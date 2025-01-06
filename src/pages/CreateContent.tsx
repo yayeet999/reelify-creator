@@ -24,8 +24,9 @@ const CreateContent = () => {
     }
   });
 
-  // Use the provided video URL
-  const videoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
+  // Use the provided video URL with q_auto for optimal quality
+  // q_auto:good ensures good visual quality while maintaining reasonable file size
+  const videoUrl = "https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
