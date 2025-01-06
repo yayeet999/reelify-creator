@@ -11,19 +11,21 @@ import { Cloudinary } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
 
 const CreateContent = () => {
-  const [videoUrl, setVideoUrl] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [textOverlay, setTextOverlay] = useState("");
   const [textSize, setTextSize] = useState([16]);
   const [textColor, setTextColor] = useState("#FFFFFF");
 
-  // Initialize Cloudinary
+  // Initialize Cloudinary with the provided credentials
   const cld = new Cloudinary({
     cloud: {
       cloudName: 'fornotreel'
     }
   });
+
+  // Use the provided video URL
+  const videoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
@@ -51,19 +53,12 @@ const CreateContent = () => {
           </CardHeader>
           <CardContent>
             <div className="aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
-              {videoUrl ? (
-                <video 
-                  className="w-full h-full rounded-lg object-cover"
-                  controls
-                  src={videoUrl}
-                  loop
-                />
-              ) : (
-                <div className="text-center p-6">
-                  <Video className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
-                  <p className="text-muted-foreground">Video preview will appear here</p>
-                </div>
-              )}
+              <video 
+                className="w-full h-full rounded-lg object-cover"
+                controls
+                src={videoUrl}
+                loop
+              />
             </div>
           </CardContent>
         </Card>
@@ -91,15 +86,6 @@ const CreateContent = () => {
               </TabsList>
 
               <TabsContent value="details" className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Video URL</Label>
-                  <Input
-                    placeholder="Enter Cloudinary video URL"
-                    value={videoUrl}
-                    onChange={(e) => setVideoUrl(e.target.value)}
-                  />
-                </div>
-                
                 <div className="space-y-2">
                   <Label>Title</Label>
                   <Input
