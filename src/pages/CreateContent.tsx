@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -45,22 +45,51 @@ const CreateContent = () => {
     return url;
   };
 
-  // Handle save with text overlay
-  const handleSaveWithText = () => {
-    const transformedUrl = generateCloudinaryUrl();
-    // Copy to clipboard
-    navigator.clipboard.writeText(transformedUrl).then(() => {
+  // Handle download with text overlay
+  const handleDownloadWithText = async () => {
+    try {
+      const transformedUrl = generateCloudinaryUrl();
+      
+      // Show loading toast
       toast({
-        title: "URL Copied!",
-        description: "The video URL with text overlay has been copied to your clipboard.",
+        title: "Downloading...",
+        description: "Preparing your video for download.",
       });
-    }).catch(() => {
+
+      // Fetch the video
+      const response = await fetch(transformedUrl);
+      if (!response.ok) throw new Error('Download failed');
+      
+      const blob = await response.blob();
+      
+      // Create a download link
+      const downloadUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = downloadUrl;
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      link.download = `video-with-text-${timestamp}.mp4`;
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Cleanup
+      window.URL.revokeObjectURL(downloadUrl);
+      
       toast({
-        title: "Error",
-        description: "Failed to copy URL to clipboard.",
+        title: "Download Complete!",
+        description: "Your video has been downloaded successfully.",
+      });
+    } catch (error) {
+      toast({
+        title: "Download Failed",
+        description: "There was an error downloading your video. Please try again.",
         variant: "destructive",
       });
-    });
+    }
   };
 
   return (
@@ -151,9 +180,9 @@ const CreateContent = () => {
 
             <Button 
               className="w-full mt-4"
-              onClick={handleSaveWithText}
+              onClick={handleDownloadWithText}
             >
-              Save with Text Overlay
+              Download with Text Overlay
             </Button>
           </CardContent>
         </Card>
