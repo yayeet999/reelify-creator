@@ -33,40 +33,32 @@ export const VideoDownloader = ({
     url += "/q_auto:good";
 
     if (textOverlay) {
+      // First, add text wrapping parameters
+      // Use 80% of video width for text container
+      const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
+      url += `/w_${textWidth},c_fit`;
+
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
       const cloudinaryFontSize = textSize * calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH);
       const position = getCloudinaryPosition(textPosition);
       const animationEffect = getCloudinaryAnimation(animation);
       
-      // Calculate text container width (80% of video width)
-      const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
-
-      // Group all text-related parameters together
-      url += `/l_text:Roboto_${cloudinaryFontSize}_bold:${encodedText}`;
-      url += `,w_${textWidth}`;
-      url += ',c_fit';
-      url += ',text_align_center';
-      url += ',b_none';
-      url += `,co_rgb:${colorHex}`;
-      url += `,${position}`;
+      // Add text overlay with wrapping enabled
+      url += `/l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},${position}`;
       
-      // Add animation and timing parameters after text parameters
       if (animationEffect) url += `,${animationEffect}`;
       if (startTime > 0) url += `,so_${startTime}`;
-      if (duration > 0) url += `,dl_${duration}`;
+      url += `,dl_${duration}`;
     }
 
-    // Add version and public ID at the end
     url += "/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
-    console.log('Generated URL:', url); // Add logging to help debug
     return url;
   };
 
   const handleDownload = async () => {
     try {
       const transformedUrl = generateCloudinaryUrl();
-      console.log('Starting download from URL:', transformedUrl);
       
       toast({
         title: "Downloading...",
@@ -74,10 +66,7 @@ export const VideoDownloader = ({
       });
 
       const response = await fetch(transformedUrl);
-      if (!response.ok) {
-        console.error('Download failed with status:', response.status);
-        throw new Error(`Download failed with status: ${response.status}`);
-      }
+      if (!response.ok) throw new Error('Download failed');
       
       const blob = await response.blob();
       const downloadUrl = window.URL.createObjectURL(blob);
@@ -98,10 +87,9 @@ export const VideoDownloader = ({
         description: "Your video has been downloaded successfully.",
       });
     } catch (error) {
-      console.error('Download error:', error);
       toast({
         title: "Download Failed",
-        description: error instanceof Error ? error.message : "There was an error downloading your video. Please try again.",
+        description: "There was an error downloading your video. Please try again.",
         variant: "destructive",
       });
     }
