@@ -7,11 +7,11 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import CreateContent from "./pages/CreateContent";
 
 // Placeholder components for the dashboard routes
 const Profile = () => <div className="p-6"><h1 className="text-2xl font-bold">Profile</h1></div>;
 const Settings = () => <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1></div>;
-const CreateContent = () => <div className="p-6"><h1 className="text-2xl font-bold">Create Content</h1></div>;
 const GenerateHooks = () => <div className="p-6"><h1 className="text-2xl font-bold">Generate Hooks</h1></div>;
 
 const queryClient = new QueryClient();
