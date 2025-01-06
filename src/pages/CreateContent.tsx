@@ -8,53 +8,80 @@ import { Button } from "@/components/ui/button";
 import { Video, Type } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Cloudinary } from "@cloudinary/url-gen";
+import { TextPositionSelector } from "@/components/video-editor/TextPositionSelector";
+import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
+import { TimelineControl } from "@/components/video-editor/TimelineControl";
+import { VideoPreview } from "@/components/video-editor/VideoPreview";
 
 const CreateContent = () => {
   const [textOverlay, setTextOverlay] = useState("");
   const [textSize, setTextSize] = useState([16]);
   const [textColor, setTextColor] = useState("#FFFFFF");
+  const [textPosition, setTextPosition] = useState<"top" | "middle" | "bottom">("middle");
+  const [animation, setAnimation] = useState<AnimationType>("none");
+  const [startTime, setStartTime] = useState(0);
+  const [duration, setDuration] = useState(5);
   const { toast } = useToast();
 
-  // Video dimensions constants
-  const ACTUAL_VIDEO_WIDTH = 1080; // Width of the original video
-  const PREVIEW_WIDTH = 240; // Width of our preview container
-  const SCALE_FACTOR = ACTUAL_VIDEO_WIDTH / PREVIEW_WIDTH;
-  const FINE_TUNE_FACTOR = 0.8; // Adjustment factor to perfect the match
-
-  // Initialize Cloudinary
-  const cld = new Cloudinary({
-    cloud: {
-      cloudName: 'fornotreel'
-    }
-  });
-
-  // Generate the base video URL (without transformations)
+  const VIDEO_DURATION = 30; // Set this to your actual video duration
   const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
 
   // Function to calculate the scaled font size for Cloudinary
   const getCloudinaryFontSize = () => {
-    const scaledSize = Math.round(textSize[0] * SCALE_FACTOR * FINE_TUNE_FACTOR);
-    return scaledSize;
+    const ACTUAL_VIDEO_WIDTH = 1080;
+    const PREVIEW_WIDTH = 240;
+    const SCALE_FACTOR = ACTUAL_VIDEO_WIDTH / PREVIEW_WIDTH;
+    const FINE_TUNE_FACTOR = 0.8;
+    return Math.round(textSize[0] * SCALE_FACTOR * FINE_TUNE_FACTOR);
+  };
+
+  // Function to get Cloudinary position parameter
+  const getCloudinaryPosition = () => {
+    switch (textPosition) {
+      case "top":
+        return "g_north,y_50";
+      case "middle":
+        return "g_center";
+      case "bottom":
+        return "g_south,y_50";
+    }
+  };
+
+  // Function to get Cloudinary animation parameters
+  const getCloudinaryAnimation = () => {
+    switch (animation) {
+      case "none":
+        return "";
+      case "fade":
+        return "e_fade:2000";
+      case "slide-left":
+        return "e_slide:l:2000";
+      case "slide-up":
+        return "e_slide:u:2000";
+    }
   };
 
   // Function to generate Cloudinary URL with transformations
   const generateCloudinaryUrl = () => {
+    if (!textOverlay) return baseVideoUrl;
+
     let url = "https://res.cloudinary.com/fornotreel/video/upload";
-    
-    // Add quality auto transformation
     url += "/q_auto:good";
-    
-    // Add text overlay if provided
+
     if (textOverlay) {
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
       const cloudinaryFontSize = getCloudinaryFontSize();
-      url += `/l_text:Arial_${cloudinaryFontSize}:${encodedText},co_rgb:${colorHex}`;
+      const position = getCloudinaryPosition();
+      const animation = getCloudinaryAnimation();
+      
+      url += `/l_text:Roboto_${cloudinaryFontSize}:${encodedText},co_rgb:${colorHex},${position}`;
+      if (animation) url += `,${animation}`;
+      if (startTime > 0) url += `,so_${startTime}`;
+      url += `,dl_${duration}`;
     }
-    
-    // Add the video ID at the end
+
     url += "/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
-    
     return url;
   };
 
@@ -63,33 +90,26 @@ const CreateContent = () => {
     try {
       const transformedUrl = generateCloudinaryUrl();
       
-      // Show loading toast
       toast({
         title: "Downloading...",
         description: "Preparing your video for download.",
       });
 
-      // Fetch the video
       const response = await fetch(transformedUrl);
       if (!response.ok) throw new Error('Download failed');
       
       const blob = await response.blob();
-      
-      // Create a download link
       const downloadUrl = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = downloadUrl;
       
-      // Generate filename with timestamp
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
       link.download = `video-with-text-${timestamp}.mp4`;
       
-      // Trigger download
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       
-      // Cleanup
       window.URL.revokeObjectURL(downloadUrl);
       
       toast({
@@ -124,26 +144,14 @@ const CreateContent = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
-              <video 
-                className="w-full h-full rounded-lg object-cover"
-                controls
-                src={baseVideoUrl}
-                loop
-              />
-              {textOverlay && (
-                <div 
-                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center w-full px-4"
-                  style={{
-                    color: textColor,
-                    fontSize: `${textSize[0]}px`,
-                    textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
-                  }}
-                >
-                  {textOverlay}
-                </div>
-              )}
-            </div>
+            <VideoPreview
+              videoUrl={baseVideoUrl}
+              text={textOverlay}
+              textColor={textColor}
+              textSize={textSize[0]}
+              position={textPosition}
+              animation={animation}
+            />
           </CardContent>
         </Card>
 
@@ -152,7 +160,7 @@ const CreateContent = () => {
           <CardHeader>
             <CardTitle>Text Overlay Settings</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
             <div className="space-y-2">
               <Label>Text Overlay</Label>
               <Textarea
@@ -162,6 +170,33 @@ const CreateContent = () => {
               />
             </div>
             
+            <div className="space-y-2">
+              <Label>Text Position</Label>
+              <TextPositionSelector
+                position={textPosition}
+                onChange={setTextPosition}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Animation</Label>
+              <TextAnimationSelector
+                animation={animation}
+                onChange={setAnimation}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Timing</Label>
+              <TimelineControl
+                startTime={startTime}
+                duration={duration}
+                videoDuration={VIDEO_DURATION}
+                onStartTimeChange={setStartTime}
+                onDurationChange={setDuration}
+              />
+            </div>
+
             <div className="space-y-2">
               <Label>Text Size: {textSize}px</Label>
               <Slider
