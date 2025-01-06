@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -24,9 +24,29 @@ const CreateContent = () => {
     }
   });
 
-  // Use the provided video URL with q_auto for optimal quality
-  // q_auto:good ensures good visual quality while maintaining reasonable file size
-  const videoUrl = "https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
+  // Generate the video URL with transformations based on user input
+  const videoUrl = useMemo(() => {
+    let baseUrl = "https://res.cloudinary.com/fornotreel/video/upload";
+    
+    // Add quality auto transformation
+    baseUrl += "/q_auto:good";
+    
+    // Add text overlay if provided
+    if (textOverlay) {
+      // Encode the text for URL
+      const encodedText = encodeURIComponent(textOverlay);
+      // Add text overlay transformation
+      // co_rgb:COLOR - sets text color (remove # and convert to decimal)
+      // l_text:Arial_${SIZE} - sets font and size
+      const colorHex = textColor.replace('#', '');
+      baseUrl += `/l_text:Arial_${textSize[0]}:${encodedText},co_rgb:${colorHex}`;
+    }
+    
+    // Add the video ID at the end
+    baseUrl += "/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
+    
+    return baseUrl;
+  }, [textOverlay, textSize, textColor]);
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
