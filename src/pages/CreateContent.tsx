@@ -44,7 +44,7 @@ const CreateContent = () => {
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Video Preview Area */}
-        <Card className="xl:col-span-2 bg-accent-purple/20">
+        <Card className="xl:col-span-1 bg-accent-purple/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Video className="w-5 h-5" />
@@ -52,7 +52,7 @@ const CreateContent = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
+            <div className="max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
               <video 
                 className="w-full h-full rounded-lg object-cover"
                 controls
@@ -64,7 +64,7 @@ const CreateContent = () => {
         </Card>
 
         {/* Content Configuration */}
-        <Card className="xl:col-span-1">
+        <Card className="xl:col-span-2">
           <CardHeader>
             <CardTitle>Content Settings</CardTitle>
           </CardHeader>
