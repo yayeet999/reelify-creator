@@ -8,6 +8,12 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 
+// Placeholder components for the dashboard routes
+const Profile = () => <div className="p-6"><h1 className="text-2xl font-bold">Profile</h1></div>;
+const Settings = () => <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1></div>;
+const CreateContent = () => <div className="p-6"><h1 className="text-2xl font-bold">Create Content</h1></div>;
+const GenerateHooks = () => <div className="p-6"><h1 className="text-2xl font-bold">Generate Hooks</h1></div>;
+
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -47,6 +53,38 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Index />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <ProtectedRoute>
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/create"
+            element={
+              <ProtectedRoute>
+                <CreateContent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/hooks"
+            element={
+              <ProtectedRoute>
+                <GenerateHooks />
               </ProtectedRoute>
             }
           />
