@@ -30,11 +30,11 @@ const CreateContent = () => {
   const getCloudinaryPosition = () => {
     switch (textPosition) {
       case "top":
-        return "g_north,y_50";
+        return "g_north,y_150";  // Adjusted to match preview position (15% from top)
       case "middle":
         return "g_center";
       case "bottom":
-        return "g_south,y_50";
+        return "g_south,y_150";  // Adjusted to match preview position (15% from bottom)
     }
   };
 

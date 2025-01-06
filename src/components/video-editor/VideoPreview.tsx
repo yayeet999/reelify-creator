@@ -21,11 +21,11 @@ export const VideoPreview = ({
   const getPositionClasses = (pos: Position) => {
     switch (pos) {
       case "top":
-        return "top-8";
+        return "top-[15%]";
       case "middle":
         return "top-1/2 -translate-y-1/2";
       case "bottom":
-        return "bottom-8";
+        return "bottom-[15%]";
     }
   };
 
