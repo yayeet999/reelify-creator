@@ -26,15 +26,6 @@ const CreateContent = () => {
   const VIDEO_DURATION = 30; // Set this to your actual video duration
   const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
 
-  // Function to calculate the scaled font size for Cloudinary
-  const getCloudinaryFontSize = () => {
-    const ACTUAL_VIDEO_WIDTH = 1080;
-    const PREVIEW_WIDTH = 240;
-    const SCALE_FACTOR = ACTUAL_VIDEO_WIDTH / PREVIEW_WIDTH;
-    const FINE_TUNE_FACTOR = 0.8;
-    return Math.round(textSize[0] * SCALE_FACTOR * FINE_TUNE_FACTOR);
-  };
-
   // Function to get Cloudinary position parameter
   const getCloudinaryPosition = () => {
     switch (textPosition) {
@@ -55,6 +46,15 @@ const CreateContent = () => {
       case "fade":
         return "e_fade:2000";
     }
+  };
+
+  // Function to calculate the scaled font size for Cloudinary
+  const getCloudinaryFontSize = () => {
+    const ACTUAL_VIDEO_WIDTH = 1080;
+    const PREVIEW_WIDTH = 240;
+    const SCALE_FACTOR = ACTUAL_VIDEO_WIDTH / PREVIEW_WIDTH;
+    const FINE_TUNE_FACTOR = 0.8;
+    return Math.round(textSize[0] * SCALE_FACTOR * FINE_TUNE_FACTOR);
   };
 
   // Function to generate Cloudinary URL with transformations
