@@ -1,16 +1,22 @@
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Video, Type, Image, Palette, Save } from "lucide-react";
 import { Cloudinary } from "@cloudinary/url-gen";
 import { AdvancedImage } from "@cloudinary/react";
-import { auto } from "@cloudinary/url-gen/actions/resize";
-import { autoGravity } from "@cloudinary/url-gen/qualifiers/gravity";
 
 const CreateContent = () => {
   const [videoUrl, setVideoUrl] = useState("");
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [textOverlay, setTextOverlay] = useState("");
+  const [textSize, setTextSize] = useState([16]);
+  const [textColor, setTextColor] = useState("#FFFFFF");
 
   // Initialize Cloudinary
   const cld = new Cloudinary({
@@ -20,69 +26,155 @@ const CreateContent = () => {
   });
 
   return (
-    <div className="container mx-auto p-6 space-y-6 animate-fade-up">
-      <h1 className="text-3xl font-bold text-primary">Create Content</h1>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="container mx-auto p-6 animate-fade-up">
+      <div className="flex items-center justify-between mb-8">
+        <div>
+          <h1 className="text-3xl font-bold text-primary">Create Content</h1>
+          <p className="text-muted-foreground mt-1">
+            Create and customize your short-form video content
+          </p>
+        </div>
+        <Button className="gap-2" size="lg">
+          <Save className="w-4 h-4" />
+          Save Content
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Video Preview Area */}
-        <Card className="col-span-1 bg-accent-purple/20">
+        <Card className="xl:col-span-2 bg-accent-purple/20">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
+              <Video className="w-5 h-5" />
               <span>Video Preview</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="aspect-video bg-black/5 rounded-lg flex items-center justify-center">
+            <div className="aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
               {videoUrl ? (
                 <video 
-                  className="w-full h-full rounded-lg"
+                  className="w-full h-full rounded-lg object-cover"
                   controls
                   src={videoUrl}
+                  loop
                 />
               ) : (
-                <p className="text-muted-foreground">Video preview will appear here</p>
+                <div className="text-center p-6">
+                  <Video className="w-12 h-12 mx-auto mb-4 text-muted-foreground/50" />
+                  <p className="text-muted-foreground">Video preview will appear here</p>
+                </div>
               )}
             </div>
           </CardContent>
         </Card>
 
-        {/* Content Details */}
-        <Card className="col-span-1">
+        {/* Content Configuration */}
+        <Card className="xl:col-span-1">
           <CardHeader>
-            <CardTitle>Content Details</CardTitle>
+            <CardTitle>Content Settings</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Video URL</label>
-              <input
-                type="text"
-                placeholder="Enter Cloudinary video URL"
-                className="w-full px-3 py-2 border rounded-md"
-                value={videoUrl}
-                onChange={(e) => setVideoUrl(e.target.value)}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Title</label>
-              <input
-                type="text"
-                placeholder="Enter content title"
-                className="w-full px-3 py-2 border rounded-md"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-            </div>
+          <CardContent>
+            <Tabs defaultValue="details" className="space-y-4">
+              <TabsList className="grid grid-cols-3 gap-4">
+                <TabsTrigger value="details" className="gap-2">
+                  <Type className="w-4 h-4" />
+                  Details
+                </TabsTrigger>
+                <TabsTrigger value="text" className="gap-2">
+                  <Type className="w-4 h-4" />
+                  Text
+                </TabsTrigger>
+                <TabsTrigger value="style" className="gap-2">
+                  <Palette className="w-4 h-4" />
+                  Style
+                </TabsTrigger>
+              </TabsList>
 
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Description</label>
-              <Textarea
-                placeholder="Enter content description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="min-h-[100px]"
-              />
-            </div>
+              <TabsContent value="details" className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Video URL</Label>
+                  <Input
+                    placeholder="Enter Cloudinary video URL"
+                    value={videoUrl}
+                    onChange={(e) => setVideoUrl(e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Title</Label>
+                  <Input
+                    placeholder="Enter content title"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Description</Label>
+                  <Textarea
+                    placeholder="Enter content description"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    className="min-h-[100px]"
+                  />
+                </div>
+              </TabsContent>
+
+              <TabsContent value="text" className="space-y-4">
+                <div className="space-y-2">
+                  <Label>Text Overlay</Label>
+                  <Textarea
+                    placeholder="Add text overlay to your video"
+                    value={textOverlay}
+                    onChange={(e) => setTextOverlay(e.target.value)}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label>Text Size: {textSize}px</Label>
+                  <Slider
+                    value={textSize}
+                    onValueChange={setTextSize}
+                    min={12}
+                    max={72}
+                    step={1}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Text Color</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="color"
+                      value={textColor}
+                      onChange={(e) => setTextColor(e.target.value)}
+                      className="w-20 h-10 p-1"
+                    />
+                    <Input
+                      value={textColor}
+                      onChange={(e) => setTextColor(e.target.value)}
+                      placeholder="#FFFFFF"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+              </TabsContent>
+
+              <TabsContent value="style" className="space-y-4">
+                <div className="grid gap-4">
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-sm">Coming Soon</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-sm text-muted-foreground">
+                        Additional styling options will be available soon.
+                      </p>
+                    </CardContent>
+                  </Card>
+                </div>
+              </TabsContent>
+            </Tabs>
           </CardContent>
         </Card>
       </div>
