@@ -33,19 +33,23 @@ export const VideoDownloader = ({
     url += "/q_auto:good";
 
     if (textOverlay) {
-      // First, add text wrapping parameters
-      // Use 80% of video width for text container
-      const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
-      url += `/w_${textWidth},c_fit`;
-
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
       const cloudinaryFontSize = textSize * calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH);
       const position = getCloudinaryPosition(textPosition);
       const animationEffect = getCloudinaryAnimation(animation);
       
-      // Add text overlay with wrapping enabled
-      url += `/l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},${position}`;
+      // Calculate text container width (80% of video width)
+      const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
+
+      // Add text overlay with all parameters grouped together
+      url += `/l_text:Roboto_${cloudinaryFontSize}_bold:${encodedText}`;
+      url += `,w_${textWidth}`;
+      url += ',c_fit';
+      url += ',text_align_center';
+      url += ',b_none';
+      url += `,co_rgb:${colorHex}`;
+      url += `,${position}`;
       
       if (animationEffect) url += `,${animationEffect}`;
       if (startTime > 0) url += `,so_${startTime}`;
