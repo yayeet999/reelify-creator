@@ -1,7 +1,7 @@
 import { ArrowUp, ArrowDown, AlignCenter } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-type Position = "top" | "middle" | "bottom";
+export type Position = "top" | "middle" | "bottom";
 
 interface TextPositionSelectorProps {
   position: Position;
