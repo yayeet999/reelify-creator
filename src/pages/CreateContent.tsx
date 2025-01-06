@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Video, Type } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Cloudinary } from "@cloudinary/url-gen";
 
 const CreateContent = () => {
@@ -14,6 +14,12 @@ const CreateContent = () => {
   const [textSize, setTextSize] = useState([16]);
   const [textColor, setTextColor] = useState("#FFFFFF");
   const { toast } = useToast();
+
+  // Video dimensions constants
+  const ACTUAL_VIDEO_WIDTH = 1080; // Width of the original video
+  const PREVIEW_WIDTH = 240; // Width of our preview container
+  const SCALE_FACTOR = ACTUAL_VIDEO_WIDTH / PREVIEW_WIDTH;
+  const FINE_TUNE_FACTOR = 0.8; // Adjustment factor to perfect the match
 
   // Initialize Cloudinary
   const cld = new Cloudinary({
@@ -24,6 +30,12 @@ const CreateContent = () => {
 
   // Generate the base video URL (without transformations)
   const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
+
+  // Function to calculate the scaled font size for Cloudinary
+  const getCloudinaryFontSize = () => {
+    const scaledSize = Math.round(textSize[0] * SCALE_FACTOR * FINE_TUNE_FACTOR);
+    return scaledSize;
+  };
 
   // Function to generate Cloudinary URL with transformations
   const generateCloudinaryUrl = () => {
@@ -36,7 +48,8 @@ const CreateContent = () => {
     if (textOverlay) {
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
-      url += `/l_text:Arial_${textSize[0]}:${encodedText},co_rgb:${colorHex}`;
+      const cloudinaryFontSize = getCloudinaryFontSize();
+      url += `/l_text:Arial_${cloudinaryFontSize}:${encodedText},co_rgb:${colorHex}`;
     }
     
     // Add the video ID at the end
