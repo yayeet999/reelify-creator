@@ -35,10 +35,6 @@ export const VideoPreview = ({
         return "";
       case "fade":
         return "animate-fade-in";
-      case "slide-left":
-        return "animate-slide-in-right";
-      case "slide-up":
-        return "animate-fade-up";
     }
   };
 

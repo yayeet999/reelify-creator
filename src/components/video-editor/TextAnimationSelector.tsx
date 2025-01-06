@@ -1,7 +1,7 @@
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
-export type AnimationType = "none" | "fade" | "slide-left" | "slide-up";
+export type AnimationType = "none" | "fade";
 
 interface TextAnimationSelectorProps {
   animation: AnimationType;
@@ -25,14 +25,6 @@ export const TextAnimationSelector = ({
       <div className="flex items-center space-x-2">
         <RadioGroupItem value="fade" id="fade" />
         <Label htmlFor="fade">Fade In</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="slide-left" id="slide-left" />
-        <Label htmlFor="slide-left">Slide Left</Label>
-      </div>
-      <div className="flex items-center space-x-2">
-        <RadioGroupItem value="slide-up" id="slide-up" />
-        <Label htmlFor="slide-up">Slide Up</Label>
       </div>
     </RadioGroup>
   );

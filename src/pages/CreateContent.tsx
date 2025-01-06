@@ -54,10 +54,6 @@ const CreateContent = () => {
         return "";
       case "fade":
         return "e_fade:2000";
-      case "slide-left":
-        return "e_slide:l:2000";
-      case "slide-up":
-        return "e_slide:u:2000";
     }
   };
 
