@@ -2,48 +2,66 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
 import { Video, Type } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import { Cloudinary } from "@cloudinary/url-gen";
-import { AdvancedImage } from "@cloudinary/react";
 
 const CreateContent = () => {
   const [textOverlay, setTextOverlay] = useState("");
   const [textSize, setTextSize] = useState([16]);
   const [textColor, setTextColor] = useState("#FFFFFF");
+  const { toast } = useToast();
 
-  // Initialize Cloudinary with the provided credentials
+  // Initialize Cloudinary
   const cld = new Cloudinary({
     cloud: {
       cloudName: 'fornotreel'
     }
   });
 
-  // Generate the video URL with transformations based on user input
-  const videoUrl = useMemo(() => {
-    let baseUrl = "https://res.cloudinary.com/fornotreel/video/upload";
+  // Generate the base video URL (without transformations)
+  const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
+
+  // Function to generate Cloudinary URL with transformations
+  const generateCloudinaryUrl = () => {
+    let url = "https://res.cloudinary.com/fornotreel/video/upload";
     
     // Add quality auto transformation
-    baseUrl += "/q_auto:good";
+    url += "/q_auto:good";
     
     // Add text overlay if provided
     if (textOverlay) {
-      // Encode the text for URL
       const encodedText = encodeURIComponent(textOverlay);
-      // Add text overlay transformation
-      // co_rgb:COLOR - sets text color (remove # and convert to decimal)
-      // l_text:Arial_${SIZE} - sets font and size
       const colorHex = textColor.replace('#', '');
-      baseUrl += `/l_text:Arial_${textSize[0]}:${encodedText},co_rgb:${colorHex}`;
+      url += `/l_text:Arial_${textSize[0]}:${encodedText},co_rgb:${colorHex}`;
     }
     
     // Add the video ID at the end
-    baseUrl += "/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
+    url += "/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
     
-    return baseUrl;
-  }, [textOverlay, textSize, textColor]);
+    return url;
+  };
+
+  // Handle save with text overlay
+  const handleSaveWithText = () => {
+    const transformedUrl = generateCloudinaryUrl();
+    // Copy to clipboard
+    navigator.clipboard.writeText(transformedUrl).then(() => {
+      toast({
+        title: "URL Copied!",
+        description: "The video URL with text overlay has been copied to your clipboard.",
+      });
+    }).catch(() => {
+      toast({
+        title: "Error",
+        description: "Failed to copy URL to clipboard.",
+        variant: "destructive",
+      });
+    });
+  };
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
@@ -64,13 +82,25 @@ const CreateContent = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
+            <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
               <video 
                 className="w-full h-full rounded-lg object-cover"
                 controls
-                src={videoUrl}
+                src={baseVideoUrl}
                 loop
               />
+              {textOverlay && (
+                <div 
+                  className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center w-full px-4"
+                  style={{
+                    color: textColor,
+                    fontSize: `${textSize[0]}px`,
+                    textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                  }}
+                >
+                  {textOverlay}
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
@@ -118,6 +148,13 @@ const CreateContent = () => {
                 />
               </div>
             </div>
+
+            <Button 
+              className="w-full mt-4"
+              onClick={handleSaveWithText}
+            >
+              Save with Text Overlay
+            </Button>
           </CardContent>
         </Card>
       </div>
