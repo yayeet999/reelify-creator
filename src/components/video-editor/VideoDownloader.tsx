@@ -33,19 +33,18 @@ export const VideoDownloader = ({
     url += "/q_auto:good";
 
     if (textOverlay) {
-      // First, add text wrapping parameters
-      // Use 80% of video width for text container
+      // Calculate text container width (80% of video width)
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
-      url += `/w_${textWidth},c_fit`;
-
+      
+      // Group all text-related parameters together
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
       const cloudinaryFontSize = textSize * calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH);
       const position = getCloudinaryPosition(textPosition);
       const animationEffect = getCloudinaryAnimation(animation);
-      
-      // Add text overlay with wrapping enabled
-      url += `/l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},${position}`;
+
+      // Add text overlay with proper wrapping and centering
+      url += `/w_${textWidth},c_fit/l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},${position}`;
       
       if (animationEffect) url += `,${animationEffect}`;
       if (startTime > 0) url += `,so_${startTime}`;
@@ -53,6 +52,7 @@ export const VideoDownloader = ({
     }
 
     url += "/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
+    console.log("Generated URL:", url); // For debugging
     return url;
   };
 
@@ -87,6 +87,7 @@ export const VideoDownloader = ({
         description: "Your video has been downloaded successfully.",
       });
     } catch (error) {
+      console.error("Download error:", error);
       toast({
         title: "Download Failed",
         description: "There was an error downloading your video. Please try again.",

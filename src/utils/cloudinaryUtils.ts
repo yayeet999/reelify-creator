@@ -7,11 +7,11 @@ export const calculateCloudinaryScale = (previewWidth: number, actualWidth: numb
 export const getCloudinaryPosition = (position: "top" | "middle" | "bottom") => {
   switch (position) {
     case "top":
-      return "g_north,y_200";
+      return "g_north,y_0.15"; // 15% from top
     case "middle":
-      return "g_center";
+      return "g_center"; // Center doesn't need offset
     case "bottom":
-      return "g_south,y_200";
+      return "g_south,y_0.15"; // 15% from bottom
   }
 };
 
