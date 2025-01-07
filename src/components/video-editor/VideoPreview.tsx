@@ -45,13 +45,13 @@ export const VideoPreview = ({
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
       {/* Grid overlay */}
       <div 
-        className="absolute inset-0 z-10 pointer-events-none opacity-[0.03]"
+        className="absolute inset-0 z-10 pointer-events-none select-none"
         style={{
           backgroundImage: `
-            linear-gradient(to right, #fff 1px, transparent 1px),
-            linear-gradient(to bottom, #fff 1px, transparent 1px)
+            linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px)
           `,
-          backgroundSize: '20px 20px',
+          backgroundSize: '15px 15px',
         }}
       />
       
