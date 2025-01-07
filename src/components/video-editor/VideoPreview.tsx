@@ -51,7 +51,7 @@ export const VideoPreview = ({
       />
       {text && (
         <div 
-          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-4 py-2 ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
+          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-6 py-2 ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
           style={{
             color: textColor,
             fontSize: `${textSize * PREVIEW_SCALE}px`,
