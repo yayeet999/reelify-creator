@@ -20,7 +20,7 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <Card 
-        className={`relative w-[300px] h-[300px] cursor-pointer transition-all hover:ring-2 hover:ring-primary ${
+        className={`relative w-full max-w-[200px] aspect-square cursor-pointer transition-all hover:ring-2 hover:ring-primary ${
           currentVideoUrl === mainThumbnail.videoUrl ? 'ring-2 ring-primary' : ''
         }`}
         onClick={() => handleThumbnailClick(mainThumbnail.videoUrl)}
