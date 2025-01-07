@@ -55,33 +55,6 @@ export const VideoPreview = ({
         playsInline
       />
       
-      {/* Watermark overlay with middle z-index */}
-      <div 
-        className="absolute inset-0 z-[10] pointer-events-none select-none"
-      >
-        {/* Repeating text watermark */}
-        <div 
-          className="absolute inset-0"
-          style={{
-            backgroundSize: '200px 200px',
-            fontSize: '12px',
-            color: 'rgba(255,255,255,0.2)',
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '30px',
-            padding: '10px',
-            transform: 'rotate(-45deg)',
-            transformOrigin: 'center',
-            justifyContent: 'center',
-            alignItems: 'center'
-          }}
-        >
-          {Array.from({ length: 20 }).map((_, i) => (
-            <span key={i} className="whitespace-nowrap">notreel.ai</span>
-          ))}
-        </div>
-      </div>
-      
       {/* Text overlay with highest z-index */}
       {text && (
         <div 
