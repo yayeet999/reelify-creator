@@ -34,7 +34,7 @@ export const VideoPreview = ({
       case "none":
         return "opacity-100";
       case "fade":
-        return "opacity-0 animate-fade-in";
+        return "opacity-0 animate-fade-in animate-duration-1000 animate-fill-forwards";
     }
   };
 
