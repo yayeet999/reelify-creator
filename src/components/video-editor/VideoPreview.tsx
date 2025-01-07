@@ -62,13 +62,12 @@ export const VideoPreview = ({
         muted
         loop
         controls={false}
-        onContextMenu={(e) => e.preventDefault()}
         playsInline
       />
       
       {/* Watermark overlay with middle z-index */}
       <div className="absolute inset-0 z-[20] pointer-events-none">
-        <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-[0.03]">
+        <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-[0.15]">
           {[...Array(9)].map((_, i) => (
             <div key={i} className="flex items-center justify-center rotate-[-25deg]">
               <span className="text-black text-xl font-bold whitespace-nowrap">
