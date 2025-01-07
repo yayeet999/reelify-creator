@@ -32,17 +32,17 @@ const CreateContent = () => {
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold text-primary">Create Content</h1>
         <p className="text-muted-foreground mt-1">
           Create and customize your short-form video content
         </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         {/* Video Preview Area */}
         <Card className="xl:col-span-1 bg-accent-purple/20">
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2">
               <Video className="w-5 h-5" />
               <span>Video Preview</span>
@@ -62,37 +62,40 @@ const CreateContent = () => {
 
         {/* Content Configuration */}
         <Card className="xl:col-span-2">
-          <CardHeader>
+          <CardHeader className="pb-4">
             <CardTitle>Text Overlay Settings</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
+          <CardContent className="space-y-4">
+            <div className="space-y-1.5">
               <Label>Text Overlay ({100 - textOverlay.length} characters remaining)</Label>
               <Textarea
                 placeholder="Add text overlay to your video"
                 value={textOverlay}
                 onChange={handleTextOverlayChange}
                 maxLength={100}
+                className="resize-none h-20"
               />
             </div>
             
-            <div className="space-y-2">
-              <Label>Text Position</Label>
-              <TextPositionSelector
-                position={textPosition}
-                onChange={setTextPosition}
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-1.5">
+                <Label>Text Position</Label>
+                <TextPositionSelector
+                  position={textPosition}
+                  onChange={setTextPosition}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Animation</Label>
+                <TextAnimationSelector
+                  animation={animation}
+                  onChange={setAnimation}
+                />
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <Label>Animation</Label>
-              <TextAnimationSelector
-                animation={animation}
-                onChange={setAnimation}
-              />
-            </div>
-
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label>Timing</Label>
               <TimelineControl
                 startTime={startTime}
@@ -103,7 +106,7 @@ const CreateContent = () => {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label>Text Size: {textSize}px</Label>
               <Slider
                 value={textSize}
@@ -114,7 +117,7 @@ const CreateContent = () => {
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label>Text Color</Label>
               <div className="flex gap-2">
                 <Input
