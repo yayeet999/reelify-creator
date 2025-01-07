@@ -16,7 +16,7 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     {
       id: 'thumbnail-2',
       thumbnailUrl: '/thumbnail2.jpg',
-      videoUrl: '' // This will be filled with the URL you provide
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736233233/url2_xr10ft.mp4'
     }
   ];
 
