@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateContent from "./pages/CreateContent";
+import { DashboardLayout } from "./components/layouts/DashboardLayout";
 
 // Placeholder components for the dashboard routes
 const Profile = () => <div className="p-6"><h1 className="text-2xl font-bold">Profile</h1></div>;
@@ -37,7 +38,11 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <div>Loading...</div>;
   }
 
-  return isAuthenticated ? <>{children}</> : <Navigate to="/auth" replace />;
+  return isAuthenticated ? (
+    <DashboardLayout>{children}</DashboardLayout>
+  ) : (
+    <Navigate to="/auth" replace />
+  );
 };
 
 const App = () => (

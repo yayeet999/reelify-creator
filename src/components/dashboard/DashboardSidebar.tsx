@@ -9,6 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarRail,
 } from "@/components/ui/sidebar";
 
 const menuItems = [
@@ -49,7 +50,7 @@ export function DashboardSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar className="border-r border-border/10">
+    <Sidebar>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 text-lg font-semibold text-primary">
@@ -74,6 +75,7 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarRail />
     </Sidebar>
   );
 }
