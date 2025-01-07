@@ -59,7 +59,7 @@ export function DashboardSidebar() {
             Dashboard
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="pt-8">
+            <SidebarMenu className="space-y-1.5 pt-8">
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
@@ -67,7 +67,7 @@ export function DashboardSidebar() {
                     tooltip={item.description}
                     isActive={location.pathname === item.path}
                     className={cn(
-                      "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
+                      "group flex items-center gap-3 rounded-lg px-3 py-3 text-[15px] font-medium",
                       item.isHighlighted
                         ? "bg-primary text-white hover:bg-primary/90 justify-center"
                         : "hover:bg-primary/10 hover:text-primary justify-start"
