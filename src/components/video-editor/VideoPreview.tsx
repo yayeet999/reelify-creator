@@ -46,38 +46,11 @@ export const VideoPreview = ({
       {/* Watermark overlay */}
       <div 
         className="absolute inset-0 z-10 pointer-events-none select-none"
-        style={{
-          backgroundImage: `
-            repeating-linear-gradient(
-              45deg,
-              rgba(255,255,255,0.2),
-              rgba(255,255,255,0.2) 1px,
-              transparent 1px,
-              transparent 15px
-            ),
-            repeating-linear-gradient(
-              -45deg,
-              rgba(255,255,255,0.2),
-              rgba(255,255,255,0.2) 1px,
-              transparent 1px,
-              transparent 15px
-            )
-          `,
-        }}
       >
         {/* Repeating text watermark */}
         <div 
           className="absolute inset-0"
           style={{
-            backgroundImage: `
-              repeating-linear-gradient(
-                -45deg,
-                transparent,
-                transparent 50px,
-                rgba(255,255,255,0.2) 50px,
-                rgba(255,255,255,0.2) 100px
-              )
-            `,
             backgroundSize: '200px 200px',
             fontSize: '12px',
             color: 'rgba(255,255,255,0.2)',
