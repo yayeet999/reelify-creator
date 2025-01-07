@@ -10,7 +10,6 @@ import { TextAnimationSelector, type AnimationType } from "@/components/video-ed
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
-import { TextPresets } from "@/components/video-editor/TextPresets";
 
 const CreateContent = () => {
   const [textOverlay, setTextOverlay] = useState("");
@@ -74,11 +73,6 @@ const CreateContent = () => {
                 value={textOverlay}
                 onChange={(e) => setTextOverlay(e.target.value)}
               />
-            </div>
-
-            <div className="space-y-2">
-              <Label>Color Presets</Label>
-              <TextPresets onSelect={handlePresetSelect} />
             </div>
             
             <div className="space-y-2">
