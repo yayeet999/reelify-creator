@@ -52,7 +52,7 @@ export function DashboardSidebar() {
   const location = useLocation();
 
   return (
-    <Sidebar className="w-[90%]">
+    <Sidebar>
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 text-lg font-semibold text-primary">
@@ -67,10 +67,10 @@ export function DashboardSidebar() {
                     tooltip={item.description}
                     isActive={location.pathname === item.path}
                     className={cn(
-                      "group flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
+                      "group flex items-center justify-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium",
                       item.isHighlighted
-                        ? "bg-primary text-white hover:bg-primary/90 justify-center"
-                        : "hover:bg-primary/10 hover:text-primary justify-start"
+                        ? "bg-primary text-white hover:bg-primary/90"
+                        : "hover:bg-primary/10 hover:text-primary"
                     )}
                   >
                     <item.icon 
