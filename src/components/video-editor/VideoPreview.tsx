@@ -1,6 +1,6 @@
 import { type Position } from "./TextPositionSelector";
 import { type AnimationType } from "./TextAnimationSelector";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface VideoPreviewProps {
   videoUrl: string;
@@ -20,6 +20,8 @@ export const VideoPreview = ({
   animation,
 }: VideoPreviewProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [prevVideoUrl, setPrevVideoUrl] = useState(videoUrl);
 
   // Enhanced video control effect
   useEffect(() => {
@@ -27,6 +29,9 @@ export const VideoPreview = ({
     if (videoElement) {
       // Reset video and play
       videoElement.currentTime = 0;
+      
+      // Track loading state
+      setIsLoading(true);
       
       // Ensure video plays and loops
       const playVideo = async () => {
@@ -40,6 +45,13 @@ export const VideoPreview = ({
       playVideo();
     }
   }, [videoUrl]); // Only reset when video source changes
+
+  // Update previous video URL after transition
+  useEffect(() => {
+    if (!isLoading) {
+      setPrevVideoUrl(videoUrl);
+    }
+  }, [isLoading, videoUrl]);
 
   const getPositionClasses = (pos: Position) => {
     switch (pos) {
@@ -66,16 +78,30 @@ export const VideoPreview = ({
 
   return (
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
-      {/* Base video with lowest z-index */}
+      {/* Previous video for transition */}
+      {prevVideoUrl !== videoUrl && (
+        <video 
+          className="absolute inset-0 w-full h-full rounded-lg object-cover z-[1] transition-opacity duration-300 opacity-0"
+          src={prevVideoUrl}
+          autoPlay
+          muted
+          loop
+          playsInline
+        />
+      )}
+      
+      {/* Current video */}
       <video 
         ref={videoRef}
-        className="w-full h-full rounded-lg object-cover z-[1]"
+        className={`w-full h-full rounded-lg object-cover z-[2] transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
         src={videoUrl}
         autoPlay
         muted
         loop
         controls={false}
         playsInline
+        preload="auto"
+        onLoadedData={() => setIsLoading(false)}
       />
       
       {/* Watermark overlay with middle z-index */}
