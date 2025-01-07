@@ -32,9 +32,9 @@ export const VideoPreview = ({
   const getAnimationClasses = (anim: AnimationType) => {
     switch (anim) {
       case "none":
-        return "";
+        return "opacity-100";
       case "fade":
-        return "animate-fade-in";
+        return "opacity-0 animate-fade-in";
     }
   };
 
