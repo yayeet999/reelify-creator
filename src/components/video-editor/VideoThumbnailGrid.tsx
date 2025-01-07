@@ -9,7 +9,7 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
   // This is our main video thumbnail
   const mainThumbnail = {
     id: 'elegant-salon',
-    thumbnailUrl: '/Screenshot 2025-01-06 214011.jpg',
+    thumbnailUrl: '/thumbnail1',
     videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4'
   };
 
