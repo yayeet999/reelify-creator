@@ -10,6 +10,7 @@ import { TextAnimationSelector, type AnimationType } from "@/components/video-ed
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
+import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 
 const CreateContent = () => {
   const [textOverlay, setTextOverlay] = useState("");
@@ -19,9 +20,9 @@ const CreateContent = () => {
   const [animation, setAnimation] = useState<AnimationType>("none");
   const [startTime, setStartTime] = useState(0);
   const [duration, setDuration] = useState(5);
+  const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4");
 
   const VIDEO_DURATION = 30;
-  const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
 
   const handleTextOverlayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
@@ -48,14 +49,18 @@ const CreateContent = () => {
               <span>Video Preview</span>
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-4">
             <VideoPreview
-              videoUrl={baseVideoUrl}
+              videoUrl={currentVideoUrl}
               text={textOverlay}
               textColor={textColor}
               textSize={textSize[0]}
               position={textPosition}
               animation={animation}
+            />
+            <VideoThumbnailGrid 
+              currentVideoUrl={currentVideoUrl}
+              onVideoSelect={setCurrentVideoUrl}
             />
           </CardContent>
         </Card>
