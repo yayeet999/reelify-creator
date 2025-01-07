@@ -85,7 +85,7 @@ export const VideoPreview = ({
       {/* Text overlay with highest z-index */}
       {text && (
         <div 
-          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-6 py-2 z-[30] ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
+          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-[25px] py-2 z-[30] ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
           style={{
             color: textColor,
             fontSize: `${textSize * PREVIEW_SCALE}px`,
