@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Settings, FilePlus, Code, Home } from "lucide-react";
+import { User, Settings, FilePlus, Code, Home } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -28,19 +28,22 @@ const menuItems = [
     description: "Overview and quick actions",
   },
   {
-    title: "Generate Hooks",
-    icon: Code,
-    path: "/hooks",
-    description: "Custom hook generator",
+    title: "Profile",
+    icon: User,
+    path: "/profile",
+    description: "Manage your profile",
   },
-];
-
-const bottomMenuItems = [
   {
     title: "Settings",
     icon: Settings,
     path: "/settings",
     description: "Configure your preferences",
+  },
+  {
+    title: "Generate Hooks",
+    icon: Code,
+    path: "/hooks",
+    description: "Custom hook generator",
   },
 ];
 
@@ -55,8 +58,8 @@ export function DashboardSidebar() {
           <SidebarGroupLabel className="px-2 text-lg font-semibold text-primary">
             Dashboard
           </SidebarGroupLabel>
-          <SidebarGroupContent className="flex flex-col h-full">
-            <SidebarMenu className="space-y-1.5 pt-10 flex-1">
+          <SidebarGroupContent>
+            <SidebarMenu className="space-y-1.5 pt-10">
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
@@ -78,23 +81,6 @@ export function DashboardSidebar() {
                           : "text-muted-foreground group-hover:text-primary"
                       )} 
                     />
-                    <span className="truncate">{item.title}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-            
-            {/* Bottom menu items */}
-            <SidebarMenu className="space-y-1.5 mt-auto pb-4">
-              {bottomMenuItems.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton
-                    onClick={() => navigate(item.path)}
-                    tooltip={item.description}
-                    isActive={location.pathname === item.path}
-                    className="group flex items-center gap-3 rounded-lg px-3 py-3 text-[15px] font-medium hover:bg-primary/10 hover:text-primary justify-start"
-                  >
-                    <item.icon className="h-5 w-5 shrink-0 transition-colors text-muted-foreground group-hover:text-primary" />
                     <span className="truncate">{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
