@@ -59,7 +59,7 @@ export function DashboardSidebar() {
             Dashboard
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1.5 pt-8">
+            <SidebarMenu className="space-y-1.5 pt-10">
               {menuItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
