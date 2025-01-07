@@ -58,12 +58,7 @@
     display: none !important;
   }
   
-  /* Safari */
-  video::-webkit-media-controls-start-playback-button {
-    display: none !important;
-  }
-
-  /* Edge-specific rules */
+  /* Edge - both legacy (-ms) and modern (-webkit) */
   video::-ms-media-controls {
     display: none !important;
   }
