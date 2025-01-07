@@ -1,5 +1,6 @@
 import { type Position } from "./TextPositionSelector";
 import { type AnimationType } from "./TextAnimationSelector";
+import { useEffect, useRef } from "react";
 
 interface VideoPreviewProps {
   videoUrl: string;
@@ -18,6 +19,15 @@ export const VideoPreview = ({
   position,
   animation,
 }: VideoPreviewProps) => {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = 0;
+      videoRef.current.play();
+    }
+  }, [videoUrl]);
+
   const getPositionClasses = (pos: Position) => {
     switch (pos) {
       case "top":
@@ -34,7 +44,7 @@ export const VideoPreview = ({
       case "none":
         return "opacity-100";
       case "fade":
-        return "opacity-0 animate-fade-in animate-duration-1000 animate-fill-forwards";
+        return "animate-fade-in";
     }
   };
 
@@ -45,6 +55,7 @@ export const VideoPreview = ({
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
       {/* Base video with lowest z-index */}
       <video 
+        ref={videoRef}
         className="w-full h-full rounded-lg object-cover z-[1]"
         src={videoUrl}
         autoPlay
@@ -55,6 +66,19 @@ export const VideoPreview = ({
         playsInline
       />
       
+      {/* Watermark overlay with middle z-index */}
+      <div className="absolute inset-0 z-[20] pointer-events-none">
+        <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-[0.03]">
+          {[...Array(9)].map((_, i) => (
+            <div key={i} className="flex items-center justify-center rotate-[-25deg]">
+              <span className="text-black text-xl font-bold whitespace-nowrap">
+                REELIFY
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Text overlay with highest z-index */}
       {text && (
         <div 
