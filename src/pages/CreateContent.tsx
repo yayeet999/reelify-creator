@@ -92,12 +92,30 @@ const CreateContent = () => {
               </div>
 
               <div className="space-y-1.5">
-                <Label>Animation</Label>
-                <TextAnimationSelector
-                  animation={animation}
-                  onChange={setAnimation}
-                />
+                <Label>Text Color</Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="color"
+                    value={textColor}
+                    onChange={(e) => setTextColor(e.target.value)}
+                    className="w-20 h-10 p-1"
+                  />
+                  <Input
+                    value={textColor}
+                    onChange={(e) => setTextColor(e.target.value)}
+                    placeholder="#FFFFFF"
+                    className="flex-1"
+                  />
+                </div>
               </div>
+            </div>
+
+            {/* Hidden animation selector - keeping functionality */}
+            <div className="hidden">
+              <TextAnimationSelector
+                animation={animation}
+                onChange={setAnimation}
+              />
             </div>
 
             <div className="space-y-1.5">
@@ -120,24 +138,6 @@ const CreateContent = () => {
                 max={37}
                 step={1}
               />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Text Color</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="color"
-                  value={textColor}
-                  onChange={(e) => setTextColor(e.target.value)}
-                  className="w-20 h-10 p-1"
-                />
-                <Input
-                  value={textColor}
-                  onChange={(e) => setTextColor(e.target.value)}
-                  placeholder="#FFFFFF"
-                  className="flex-1"
-                />
-              </div>
             </div>
 
             <VideoDownloader 
