@@ -11,10 +11,18 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 const menuItems = [
   {
-    title: "Dashboard",
+    title: "Create Content",
+    icon: FilePlus,
+    path: "/create",
+    description: "Create new content",
+    isHighlighted: true,
+  },
+  {
+    title: "Home",
     icon: Home,
     path: "/",
     description: "Overview and quick actions",
@@ -30,12 +38,6 @@ const menuItems = [
     icon: Settings,
     path: "/settings",
     description: "Configure your preferences",
-  },
-  {
-    title: "Create Content",
-    icon: FilePlus,
-    path: "/create",
-    description: "Create new content",
   },
   {
     title: "Generate Hooks",
@@ -64,9 +66,21 @@ export function DashboardSidebar() {
                     onClick={() => navigate(item.path)}
                     tooltip={item.description}
                     isActive={location.pathname === item.path}
-                    className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-primary/10 hover:text-primary"
+                    className={cn(
+                      "group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium",
+                      item.isHighlighted
+                        ? "bg-primary text-white hover:bg-primary/90"
+                        : "hover:bg-primary/10 hover:text-primary"
+                    )}
                   >
-                    <item.icon className="h-5 w-5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary" />
+                    <item.icon 
+                      className={cn(
+                        "h-5 w-5 shrink-0 transition-colors",
+                        item.isHighlighted
+                          ? "text-white"
+                          : "text-muted-foreground group-hover:text-primary"
+                      )} 
+                    />
                     <span className="truncate">{item.title}</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
