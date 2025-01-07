@@ -15,7 +15,6 @@ const CreateContent = () => {
   const [textOverlay, setTextOverlay] = useState("");
   const [textSize, setTextSize] = useState([16]);
   const [textColor, setTextColor] = useState("#FFFFFF");
-  const [backgroundColor, setBackgroundColor] = useState("#000000E6"); // Keeping the state for future use
   const [textPosition, setTextPosition] = useState<"top" | "middle" | "bottom">("middle");
   const [animation, setAnimation] = useState<AnimationType>("none");
   const [startTime, setStartTime] = useState(0);
@@ -23,11 +22,6 @@ const CreateContent = () => {
 
   const VIDEO_DURATION = 30;
   const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
-
-  const handlePresetSelect = (newTextColor: string, newBackgroundColor: string) => {
-    setTextColor(newTextColor);
-    setBackgroundColor(newBackgroundColor);
-  };
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
@@ -52,7 +46,6 @@ const CreateContent = () => {
               videoUrl={baseVideoUrl}
               text={textOverlay}
               textColor={textColor}
-              backgroundColor={backgroundColor}
               textSize={textSize[0]}
               position={textPosition}
               animation={animation}
@@ -134,7 +127,6 @@ const CreateContent = () => {
             <VideoDownloader 
               textOverlay={textOverlay}
               textColor={textColor}
-              backgroundColor={backgroundColor}
               textSize={textSize[0]}
               textPosition={textPosition}
               animation={animation}

@@ -5,7 +5,6 @@ import { calculateCloudinaryScale, getCloudinaryPosition, getCloudinaryAnimation
 interface VideoDownloaderProps {
   textOverlay: string;
   textColor: string;
-  backgroundColor: string;
   textSize: number;
   textPosition: "top" | "middle" | "bottom";
   animation: "none" | "fade";
@@ -16,7 +15,6 @@ interface VideoDownloaderProps {
 export const VideoDownloader = ({
   textOverlay,
   textColor,
-  backgroundColor,
   textSize,
   textPosition,
   animation,
@@ -38,12 +36,11 @@ export const VideoDownloader = ({
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
-      const bgColorHex = backgroundColor.replace('#', '');
       const cloudinaryFontSize = textSize * calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH);
       const position = getCloudinaryPosition(textPosition);
       const animationEffect = getCloudinaryAnimation(animation);
 
-      url += `/c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},b_rgb:${bgColorHex},w_${textWidth}`;
+      url += `/c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},w_${textWidth}`;
       
       if (animationEffect) url += `,${animationEffect}`;
       
