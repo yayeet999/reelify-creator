@@ -10,11 +10,13 @@ import { TextAnimationSelector, type AnimationType } from "@/components/video-ed
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
+import { TextPresets } from "@/components/video-editor/TextPresets";
 
 const CreateContent = () => {
   const [textOverlay, setTextOverlay] = useState("");
   const [textSize, setTextSize] = useState([16]);
   const [textColor, setTextColor] = useState("#FFFFFF");
+  const [backgroundColor, setBackgroundColor] = useState("#000000E6");
   const [textPosition, setTextPosition] = useState<"top" | "middle" | "bottom">("middle");
   const [animation, setAnimation] = useState<AnimationType>("none");
   const [startTime, setStartTime] = useState(0);
@@ -22,6 +24,11 @@ const CreateContent = () => {
 
   const VIDEO_DURATION = 30;
   const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
+
+  const handlePresetSelect = (newTextColor: string, newBackgroundColor: string) => {
+    setTextColor(newTextColor);
+    setBackgroundColor(newBackgroundColor);
+  };
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
@@ -46,6 +53,7 @@ const CreateContent = () => {
               videoUrl={baseVideoUrl}
               text={textOverlay}
               textColor={textColor}
+              backgroundColor={backgroundColor}
               textSize={textSize[0]}
               position={textPosition}
               animation={animation}
@@ -66,6 +74,11 @@ const CreateContent = () => {
                 value={textOverlay}
                 onChange={(e) => setTextOverlay(e.target.value)}
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Color Presets</Label>
+              <TextPresets onSelect={handlePresetSelect} />
             </div>
             
             <div className="space-y-2">
@@ -107,26 +120,49 @@ const CreateContent = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Text Color</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="color"
-                  value={textColor}
-                  onChange={(e) => setTextColor(e.target.value)}
-                  className="w-20 h-10 p-1"
-                />
-                <Input
-                  value={textColor}
-                  onChange={(e) => setTextColor(e.target.value)}
-                  placeholder="#FFFFFF"
-                  className="flex-1"
-                />
+              <Label>Colors</Label>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label className="text-xs">Text Color</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="color"
+                      value={textColor}
+                      onChange={(e) => setTextColor(e.target.value)}
+                      className="w-20 h-10 p-1"
+                    />
+                    <Input
+                      value={textColor}
+                      onChange={(e) => setTextColor(e.target.value)}
+                      placeholder="#FFFFFF"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs">Background Color</Label>
+                  <div className="flex gap-2">
+                    <Input
+                      type="color"
+                      value={backgroundColor}
+                      onChange={(e) => setBackgroundColor(e.target.value)}
+                      className="w-20 h-10 p-1"
+                    />
+                    <Input
+                      value={backgroundColor}
+                      onChange={(e) => setBackgroundColor(e.target.value)}
+                      placeholder="#000000E6"
+                      className="flex-1"
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
             <VideoDownloader 
               textOverlay={textOverlay}
               textColor={textColor}
+              backgroundColor={backgroundColor}
               textSize={textSize[0]}
               textPosition={textPosition}
               animation={animation}

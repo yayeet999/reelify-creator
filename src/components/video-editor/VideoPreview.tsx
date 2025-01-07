@@ -5,6 +5,7 @@ interface VideoPreviewProps {
   videoUrl: string;
   text: string;
   textColor: string;
+  backgroundColor: string;
   textSize: number;
   position: Position;
   animation: AnimationType;
@@ -14,6 +15,7 @@ export const VideoPreview = ({
   videoUrl,
   text,
   textColor,
+  backgroundColor,
   textSize,
   position,
   animation,
@@ -48,11 +50,11 @@ export const VideoPreview = ({
       />
       {text && (
         <div 
-          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-4 ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
+          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-4 py-2 ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
           style={{
             color: textColor,
+            backgroundColor,
             fontSize: `${textSize}px`,
-            textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
           }}
         >
           {text}

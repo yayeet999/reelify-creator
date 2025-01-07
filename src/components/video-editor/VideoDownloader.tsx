@@ -5,6 +5,7 @@ import { calculateCloudinaryScale, getCloudinaryPosition, getCloudinaryAnimation
 interface VideoDownloaderProps {
   textOverlay: string;
   textColor: string;
+  backgroundColor: string;
   textSize: number;
   textPosition: "top" | "middle" | "bottom";
   animation: "none" | "fade";
@@ -15,6 +16,7 @@ interface VideoDownloaderProps {
 export const VideoDownloader = ({
   textOverlay,
   textColor,
+  backgroundColor,
   textSize,
   textPosition,
   animation,
@@ -33,33 +35,26 @@ export const VideoDownloader = ({
     url += "/q_auto:good";
 
     if (textOverlay) {
-      // Calculate text container width (80% of video width)
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
-      
-      // Prepare text parameters
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
+      const bgColorHex = backgroundColor.replace('#', '');
       const cloudinaryFontSize = textSize * calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH);
       const position = getCloudinaryPosition(textPosition);
       const animationEffect = getCloudinaryAnimation(animation);
 
-      // Add text overlay with proper wrapping and centering
-      // Note the order: c_fit before l_text, and width parameter after text
-      url += `/c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},w_${textWidth}`;
+      url += `/c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},b_rgb:${bgColorHex},w_${textWidth}`;
       
-      // Add animation if specified
       if (animationEffect) url += `,${animationEffect}`;
       
-      // Apply the layer with position
       url += `/fl_layer_apply,${position}`;
 
-      // Add timing parameters if specified
       if (startTime > 0) url += `,so_${startTime}`;
       url += `,dl_${duration}`;
     }
 
     url += "/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
-    console.log("Generated URL:", url); // For debugging
+    console.log("Generated URL:", url);
     return url;
   };
 
