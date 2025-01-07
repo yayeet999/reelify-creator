@@ -40,8 +40,8 @@ export const VideoPreview = ({
     }
   };
 
-  // Scale factor for preview (240px preview width / 1080px actual video width)
-  const PREVIEW_SCALE = 0.222;
+  // Scale factor for preview (adjusted for better visual match)
+  const PREVIEW_SCALE = 0.8;
 
   return (
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
