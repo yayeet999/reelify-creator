@@ -9,7 +9,7 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
   // This is our main video thumbnail
   const mainThumbnail = {
     id: 'elegant-salon',
-    thumbnailUrl: '/elegant-salon-thumbnail.jpg',
+    thumbnailUrl: '/Screenshot 2025-01-06 214011.jpg',
     videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4'
   };
 
@@ -20,7 +20,7 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       <Card 
-        className={`relative aspect-[9/16] cursor-pointer transition-all hover:ring-2 hover:ring-primary ${
+        className={`relative w-[300px] h-[300px] cursor-pointer transition-all hover:ring-2 hover:ring-primary ${
           currentVideoUrl === mainThumbnail.videoUrl ? 'ring-2 ring-primary' : ''
         }`}
         onClick={() => handleThumbnailClick(mainThumbnail.videoUrl)}
