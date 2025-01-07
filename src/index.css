@@ -36,7 +36,7 @@
     @apply bg-background text-foreground font-sans;
   }
 
-  /* Hide browser video controls */
+  /* Hide browser video controls - Chrome/Safari */
   video::-webkit-media-controls {
     display: none !important;
   }
@@ -60,6 +60,32 @@
   
   /* Safari */
   video::-webkit-media-controls-start-playback-button {
+    display: none !important;
+  }
+
+  /* Edge-specific rules */
+  video::-ms-media-controls {
+    display: none !important;
+  }
+  
+  video::-ms-media-controls-overlay-play-button {
+    display: none !important;
+  }
+  
+  video::-ms-media-controls-panel {
+    display: none !important;
+  }
+  
+  video::-ms-media-controls-current-time-display,
+  video::-ms-media-controls-time-remaining-display {
+    display: none !important;
+  }
+  
+  /* Additional Edge Chromium rules */
+  video::-webkit-media-controls-current-time-display,
+  video::-webkit-media-controls-time-remaining-display,
+  video::-webkit-media-controls-volume-slider,
+  video::-webkit-media-controls-mute-button {
     display: none !important;
   }
 }
