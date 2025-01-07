@@ -40,6 +40,9 @@ export const VideoPreview = ({
     }
   };
 
+  // Scale factor for preview (240px preview width / 1080px actual video width)
+  const PREVIEW_SCALE = 0.222;
+
   return (
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
       <video 
@@ -54,7 +57,7 @@ export const VideoPreview = ({
           style={{
             color: textColor,
             backgroundColor,
-            fontSize: `${textSize}px`,
+            fontSize: `${textSize * PREVIEW_SCALE}px`,
           }}
         >
           {text}
