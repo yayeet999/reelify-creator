@@ -34,7 +34,7 @@ export const VideoPreview = ({
       case "none":
         return "opacity-100";
       case "fade":
-        return "opacity-0 animate-fade-in animate-duration-1000 animate-fill-forwards";
+        return "animate-fade-in";
     }
   };
 
@@ -43,17 +43,40 @@ export const VideoPreview = ({
 
   return (
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
+      <video 
+        className="w-full h-full rounded-lg object-cover"
+        src={videoUrl}
+        autoPlay
+        muted
+        loop
+        controls={false}
+        onContextMenu={(e) => e.preventDefault()}
+        playsInline
+      />
+      
+      {/* Text overlay - moved before watermark */}
+      {text && (
+        <div 
+          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-6 py-2 z-30 ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
+          style={{
+            color: textColor,
+            fontSize: `${textSize * PREVIEW_SCALE}px`,
+          }}
+        >
+          {text}
+        </div>
+      )}
+
       {/* Watermark overlay */}
       <div 
-        className="absolute inset-0 z-10 pointer-events-none select-none"
+        className="absolute inset-0 z-20 pointer-events-none select-none opacity-20"
       >
-        {/* Repeating text watermark */}
         <div 
           className="absolute inset-0"
           style={{
             backgroundSize: '200px 200px',
             fontSize: '12px',
-            color: 'rgba(255,255,255,0.2)',
+            color: 'rgba(255,255,255,1)',
             display: 'flex',
             flexWrap: 'wrap',
             gap: '30px',
@@ -69,28 +92,6 @@ export const VideoPreview = ({
           ))}
         </div>
       </div>
-      
-      <video 
-        className="w-full h-full rounded-lg object-cover"
-        src={videoUrl}
-        autoPlay
-        muted
-        loop
-        controls={false}
-        onContextMenu={(e) => e.preventDefault()}
-        playsInline
-      />
-      {text && (
-        <div 
-          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-6 py-2 z-20 ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
-          style={{
-            color: textColor,
-            fontSize: `${textSize * PREVIEW_SCALE}px`,
-          }}
-        >
-          {text}
-        </div>
-      )}
     </div>
   );
 };
