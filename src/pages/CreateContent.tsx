@@ -18,7 +18,7 @@ const CreateContent = () => {
   const [textPosition, setTextPosition] = useState<"top" | "middle" | "bottom">("middle");
   const [animation, setAnimation] = useState<AnimationType>("none");
   const [startTime, setStartTime] = useState(0);
-  const [duration, setDuration] = useState(5);
+  const duration = 5; // Fixed duration of 5 seconds
 
   const VIDEO_DURATION = 30;
   const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
@@ -91,7 +91,7 @@ const CreateContent = () => {
                 duration={duration}
                 videoDuration={VIDEO_DURATION}
                 onStartTimeChange={setStartTime}
-                onDurationChange={setDuration}
+                onDurationChange={() => {}} // Empty function since we removed duration control
               />
             </div>
 
