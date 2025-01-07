@@ -43,6 +43,18 @@ export const VideoPreview = ({
 
   return (
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
+      {/* Grid overlay */}
+      <div 
+        className="absolute inset-0 z-10 pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: `
+            linear-gradient(to right, #fff 1px, transparent 1px),
+            linear-gradient(to bottom, #fff 1px, transparent 1px)
+          `,
+          backgroundSize: '20px 20px',
+        }}
+      />
+      
       <video 
         className="w-full h-full rounded-lg object-cover"
         src={videoUrl}
@@ -51,11 +63,11 @@ export const VideoPreview = ({
         loop
         controls={false}
         onContextMenu={(e) => e.preventDefault()}
-        playsInline // Added for better mobile support
+        playsInline
       />
       {text && (
         <div 
-          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-6 py-2 ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
+          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-6 py-2 z-20 ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
           style={{
             color: textColor,
             fontSize: `${textSize * PREVIEW_SCALE}px`,
