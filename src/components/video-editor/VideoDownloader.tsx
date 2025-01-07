@@ -36,7 +36,7 @@ export const VideoDownloader = ({
       // Calculate text container width (80% of video width)
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
       
-      // Group all text-related parameters together
+      // Prepare text parameters
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
       const cloudinaryFontSize = textSize * calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH);
@@ -44,9 +44,16 @@ export const VideoDownloader = ({
       const animationEffect = getCloudinaryAnimation(animation);
 
       // Add text overlay with proper wrapping and centering
-      url += `/w_${textWidth},c_fit/l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},${position}`;
+      // Note the order: c_fit before l_text, and width parameter after text
+      url += `/c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},w_${textWidth}`;
       
+      // Add animation if specified
       if (animationEffect) url += `,${animationEffect}`;
+      
+      // Apply the layer with position
+      url += `/fl_layer_apply,${position}`;
+
+      // Add timing parameters if specified
       if (startTime > 0) url += `,so_${startTime}`;
       url += `,dl_${duration}`;
     }
