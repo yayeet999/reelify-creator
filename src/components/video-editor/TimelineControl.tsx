@@ -14,6 +14,7 @@ export const TimelineControl = ({
   duration,
   videoDuration,
   onStartTimeChange,
+  onDurationChange,
 }: TimelineControlProps) => {
   return (
     <div className="space-y-4">
@@ -23,6 +24,16 @@ export const TimelineControl = ({
           value={[startTime]}
           onValueChange={([value]) => onStartTimeChange(value)}
           max={videoDuration - duration}
+          step={0.1}
+        />
+      </div>
+      <div className="space-y-2">
+        <Label>Duration: {duration.toFixed(1)}s</Label>
+        <Slider
+          value={[duration]}
+          onValueChange={([value]) => onDurationChange(value)}
+          min={0.5}
+          max={videoDuration - startTime}
           step={0.1}
         />
       </div>
