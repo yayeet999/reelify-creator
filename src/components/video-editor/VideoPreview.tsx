@@ -71,7 +71,7 @@ export const VideoPreview = ({
           {[...Array(9)].map((_, i) => (
             <div key={i} className="flex items-center justify-center rotate-[-25deg]">
               <span className="text-black text-xl font-bold whitespace-nowrap">
-                REELIFY
+                notreel.ai
               </span>
             </div>
           ))}
