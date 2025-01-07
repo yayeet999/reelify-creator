@@ -16,7 +16,7 @@ const CreateContent = () => {
   const [textOverlay, setTextOverlay] = useState("");
   const [textSize, setTextSize] = useState([16]);
   const [textColor, setTextColor] = useState("#FFFFFF");
-  const [backgroundColor, setBackgroundColor] = useState("#000000E6");
+  const [backgroundColor, setBackgroundColor] = useState("#000000E6"); // Keeping the state for future use
   const [textPosition, setTextPosition] = useState<"top" | "middle" | "bottom">("middle");
   const [animation, setAnimation] = useState<AnimationType>("none");
   const [startTime, setStartTime] = useState(0);
@@ -120,42 +120,20 @@ const CreateContent = () => {
             </div>
 
             <div className="space-y-2">
-              <Label>Colors</Label>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="text-xs">Text Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="color"
-                      value={textColor}
-                      onChange={(e) => setTextColor(e.target.value)}
-                      className="w-20 h-10 p-1"
-                    />
-                    <Input
-                      value={textColor}
-                      onChange={(e) => setTextColor(e.target.value)}
-                      placeholder="#FFFFFF"
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label className="text-xs">Background Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="color"
-                      value={backgroundColor}
-                      onChange={(e) => setBackgroundColor(e.target.value)}
-                      className="w-20 h-10 p-1"
-                    />
-                    <Input
-                      value={backgroundColor}
-                      onChange={(e) => setBackgroundColor(e.target.value)}
-                      placeholder="#000000E6"
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
+              <Label>Text Color</Label>
+              <div className="flex gap-2">
+                <Input
+                  type="color"
+                  value={textColor}
+                  onChange={(e) => setTextColor(e.target.value)}
+                  className="w-20 h-10 p-1"
+                />
+                <Input
+                  value={textColor}
+                  onChange={(e) => setTextColor(e.target.value)}
+                  placeholder="#FFFFFF"
+                  className="flex-1"
+                />
               </div>
             </div>
 
