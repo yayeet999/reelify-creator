@@ -21,12 +21,25 @@ export const VideoPreview = ({
 }: VideoPreviewProps) => {
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // Enhanced video control effect
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0;
-      videoRef.current.play();
+    const videoElement = videoRef.current;
+    if (videoElement) {
+      // Reset video and play
+      videoElement.currentTime = 0;
+      
+      // Ensure video plays and loops
+      const playVideo = async () => {
+        try {
+          await videoElement.play();
+        } catch (error) {
+          console.log("Video autoplay failed:", error);
+        }
+      };
+      
+      playVideo();
     }
-  }, [videoUrl]);
+  }, [videoUrl]); // Only reset when video source changes
 
   const getPositionClasses = (pos: Position) => {
     switch (pos) {
@@ -81,6 +94,7 @@ export const VideoPreview = ({
       {/* Text overlay with highest z-index */}
       {text && (
         <div 
+          key={`${text}-${animation}-${position}`} // Force re-render when text, animation, or position changes
           className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-[25px] py-2 z-[30] ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
           style={{
             color: textColor,
