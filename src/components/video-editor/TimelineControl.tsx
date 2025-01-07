@@ -27,7 +27,7 @@ export const TimelineControl = ({
           step={0.1}
         />
       </div>
-      <div className="space-y-2">
+      <div className="hidden space-y-2">
         <Label>Duration: {duration.toFixed(1)}s</Label>
         <Slider
           value={[duration]}
