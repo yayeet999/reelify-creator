@@ -45,9 +45,13 @@ export const VideoPreview = ({
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
       <video 
         className="w-full h-full rounded-lg object-cover"
-        controls
         src={videoUrl}
+        autoPlay
+        muted
         loop
+        controls={false}
+        onContextMenu={(e) => e.preventDefault()}
+        playsInline // Added for better mobile support
       />
       {text && (
         <div 
