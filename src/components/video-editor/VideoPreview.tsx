@@ -64,7 +64,38 @@ export const VideoPreview = ({
             )
           `,
         }}
-      />
+      >
+        {/* Repeating text watermark */}
+        <div 
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `
+              repeating-linear-gradient(
+                -45deg,
+                transparent,
+                transparent 50px,
+                rgba(255,255,255,0.2) 50px,
+                rgba(255,255,255,0.2) 100px
+              )
+            `,
+            backgroundSize: '200px 200px',
+            fontSize: '12px',
+            color: 'rgba(255,255,255,0.2)',
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '30px',
+            padding: '10px',
+            transform: 'rotate(-45deg)',
+            transformOrigin: 'center',
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}
+        >
+          {Array.from({ length: 20 }).map((_, i) => (
+            <span key={i} className="whitespace-nowrap">notreel.ai</span>
+          ))}
+        </div>
+      </div>
       
       <video 
         className="w-full h-full rounded-lg object-cover"
