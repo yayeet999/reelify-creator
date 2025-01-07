@@ -23,7 +23,7 @@ export const TimelineControl = ({
         <Slider
           value={[startTime]}
           onValueChange={([value]) => onStartTimeChange(value)}
-          max={videoDuration - duration}
+          max={10.0}
           step={0.1}
         />
       </div>

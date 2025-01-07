@@ -23,6 +23,13 @@ const CreateContent = () => {
   const VIDEO_DURATION = 30;
   const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
 
+  const handleTextOverlayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value;
+    if (text.length <= 100) {
+      setTextOverlay(text);
+    }
+  };
+
   return (
     <div className="container mx-auto p-6 animate-fade-up">
       <div className="mb-8">
@@ -60,11 +67,12 @@ const CreateContent = () => {
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label>Text Overlay</Label>
+              <Label>Text Overlay ({100 - textOverlay.length} characters remaining)</Label>
               <Textarea
                 placeholder="Add text overlay to your video"
                 value={textOverlay}
-                onChange={(e) => setTextOverlay(e.target.value)}
+                onChange={handleTextOverlayChange}
+                maxLength={100}
               />
             </div>
             
@@ -101,7 +109,7 @@ const CreateContent = () => {
                 value={textSize}
                 onValueChange={setTextSize}
                 min={12}
-                max={72}
+                max={37}
                 step={1}
               />
             </div>
