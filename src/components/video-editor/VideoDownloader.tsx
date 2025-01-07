@@ -10,6 +10,7 @@ interface VideoDownloaderProps {
   animation: "none" | "fade";
   startTime: number;
   duration: number;
+  currentVideoUrl: string;
 }
 
 export const VideoDownloader = ({
@@ -20,15 +21,20 @@ export const VideoDownloader = ({
   animation,
   startTime,
   duration,
+  currentVideoUrl,
 }: VideoDownloaderProps) => {
   const { toast } = useToast();
   const PREVIEW_WIDTH = 240;
   const ACTUAL_VIDEO_WIDTH = 1080;
-  const baseVideoUrl = "https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
 
   const generateCloudinaryUrl = () => {
-    if (!textOverlay) return baseVideoUrl;
+    if (!textOverlay) return currentVideoUrl;
 
+    // Extract the version and public ID from the currentVideoUrl
+    const matches = currentVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
+    if (!matches) return currentVideoUrl;
+    
+    const publicId = matches[1];
     let url = "https://res.cloudinary.com/fornotreel/video/upload";
     url += "/q_auto:good";
 
@@ -50,7 +56,7 @@ export const VideoDownloader = ({
       url += `,dl_${duration}`;
     }
 
-    url += "/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4";
+    url += `/${publicId}.mp4`;
     console.log("Generated URL:", url);
     return url;
   };

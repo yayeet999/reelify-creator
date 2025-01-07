@@ -148,6 +148,7 @@ const CreateContent = () => {
               animation={animation}
               startTime={startTime}
               duration={duration}
+              currentVideoUrl={currentVideoUrl}
             />
           </CardContent>
         </Card>
