@@ -43,15 +43,26 @@ export const VideoPreview = ({
 
   return (
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
-      {/* Grid overlay */}
+      {/* Watermark overlay */}
       <div 
         className="absolute inset-0 z-10 pointer-events-none select-none"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.15) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.15) 1px, transparent 1px)
+            repeating-linear-gradient(
+              45deg,
+              rgba(255,255,255,0.2),
+              rgba(255,255,255,0.2) 1px,
+              transparent 1px,
+              transparent 15px
+            ),
+            repeating-linear-gradient(
+              -45deg,
+              rgba(255,255,255,0.2),
+              rgba(255,255,255,0.2) 1px,
+              transparent 1px,
+              transparent 15px
+            )
           `,
-          backgroundSize: '15px 15px',
         }}
       />
       
