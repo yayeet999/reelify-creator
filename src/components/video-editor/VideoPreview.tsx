@@ -43,9 +43,21 @@ export const VideoPreview = ({
 
   return (
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
-      {/* Watermark overlay */}
+      {/* Base video with lowest z-index */}
+      <video 
+        className="w-full h-full rounded-lg object-cover z-[1]"
+        src={videoUrl}
+        autoPlay
+        muted
+        loop
+        controls={false}
+        onContextMenu={(e) => e.preventDefault()}
+        playsInline
+      />
+      
+      {/* Watermark overlay with middle z-index */}
       <div 
-        className="absolute inset-0 z-10 pointer-events-none select-none"
+        className="absolute inset-0 z-[10] pointer-events-none select-none"
       >
         {/* Repeating text watermark */}
         <div 
@@ -70,19 +82,10 @@ export const VideoPreview = ({
         </div>
       </div>
       
-      <video 
-        className="w-full h-full rounded-lg object-cover"
-        src={videoUrl}
-        autoPlay
-        muted
-        loop
-        controls={false}
-        onContextMenu={(e) => e.preventDefault()}
-        playsInline
-      />
+      {/* Text overlay with highest z-index */}
       {text && (
         <div 
-          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-6 py-2 z-20 ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
+          className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-6 py-2 z-[30] ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
           style={{
             color: textColor,
             fontSize: `${textSize * PREVIEW_SCALE}px`,
