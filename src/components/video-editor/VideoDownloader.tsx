@@ -45,7 +45,7 @@ export const VideoDownloader = ({
 
       // Add text overlay with proper wrapping and centering
       // Note the order: c_fit before l_text, and width parameter after text
-      url += `/c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},w_${textWidth}`;
+      url += `/c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},w_${textWidth}`;
       
       // Add animation if specified
       if (animationEffect) url += `,${animationEffect}`;
