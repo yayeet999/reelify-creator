@@ -15,10 +15,8 @@ export interface Subscription {
   updated_at: string;
 }
 
-export interface SubscriptionInsert extends Omit<Subscription, 'id' | 'created_at' | 'updated_at'> {
-  id?: string;
+export interface SubscriptionInsert extends Partial<Omit<Subscription, 'id' | 'user_id'>> {
+  user_id: string;
 }
 
-export interface SubscriptionUpdate extends Partial<Subscription> {
-  id?: string;
-}
+export interface SubscriptionUpdate extends Partial<Subscription> {}

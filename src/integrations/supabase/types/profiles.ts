@@ -17,6 +17,4 @@ export interface ProfileInsert extends Partial<Omit<Profile, 'id'>> {
   id: string;
 }
 
-export interface ProfileUpdate extends Partial<Profile> {
-  id?: string;
-}
+export interface ProfileUpdate extends Partial<Profile> {}

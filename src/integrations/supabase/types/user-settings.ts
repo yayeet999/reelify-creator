@@ -8,10 +8,8 @@ export interface UserSettings {
   updated_at: string;
 }
 
-export interface UserSettingsInsert extends Omit<UserSettings, 'id' | 'created_at' | 'updated_at'> {
-  id?: string;
+export interface UserSettingsInsert extends Partial<Omit<UserSettings, 'id' | 'user_id'>> {
+  user_id: string;
 }
 
-export interface UserSettingsUpdate extends Partial<UserSettings> {
-  id?: string;
-}
+export interface UserSettingsUpdate extends Partial<UserSettings> {}
