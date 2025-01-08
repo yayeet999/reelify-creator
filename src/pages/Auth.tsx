@@ -8,14 +8,72 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import type { AuthError } from "@supabase/supabase-js";
+import { Loader2 } from "lucide-react";
+
+type SubscriptionTier = 'free' | 'starter' | 'pro' | 'enterprise';
 
 const Auth = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const checkSubscriptionStatus = async (userId: string) => {
+    try {
+      const { data: subscription, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('status', 'active')
+        .single();
+
+      if (error) throw error;
+
+      // Determine subscription tier based on price_id
+      let tier: SubscriptionTier = 'free';
+      if (subscription) {
+        switch (subscription.price_id) {
+          case 'price_starter':
+            tier = 'starter';
+            break;
+          case 'price_pro':
+            tier = 'pro';
+            break;
+          case 'price_enterprise':
+            tier = 'enterprise';
+            break;
+          default:
+            tier = 'free';
+        }
+      }
+
+      // Store the subscription tier in localStorage for use across the app
+      localStorage.setItem('subscriptionTier', tier);
+      
+      // Navigate to the appropriate dashboard based on tier
+      switch (tier) {
+        case 'starter':
+          navigate("/dashboard");
+          break;
+        case 'pro':
+          navigate("/pro/dashboard");
+          break;
+        case 'enterprise':
+          navigate("/enterprise/dashboard");
+          break;
+        default:
+          navigate("/free/dashboard");
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+      toast.error("Failed to verify subscription status. Please try again.");
+      return false;
+    }
+  };
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_IN" && session) {
+      setIsLoading(true);
+      if (event === 'SIGNED_IN' && session) {
         const storedPriceId = localStorage.getItem('selectedPriceId');
         
         if (storedPriceId) {
@@ -35,12 +93,13 @@ const Auth = () => {
             console.error('Error:', error);
             toast.error(error.message || "Failed to process subscription");
             localStorage.removeItem('selectedPriceId');
-            navigate("/dashboard");
           }
-        } else {
-          navigate("/dashboard");
         }
+
+        // Check subscription status before allowing access
+        await checkSubscriptionStatus(session.user.id);
       }
+      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
@@ -81,14 +140,20 @@ const Auth = () => {
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         )}
-        <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <SupabaseAuth
-            supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
-            theme="light"
-            providers={[]}
-          />
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <SupabaseAuth
+              supabaseClient={supabase}
+              appearance={{ theme: ThemeSupa }}
+              theme="light"
+              providers={[]}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
