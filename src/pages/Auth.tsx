@@ -65,12 +65,10 @@ const Auth = () => {
             variant="ghost"
             size="sm"
             className="gap-2"
-            asChild
+            onClick={() => navigate("/")}
           >
-            <Link to="/">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Home
-            </Link>
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
           </Button>
         </div>
         <div>
