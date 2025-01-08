@@ -11,6 +11,7 @@ import CreateContent from "./pages/CreateContent";
 import { DashboardLayout } from "./components/layouts/DashboardLayout";
 import { Hero } from "./components/Hero";
 import { Features } from "./components/Features";
+import { Pricing } from "./components/Pricing";
 
 // Placeholder components for the dashboard routes
 const Settings = () => <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1></div>;
@@ -78,6 +79,7 @@ const LandingPage = () => {
       </nav>
       <Hero />
       <Features />
+      <Pricing />
     </div>
   );
 };
