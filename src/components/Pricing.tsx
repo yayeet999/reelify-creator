@@ -61,6 +61,7 @@ export const Pricing = () => {
     try {
       const session = await supabase.auth.getSession();
       if (!session.data.session) {
+        localStorage.setItem('selectedPriceId', priceId);
         navigate("/auth");
         return;
       }
