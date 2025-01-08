@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { User, Settings, FilePlus, Code, Home, ChevronLeft, ChevronRight } from "lucide-react";
+import { User, Settings, FilePlus, Code, Home, ChevronLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -97,7 +97,7 @@ export function DashboardSidebar() {
         size="icon"
         onClick={toggleSidebar}
         className={cn(
-          "absolute -right-4 top-6 z-50 flex h-8 w-8 items-center justify-center rounded-full border bg-background shadow-md transition-all hover:bg-primary/10 hover:text-primary",
+          "absolute -right-4 top-24 z-50 flex h-8 w-8 items-center justify-center rounded-full border bg-background shadow-md transition-all hover:bg-primary/10 hover:text-primary",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
           state === "collapsed" && "rotate-180"
         )}
