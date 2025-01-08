@@ -1,10 +1,15 @@
 import { Check } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const tiers = [
   {
     name: "Starter",
     price: "$19",
+    priceId: "price_1Qf3YWF2YoGQdvcW69wTFx7i",
     description: "Perfect for content creators just getting started",
     features: [
       "5 videos per month",
@@ -16,6 +21,7 @@ const tiers = [
   {
     name: "Pro",
     price: "$49",
+    priceId: "", // Add your Pro plan price ID here
     description: "Ideal for growing creators and small businesses",
     features: [
       "25 videos per month",
@@ -30,6 +36,7 @@ const tiers = [
   {
     name: "Enterprise",
     price: "$95",
+    priceId: "", // Add your Enterprise plan price ID here
     description: "For professional creators and large teams",
     features: [
       "Unlimited videos",
@@ -45,6 +52,35 @@ const tiers = [
 ];
 
 export const Pricing = () => {
+  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+
+  const handleSubscribe = async (priceId: string, tierName: string) => {
+    setIsLoading(tierName);
+    
+    try {
+      const session = await supabase.auth.getSession();
+      if (!session.data.session) {
+        navigate("/auth");
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId }
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      toast.error(error.message || "Failed to process subscription");
+    } finally {
+      setIsLoading(null);
+    }
+  };
+
   return (
     <section id="pricing" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
@@ -95,13 +131,26 @@ export const Pricing = () => {
 
               <button
                 className={cn(
-                  "mt-8 w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors",
+                  "mt-8 w-full rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors relative",
                   tier.popular
                     ? "bg-primary text-white hover:bg-primary/90"
-                    : "border border-primary/30 bg-white text-primary hover:bg-primary/5"
+                    : "border border-primary/30 bg-white text-primary hover:bg-primary/5",
+                  isLoading === tier.name && "opacity-70 cursor-not-allowed"
                 )}
+                onClick={() => tier.priceId && handleSubscribe(tier.priceId, tier.name)}
+                disabled={isLoading === tier.name || !tier.priceId}
               >
-                Get Started
+                {isLoading === tier.name ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Processing...
+                  </span>
+                ) : (
+                  'Get Started'
+                )}
               </button>
             </div>
           ))}
