@@ -11,8 +11,11 @@ import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
+import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
+import { Loader2 } from "lucide-react";
 
 const CreateContent = () => {
+  const { isLoading, isAuthorized } = useSubscriptionGuard("starter");
   const [textOverlay, setTextOverlay] = useState("");
   const [textSize, setTextSize] = useState([16]);
   const [textColor, setTextColor] = useState("#FFFFFF");
@@ -22,7 +25,17 @@ const CreateContent = () => {
   const [duration, setDuration] = useState(5);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4");
 
-  const VIDEO_DURATION = 30;
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthorized) {
+    return null; // The hook will handle navigation and toast notification
+  }
 
   const handleTextOverlayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const text = e.target.value;
