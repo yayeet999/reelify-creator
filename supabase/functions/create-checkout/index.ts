@@ -22,10 +22,13 @@ serve(async (req) => {
     // Get the session or user object
     const authHeader = req.headers.get('Authorization')!
     const token = authHeader.replace('Bearer ', '')
-    const { data } = await supabaseClient.auth.getUser(token)
-    const user = data.user
-    const email = user?.email
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token)
+    
+    if (userError || !user) {
+      throw new Error('User not authenticated')
+    }
 
+    const email = user?.email
     if (!email) {
       throw new Error('No email found')
     }
@@ -34,11 +37,13 @@ serve(async (req) => {
       apiVersion: '2023-10-16',
     })
 
+    // Get the price ID from the request body
     const { priceId } = await req.json()
     if (!priceId) {
       throw new Error('No price ID provided')
     }
 
+    console.log('Looking up customer with email:', email)
     const customers = await stripe.customers.list({
       email: email,
       limit: 1
