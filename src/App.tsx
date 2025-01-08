@@ -12,6 +12,9 @@ import { DashboardLayout } from "./components/layouts/DashboardLayout";
 import { Hero } from "./components/Hero";
 import { Features } from "./components/Features";
 import { Pricing } from "./components/Pricing";
+import FreeDashboard from "./pages/FreeDashboard";
+import ProDashboard from "./pages/ProDashboard";
+import EnterpriseDashboard from "./pages/EnterpriseDashboard";
 
 // Placeholder components for the dashboard routes
 const Settings = () => <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1></div>;
@@ -98,6 +101,30 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Index />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/free/dashboard"
+            element={
+              <ProtectedRoute>
+                <FreeDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pro/dashboard"
+            element={
+              <ProtectedRoute>
+                <ProDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/enterprise/dashboard"
+            element={
+              <ProtectedRoute>
+                <EnterpriseDashboard />
               </ProtectedRoute>
             }
           />
