@@ -21,7 +21,7 @@ const tiers = [
   {
     name: "Pro",
     price: "$49",
-    priceId: "", // Add your Pro plan price ID here
+    priceId: "price_1Qf3aLF2YoGQdvcWiKMuplKL",
     description: "Ideal for growing creators and small businesses",
     features: [
       "25 videos per month",
@@ -36,7 +36,7 @@ const tiers = [
   {
     name: "Enterprise",
     price: "$95",
-    priceId: "", // Add your Enterprise plan price ID here
+    priceId: "price_1Qf3bQF2YoGQdvcWx23MIde4",
     description: "For professional creators and large teams",
     features: [
       "Unlimited videos",
