@@ -9,7 +9,7 @@ const tiers = [
   {
     name: "Starter",
     price: "$19",
-    priceId: "price_1Qf3YWF2YoGQdvcW69wTFx7i",
+    priceId: "price_1OxgZIF2YoGQdvcWPxJoS8Ks", // Updated to test mode price ID
     description: "Perfect for content creators just getting started",
     features: [
       "5 videos per month",
@@ -21,7 +21,7 @@ const tiers = [
   {
     name: "Pro",
     price: "$49",
-    priceId: "price_1Qf3aLF2YoGQdvcWiKMuplKL",
+    priceId: "price_1OxgZvF2YoGQdvcWyKzLQNmA", // Updated to test mode price ID
     description: "Ideal for growing creators and small businesses",
     features: [
       "25 videos per month",
@@ -36,7 +36,7 @@ const tiers = [
   {
     name: "Enterprise",
     price: "$95",
-    priceId: "price_1Qf3bQF2YoGQdvcWx23MIde4",
+    priceId: "price_1OxgaKF2YoGQdvcWCrEFZLwl", // Updated to test mode price ID
     description: "For professional creators and large teams",
     features: [
       "Unlimited videos",
