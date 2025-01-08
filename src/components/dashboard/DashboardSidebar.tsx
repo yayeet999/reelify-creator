@@ -97,12 +97,12 @@ export function DashboardSidebar() {
         size="icon"
         onClick={toggleSidebar}
         className={cn(
-          "absolute -right-4 top-24 z-50 flex h-8 w-8 items-center justify-center rounded-full border bg-background shadow-md transition-all hover:bg-primary/10 hover:text-primary",
+          "absolute -right-5 top-24 z-50 flex h-10 w-10 items-center justify-center rounded-full border bg-background shadow-md transition-all hover:bg-primary/10 hover:text-primary",
           "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
           state === "collapsed" && "rotate-180"
         )}
       >
-        <ChevronLeft className="h-4 w-4" />
+        <ChevronLeft className="h-5 w-5" />
       </Button>
       <SidebarRail />
     </Sidebar>
