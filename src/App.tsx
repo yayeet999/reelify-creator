@@ -11,18 +11,14 @@ import CreateContent from "./pages/CreateContent";
 import { DashboardLayout } from "./components/layouts/DashboardLayout";
 import { Hero } from "./components/Hero";
 import { Features } from "./components/Features";
-import { Settings } from "./components/dashboard/Settings";
 
 // Placeholder components for the dashboard routes
+const Settings = () => <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1></div>;
 const GenerateHooks = () => <div className="p-6"><h1 className="text-2xl font-bold">Generate Hooks</h1></div>;
 
 const queryClient = new QueryClient();
 
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
-
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
