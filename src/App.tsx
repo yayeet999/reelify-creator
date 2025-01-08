@@ -9,9 +9,10 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateContent from "./pages/CreateContent";
 import { DashboardLayout } from "./components/layouts/DashboardLayout";
+import { Hero } from "./components/Hero";
+import { Features } from "./components/Features";
 
 // Placeholder components for the dashboard routes
-const Profile = () => <div className="p-6"><h1 className="text-2xl font-bold">Profile</h1></div>;
 const Settings = () => <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1></div>;
 const GenerateHooks = () => <div className="p-6"><h1 className="text-2xl font-bold">Generate Hooks</h1></div>;
 
@@ -45,6 +46,42 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+// Landing page component
+const LandingPage = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    checkAuth();
+  }, []);
+
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return (
+    <div className="min-h-screen">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-between h-16">
+            <a href="/" className="text-2xl font-bold text-primary">
+              notreel.ai
+            </a>
+            <a href="/auth" className="text-primary hover:text-primary/80">
+              Sign In
+            </a>
+          </div>
+        </div>
+      </nav>
+      <Hero />
+      <Features />
+    </div>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
@@ -52,20 +89,13 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<LandingPage />} />
           <Route path="/auth" element={<Auth />} />
           <Route
-            path="/"
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <Index />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
               </ProtectedRoute>
             }
           />
