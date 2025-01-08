@@ -1,17 +1,20 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { User, Settings, FilePlus, Code, Home } from "lucide-react";
+import { User, Settings, FilePlus, Code, Home, PanelLeftClose, PanelLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
+  SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSidebar } from "@/components/ui/sidebar";
 
 const menuItems = [
   {
@@ -50,6 +53,7 @@ const menuItems = [
 export function DashboardSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toggleSidebar, state } = useSidebar();
 
   return (
     <Sidebar>
@@ -89,6 +93,23 @@ export function DashboardSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter className="p-4 hidden md:block">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={toggleSidebar}
+          className="w-full flex items-center justify-center gap-2 hover:bg-primary/10 hover:text-primary"
+        >
+          {state === "expanded" ? (
+            <>
+              <PanelLeftClose className="h-5 w-5" />
+              <span className="text-sm">Collapse</span>
+            </>
+          ) : (
+            <PanelLeft className="h-5 w-5" />
+          )}
+        </Button>
+      </SidebarFooter>
       <SidebarRail />
     </Sidebar>
   );
