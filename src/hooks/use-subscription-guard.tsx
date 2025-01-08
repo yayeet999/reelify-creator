@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import type { Profile } from "@/integrations/supabase/types/profiles";
 import type { SubscriptionTier } from "@/integrations/supabase/types/enums";
 
 export type RequiredTier = "starter" | "pro" | "enterprise";
@@ -42,8 +43,9 @@ export function useSubscriptionGuard(requiredTier: RequiredTier) {
               table: 'profiles',
               filter: `id=eq.${session.user.id}`,
             },
-            async (payload) => {
-              const newTier = payload.new?.subscription_tier as SubscriptionTier;
+            (payload) => {
+              const newProfile = payload.new as Profile;
+              const newTier = newProfile.subscription_tier;
               setCurrentTier(newTier);
               const isAllowed = TIER_LEVELS[newTier] >= TIER_LEVELS[requiredTier];
               setIsAuthorized(isAllowed);

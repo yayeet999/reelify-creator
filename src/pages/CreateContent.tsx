@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Video, Type } from "lucide-react";
+import { Video, Type, Loader2 } from "lucide-react";
 import { TextPositionSelector } from "@/components/video-editor/TextPositionSelector";
 import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
@@ -12,7 +12,6 @@ import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
-import { Loader2 } from "lucide-react";
 
 const CreateContent = () => {
   const { isLoading, isAuthorized } = useSubscriptionGuard("starter");
@@ -118,7 +117,7 @@ const CreateContent = () => {
               <TimelineControl
                 startTime={startTime}
                 duration={duration}
-                videoDuration={VIDEO_DURATION}
+                videoDuration={30}
                 onStartTimeChange={setStartTime}
                 onDurationChange={setDuration}
               />
