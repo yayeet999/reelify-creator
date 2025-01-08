@@ -73,6 +73,10 @@ serve(async (req) => {
       mode: 'subscription',
       success_url: `${req.headers.get('origin')}/dashboard`,
       cancel_url: `${req.headers.get('origin')}/`,
+      client_reference_id: user.id,
+      metadata: {
+        price_id: priceId
+      }
     })
 
     console.log('Payment session created:', session.id)
