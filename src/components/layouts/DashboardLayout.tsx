@@ -1,10 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, ReactNode } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
-import { Settings } from "@/components/dashboard/Settings";
 
-export function DashboardLayout() {
+interface DashboardLayoutProps {
+  children: ReactNode;
+}
+
+export function DashboardLayout({ children }: DashboardLayoutProps) {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -22,7 +25,7 @@ export function DashboardLayout() {
     <div className="flex h-screen bg-background">
       <DashboardSidebar />
       <main className="flex-1 overflow-y-auto p-8">
-        <Settings />
+        {children}
       </main>
     </div>
   );
