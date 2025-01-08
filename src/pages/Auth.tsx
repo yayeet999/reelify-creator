@@ -2,15 +2,13 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import type { AuthError } from "@supabase/supabase-js";
-import { Loader2 } from "lucide-react";
-
-type SubscriptionTier = 'free' | 'starter' | 'pro' | 'enterprise';
+import type { SubscriptionTier } from "@/integrations/supabase/types";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -19,37 +17,18 @@ const Auth = () => {
 
   const checkSubscriptionStatus = async (userId: string) => {
     try {
-      const { data: subscription, error } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('status', 'active')
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('subscription_tier')
+        .eq('id', userId)
         .single();
 
-      if (error) throw error;
+      if (profileError) throw profileError;
 
-      // Determine subscription tier based on price_id
-      let tier: SubscriptionTier = 'free';
-      if (subscription) {
-        switch (subscription.price_id) {
-          case 'price_starter':
-            tier = 'starter';
-            break;
-          case 'price_pro':
-            tier = 'pro';
-            break;
-          case 'price_enterprise':
-            tier = 'enterprise';
-            break;
-          default:
-            tier = 'free';
-        }
-      }
-
-      // Store the subscription tier in localStorage for use across the app
+      const tier = profile?.subscription_tier || 'free';
       localStorage.setItem('subscriptionTier', tier);
       
-      // Navigate to the appropriate dashboard based on tier
+      // Navigate based on subscription tier
       switch (tier) {
         case 'starter':
           navigate("/dashboard");
@@ -66,7 +45,6 @@ const Auth = () => {
     } catch (error) {
       console.error('Error checking subscription:', error);
       toast.error("Failed to verify subscription status. Please try again.");
-      return false;
     }
   };
 
@@ -96,7 +74,6 @@ const Auth = () => {
           }
         }
 
-        // Check subscription status before allowing access
         await checkSubscriptionStatus(session.user.id);
       }
       setIsLoading(false);

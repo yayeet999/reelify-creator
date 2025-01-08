@@ -1,0 +1,1 @@
+export type SubscriptionTier = 'free' | 'starter' | 'pro' | 'enterprise';
