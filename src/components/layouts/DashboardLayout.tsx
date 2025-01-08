@@ -1,19 +1,29 @@
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 import { DashboardSidebar } from "@/components/dashboard/DashboardSidebar";
-import { Navbar } from "@/components/Navbar";
+import { Settings } from "@/components/dashboard/Settings";
 
-export function DashboardLayout({ children }: { children: React.ReactNode }) {
+export function DashboardLayout() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  const checkUser = async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      navigate("/auth");
+    }
+  };
+
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full">
-        <DashboardSidebar />
-        <div className="flex-1 flex flex-col">
-          <Navbar />
-          <main className="flex-1 mt-16">
-            {children}
-          </main>
-        </div>
-      </div>
-    </SidebarProvider>
+    <div className="flex h-screen bg-background">
+      <DashboardSidebar />
+      <main className="flex-1 overflow-y-auto p-8">
+        <Settings />
+      </main>
+    </div>
   );
 }
