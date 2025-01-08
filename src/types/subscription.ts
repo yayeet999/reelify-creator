@@ -1,4 +1,4 @@
-import { SubscriptionTier } from '@/integrations/supabase/types';
+import type { SubscriptionTier } from '@/integrations/supabase/types/enums';
 
 export type { SubscriptionTier };
 

@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import type { AuthError } from "@supabase/supabase-js";
-import type { SubscriptionTier } from "@/integrations/supabase/types";
+import type { SubscriptionTier } from "@/integrations/supabase/types/enums";
 
 const Auth = () => {
   const navigate = useNavigate();
