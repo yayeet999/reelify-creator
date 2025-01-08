@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
 import type { AuthError } from "@supabase/supabase-js";
 
 const Auth = () => {
@@ -13,15 +14,45 @@ const Auth = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === "SIGNED_IN" && session) {
-        navigate("/");
+        const storedPriceId = localStorage.getItem('selectedPriceId');
+        
+        if (storedPriceId) {
+          try {
+            const { data, error } = await supabase.functions.invoke('create-checkout', {
+              body: { priceId: storedPriceId }
+            });
+
+            if (error) throw error;
+            
+            if (data?.url) {
+              localStorage.removeItem('selectedPriceId');
+              window.location.href = data.url;
+              return;
+            }
+          } catch (error) {
+            console.error('Error:', error);
+            toast.error(error.message || "Failed to process subscription");
+            localStorage.removeItem('selectedPriceId');
+            navigate("/dashboard");
+          }
+        } else {
+          navigate("/dashboard");
+        }
       }
     });
 
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  const handleError = (error: AuthError) => {
-    setErrorMessage(error.message);
+  const getErrorMessage = (error: AuthError) => {
+    switch (error.message) {
+      case 'Invalid login credentials':
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 'Email not confirmed':
+        return 'Please verify your email address before signing in.';
+      default:
+        return error.message;
+    }
   };
 
   return (
