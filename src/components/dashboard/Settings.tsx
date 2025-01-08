@@ -43,7 +43,13 @@ export function Settings() {
         }
 
         if (userSettings) {
-          setSettings(userSettings);
+          // Ensure the two_factor_method is of the correct type
+          const sanitizedSettings: UserSettings = {
+            two_factor_enabled: userSettings.two_factor_enabled || false,
+            two_factor_method: (userSettings.two_factor_method as "email" | "sms" | null) || null,
+            email: userSettings.email,
+          };
+          setSettings(sanitizedSettings);
         } else {
           // Create initial settings if they don't exist
           const { data: newSettings, error: insertError } = await supabase
@@ -60,7 +66,14 @@ export function Settings() {
             .single();
 
           if (insertError) throw insertError;
-          if (newSettings) setSettings(newSettings);
+          if (newSettings) {
+            const sanitizedNewSettings: UserSettings = {
+              two_factor_enabled: newSettings.two_factor_enabled || false,
+              two_factor_method: (newSettings.two_factor_method as "email" | "sms" | null) || null,
+              email: newSettings.email,
+            };
+            setSettings(sanitizedNewSettings);
+          }
         }
       }
     } catch (error) {

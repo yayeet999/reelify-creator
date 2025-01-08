@@ -18,7 +18,11 @@ const GenerateHooks = () => <div className="p-6"><h1 className="text-2xl font-bo
 
 const queryClient = new QueryClient();
 
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
 
   useEffect(() => {
