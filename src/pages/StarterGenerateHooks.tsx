@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -35,6 +35,13 @@ const StarterGenerateHooks = () => {
 
     setIsLoading(true);
     try {
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error('User not authenticated');
+      }
+
       const { data, error } = await supabase.functions.invoke('generate-hooks', {
         body: {
           productName,
@@ -48,12 +55,18 @@ const StarterGenerateHooks = () => {
       
       // Automatically save generated hooks
       for (const hookText of data.hooks) {
-        await supabase
+        const { error: saveError } = await supabase
           .from('saved_hooks')
           .insert({
             hook_text: hookText,
-            product_name: productName
+            product_name: productName,
+            user_id: user.id // Add the user_id here
           });
+
+        if (saveError) {
+          console.error('Error saving hook:', saveError);
+          throw saveError;
+        }
       }
 
       toast({
