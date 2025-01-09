@@ -2,11 +2,13 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 
 const StarterGenerateHooks = () => {
   const [selectedTone, setSelectedTone] = useState<string>("casual");
   const [selectedLanguage, setSelectedLanguage] = useState<string>("english");
   const [inputText, setInputText] = useState("");
+  const [productName, setProductName] = useState("");
 
   const toneOptions = [
     { value: "casual", label: "Casual (Gen Z)" },
@@ -31,10 +33,22 @@ const StarterGenerateHooks = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Column - Input Section */}
             <div className="space-y-6">
+              {/* Product Name Input */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  What's your product?
+                </label>
+                <Input
+                  placeholder="Enter your product name..."
+                  value={productName}
+                  onChange={(e) => setProductName(e.target.value)}
+                />
+              </div>
+
               {/* Text Input */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">
-                  What's your video about?
+                  Product Description:
                 </label>
                 <Textarea
                   placeholder="Describe your product, service, or topic..."
