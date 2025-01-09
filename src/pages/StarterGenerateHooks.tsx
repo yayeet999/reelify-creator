@@ -9,7 +9,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
 const StarterGenerateHooks = () => {
-  const [selectedLanguage, setSelectedLanguage] = useState<string>("english");
   const [inputText, setInputText] = useState("");
   const [productName, setProductName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -120,33 +119,6 @@ const StarterGenerateHooks = () => {
                 <p className="text-xs text-muted-foreground">
                   {inputText.length}/150 characters (minimum 50)
                 </p>
-              </div>
-
-              {/* Language Selection Cards */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Select Language</label>
-                <div className="flex gap-4">
-                  <Card
-                    className={`p-4 cursor-pointer transition-all ${
-                      selectedLanguage === "english"
-                        ? "bg-primary text-white"
-                        : "hover:bg-gray-50"
-                    }`}
-                    onClick={() => setSelectedLanguage("english")}
-                  >
-                    <p className="font-medium">English</p>
-                  </Card>
-                  <Card
-                    className={`p-4 cursor-pointer transition-all ${
-                      selectedLanguage === "spanish"
-                        ? "bg-primary text-white"
-                        : "hover:bg-gray-50"
-                    }`}
-                    onClick={() => setSelectedLanguage("spanish")}
-                  >
-                    <p className="font-medium">Spanish</p>
-                  </Card>
-                </div>
               </div>
 
               {/* Generate Button */}
