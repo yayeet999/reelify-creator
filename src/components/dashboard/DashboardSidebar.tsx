@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Settings, FilePlus, Code, Home } from "lucide-react";
+import { Settings, FilePlus, Code, Home, ChevronLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
