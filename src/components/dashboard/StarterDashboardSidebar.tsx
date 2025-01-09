@@ -26,7 +26,7 @@ const menuItems = [
   {
     title: "Home",
     icon: Home,
-    path: "/dashboard",
+    path: "/dashboard",  // This is the correct path for starter plan home
     description: "Overview and quick actions",
   },
   {
