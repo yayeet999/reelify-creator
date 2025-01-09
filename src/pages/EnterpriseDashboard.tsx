@@ -1,6 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { User, Settings, FilePlus, Code, Building2 } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { Profile } from "@/integrations/supabase/types/profiles";
 
 const quickStartOptions = [
   {
@@ -31,22 +34,36 @@ const quickStartOptions = [
 
 const EnterpriseDashboard = () => {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        setProfile(data);
+      }
+    };
+    getProfile();
+  }, []);
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
       <div className="space-y-8">
-        {/* Header Section */}
-        <div className="bg-amber-50 rounded-lg p-6 shadow-sm border border-amber-200">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3">
-              <Building2 className="h-8 w-8 text-amber-600" />
-              <h1 className="text-4xl font-bold tracking-tight text-amber-900">
-                Dashboard <span className="text-2xl text-amber-600">(Enterprise Plan)</span>
-              </h1>
+        {/* Profile Section */}
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-amber-200">
+          <div className="flex items-center gap-4">
+            <User className="h-12 w-12 text-amber-400" />
+            <div>
+              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="font-medium">{profile?.email || 'Loading...'}</p>
+              <p className="text-sm text-muted-foreground mt-1">Current Plan</p>
+              <p className="font-medium capitalize">{profile?.subscription_tier || 'Loading...'}</p>
             </div>
-            <p className="mt-2 text-lg text-muted-foreground">
-              Welcome to your enterprise dashboard. Enjoy unlimited access to all features!
-            </p>
           </div>
         </div>
 

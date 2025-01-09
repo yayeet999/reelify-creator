@@ -3,31 +3,29 @@ import { User, Settings, FilePlus, Code, Zap } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-
-const quickStartOptions = [
-  {
-    title: "Complete Your Profile",
-    description: "Set up your personal information and preferences",
-    icon: <User className="w-5 h-5" />,
-    path: "/profile",
-  },
-  {
-    title: "Create New Content",
-    description: "Access advanced content creation features",
-    icon: <FilePlus className="w-5 h-5" />,
-    path: "/create",
-  },
-  {
-    title: "Generate Custom Hooks",
-    description: "Create custom hooks for your content",
-    icon: <Code className="w-5 h-5" />,
-    path: "/hooks",
-  },
-];
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import type { Profile } from "@/integrations/supabase/types/profiles";
 
 const ProDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [profile, setProfile] = useState<Profile | null>(null);
+
+  useEffect(() => {
+    const getProfile = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        setProfile(data);
+      }
+    };
+    getProfile();
+  }, []);
 
   const handleUpgradeToEnterprise = () => {
     toast({
@@ -40,6 +38,19 @@ const ProDashboard = () => {
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
       <div className="space-y-8">
+        {/* Profile Section */}
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-purple-200">
+          <div className="flex items-center gap-4">
+            <User className="h-12 w-12 text-purple-400" />
+            <div>
+              <p className="text-sm text-muted-foreground">Email</p>
+              <p className="font-medium">{profile?.email || 'Loading...'}</p>
+              <p className="text-sm text-muted-foreground mt-1">Current Plan</p>
+              <p className="font-medium capitalize">{profile?.subscription_tier || 'Loading...'}</p>
+            </div>
+          </div>
+        </div>
+
         {/* Header Section */}
         <div className="bg-purple-50 rounded-lg p-6 shadow-sm border border-purple-200">
           <div className="max-w-3xl">
