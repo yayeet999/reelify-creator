@@ -1,31 +1,31 @@
 import { useNavigate } from "react-router-dom";
-import { User, Settings, FilePlus, Code } from "lucide-react";
+import { User, Settings, FilePlus, Code, Building2 } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 
 const quickStartOptions = [
   {
     title: "Complete Your Profile",
-    description: "Set up your personal information and preferences",
+    description: "Set up your organization profile and preferences",
     icon: <User className="w-5 h-5" />,
     path: "/profile",
   },
   {
-    title: "Configure Settings",
-    description: "Customize your application settings",
-    icon: <Settings className="w-5 h-5" />,
-    path: "/settings",
-  },
-  {
     title: "Create New Content",
-    description: "Start creating your first piece of content",
+    description: "Access all premium content creation features",
     icon: <FilePlus className="w-5 h-5" />,
     path: "/create",
   },
   {
     title: "Generate Custom Hooks",
-    description: "Create reusable React hooks for your projects",
+    description: "Create and manage custom hooks",
     icon: <Code className="w-5 h-5" />,
     path: "/hooks",
+  },
+  {
+    title: "Organization Settings",
+    description: "Manage your enterprise settings",
+    icon: <Settings className="w-5 h-5" />,
+    path: "/settings",
   },
 ];
 
@@ -38,11 +38,14 @@ const EnterpriseDashboard = () => {
         {/* Header Section */}
         <div className="bg-amber-50 rounded-lg p-6 shadow-sm border border-amber-200">
           <div className="max-w-3xl">
-            <h1 className="text-4xl font-bold tracking-tight text-amber-900">
-              Enterprise Dashboard
-            </h1>
+            <div className="flex items-center gap-3">
+              <Building2 className="h-8 w-8 text-amber-600" />
+              <h1 className="text-4xl font-bold tracking-tight text-amber-900">
+                Enterprise Dashboard
+              </h1>
+            </div>
             <p className="mt-2 text-lg text-muted-foreground">
-              Welcome to your enterprise tier dashboard
+              Welcome to your enterprise dashboard. Enjoy unlimited access to all features!
             </p>
           </div>
         </div>
@@ -60,25 +63,34 @@ const EnterpriseDashboard = () => {
           ))}
         </div>
 
-        {/* Additional Stats or Info Section */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-amber-50/50 rounded-lg p-6 shadow-sm">
+        {/* Enterprise Features Section */}
+        <div className="grid gap-6 md:grid-cols-3">
+          <div className="bg-amber-50/50 rounded-lg p-6 shadow-sm border border-amber-100">
             <h3 className="text-lg font-semibold mb-2">Enterprise Features</h3>
-            <p className="text-sm text-muted-foreground">
-              Access all premium features and dedicated support.
-            </p>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>• Unlimited content generations</li>
+              <li>• No video length restrictions</li>
+              <li>• Custom AI models</li>
+              <li>• Advanced analytics</li>
+            </ul>
           </div>
-          <div className="bg-amber-50/50 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Dedicated Support</h3>
-            <p className="text-sm text-muted-foreground">
-              24/7 access to our dedicated support team.
-            </p>
+          <div className="bg-amber-50/50 rounded-lg p-6 shadow-sm border border-amber-100">
+            <h3 className="text-lg font-semibold mb-2">Premium Support</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>• 24/7 dedicated support</li>
+              <li>• Custom feature development</li>
+              <li>• Priority bug fixes</li>
+              <li>• Technical consultation</li>
+            </ul>
           </div>
-          <div className="bg-amber-50/50 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Custom Solutions</h3>
-            <p className="text-sm text-muted-foreground">
-              Get customized solutions for your enterprise needs.
-            </p>
+          <div className="bg-amber-50/50 rounded-lg p-6 shadow-sm border border-amber-100">
+            <h3 className="text-lg font-semibold mb-2">Enterprise Security</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>• Advanced security features</li>
+              <li>• Custom data retention</li>
+              <li>• API access</li>
+              <li>• SSO integration</li>
+            </ul>
           </div>
         </div>
       </div>

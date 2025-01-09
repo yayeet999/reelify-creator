@@ -1,6 +1,8 @@
 import { useNavigate } from "react-router-dom";
-import { User, Settings, FilePlus, Code } from "lucide-react";
+import { User, Settings, FilePlus, Code, Crown } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 const quickStartOptions = [
   {
@@ -10,27 +12,24 @@ const quickStartOptions = [
     path: "/profile",
   },
   {
-    title: "Configure Settings",
-    description: "Customize your application settings",
-    icon: <Settings className="w-5 h-5" />,
-    path: "/settings",
-  },
-  {
     title: "Create New Content",
-    description: "Start creating your first piece of content",
+    description: "Start creating your first piece of content (Limited features)",
     icon: <FilePlus className="w-5 h-5" />,
     path: "/create",
-  },
-  {
-    title: "Generate Custom Hooks",
-    description: "Create reusable React hooks for your projects",
-    icon: <Code className="w-5 h-5" />,
-    path: "/hooks",
   },
 ];
 
 const FreeDashboard = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const handleUpgrade = () => {
+    toast({
+      title: "Ready to upgrade?",
+      description: "Let's get you started with more features!",
+    });
+    navigate("/pricing");
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
@@ -42,13 +41,20 @@ const FreeDashboard = () => {
               Free Dashboard
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Welcome to your free tier dashboard
+              Welcome to your free tier dashboard. Upgrade to unlock more features!
             </p>
+            <Button 
+              onClick={handleUpgrade}
+              className="mt-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+            >
+              <Crown className="mr-2 h-4 w-4" />
+              Upgrade Now
+            </Button>
           </div>
         </div>
 
         {/* Quick Start Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2">
           {quickStartOptions.map((option) => (
             <QuickStartCard
               key={option.title}
@@ -60,25 +66,25 @@ const FreeDashboard = () => {
           ))}
         </div>
 
-        {/* Additional Stats or Info Section */}
+        {/* Feature Limitations Section */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-gray-50/50 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Free Tier Features</h3>
-            <p className="text-sm text-muted-foreground">
-              Explore basic features and consider upgrading for more capabilities.
-            </p>
+          <div className="bg-orange-50/50 rounded-lg p-6 shadow-sm border border-orange-100">
+            <h3 className="text-lg font-semibold mb-2">Free Tier Limits</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>• Up to 10 content generations per month</li>
+              <li>• Maximum video length: 30 seconds</li>
+              <li>• Basic effects only</li>
+              <li>• Community support</li>
+            </ul>
           </div>
-          <div className="bg-gray-50/50 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Need Help?</h3>
-            <p className="text-sm text-muted-foreground">
-              Check out our documentation or contact support for assistance.
-            </p>
-          </div>
-          <div className="bg-gray-50/50 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Upgrade Now</h3>
-            <p className="text-sm text-muted-foreground">
-              Get access to more features with our paid plans.
-            </p>
+          <div className="bg-purple-50/50 rounded-lg p-6 shadow-sm border border-purple-100">
+            <h3 className="text-lg font-semibold mb-2">Upgrade Benefits</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
+              <li>• 50+ content generations per month</li>
+              <li>• Longer video support</li>
+              <li>• Advanced effects and features</li>
+              <li>• Priority support</li>
+            </ul>
           </div>
         </div>
       </div>

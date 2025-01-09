@@ -15,24 +15,41 @@ import { Pricing } from "./components/Pricing";
 import FreeDashboard from "./pages/FreeDashboard";
 import ProDashboard from "./pages/ProDashboard";
 import EnterpriseDashboard from "./pages/EnterpriseDashboard";
-
-// Placeholder components for the dashboard routes
-const Settings = () => <div className="p-6"><h1 className="text-2xl font-bold">Settings</h1></div>;
-const GenerateHooks = () => <div className="p-6"><h1 className="text-2xl font-bold">Generate Hooks</h1></div>;
+import type { Profile } from "@/integrations/supabase/types/profiles";
 
 const queryClient = new QueryClient();
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userProfile, setUserProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);
+
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        setUserProfile(profile);
+      }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       setIsAuthenticated(!!session);
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        setUserProfile(profile);
+      }
     });
 
     checkAuth();
@@ -43,11 +60,32 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return <div>Loading...</div>;
   }
 
-  return isAuthenticated ? (
-    <DashboardLayout>{children}</DashboardLayout>
-  ) : (
-    <Navigate to="/auth" replace />
-  );
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  // Redirect to appropriate dashboard based on subscription tier
+  if (userProfile) {
+    const currentPath = window.location.pathname;
+    const tierPaths = {
+      free: '/free/dashboard',
+      starter: '/dashboard',
+      pro: '/pro/dashboard',
+      enterprise: '/enterprise/dashboard'
+    };
+
+    const correctPath = tierPaths[userProfile.subscription_tier];
+    
+    if (currentPath === '/dashboard' && userProfile.subscription_tier !== 'starter') {
+      return <Navigate to={correctPath} replace />;
+    }
+
+    if (currentPath.includes('/dashboard') && !currentPath.includes(userProfile.subscription_tier)) {
+      return <Navigate to={correctPath} replace />;
+    }
+  }
+
+  return <DashboardLayout>{children}</DashboardLayout>;
 };
 
 // Landing page component
