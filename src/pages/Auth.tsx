@@ -15,7 +15,6 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Check if user is already authenticated
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
@@ -24,50 +23,61 @@ const Auth = () => {
     };
     
     checkSession();
-  }, [navigate]);
+  }, []);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setIsLoading(true);
-      try {
-        if (event === 'SIGNED_IN' && session) {
+      if (event === 'SIGNED_IN' && session) {
+        setIsLoading(true);
+        try {
           await handlePostAuthFlow(session);
+        } catch (error) {
+          console.error('Auth error:', error);
+          setErrorMessage(getErrorMessage(error));
+        } finally {
+          setIsLoading(false);
         }
-      } catch (error) {
-        console.error('Auth error:', error);
-        setErrorMessage(getErrorMessage(error));
-      } finally {
-        setIsLoading(false);
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
 
   const handlePostAuthFlow = async (session) => {
     const storedPriceId = localStorage.getItem('selectedPriceId');
     
     if (storedPriceId) {
       try {
+        console.log('Creating checkout session with priceId:', storedPriceId);
         const { data, error } = await supabase.functions.invoke('create-checkout', {
           body: { priceId: storedPriceId }
         });
 
-        if (error) throw error;
+        if (error) {
+          console.error('Checkout error:', error);
+          throw error;
+        }
         
         if (data?.url) {
+          console.log('Redirecting to checkout URL:', data.url);
           localStorage.removeItem('selectedPriceId');
           window.location.href = data.url;
           return;
+        } else {
+          console.error('No checkout URL received');
+          throw new Error('Failed to create checkout session');
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error('Error creating checkout:', error);
         toast.error(error.message || "Failed to process subscription");
         localStorage.removeItem('selectedPriceId');
+        // On error, redirect to pricing page
+        navigate("/pricing");
+        return;
       }
     }
 
-    // Get user's subscription tier
+    // If no stored priceId or checkout failed, get user's subscription tier
     const { data: profile } = await supabase
       .from('profiles')
       .select('subscription_tier')
