@@ -18,7 +18,6 @@ import FreeDashboard from "./pages/FreeDashboard";
 import ProDashboard from "./pages/ProDashboard";
 import EnterpriseDashboard from "./pages/EnterpriseDashboard";
 import FreeCreateContent from "./pages/FreeCreateContent";
-import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -129,14 +128,6 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <EnterpriseDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute>
-                <Profile />
               </ProtectedRoute>
             }
           />

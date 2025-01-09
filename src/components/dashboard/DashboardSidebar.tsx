@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { User, Settings, FilePlus, Code, Home, ChevronLeft } from "lucide-react";
+import { Settings, FilePlus, Code, Home } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -28,12 +28,6 @@ const menuItems = [
     icon: Home,
     path: "/free/dashboard",
     description: "Overview and quick actions",
-  },
-  {
-    title: "Profile",
-    icon: User,
-    path: "/profile",
-    description: "View your profile information",
   },
   {
     title: "Settings",
