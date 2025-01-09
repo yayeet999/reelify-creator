@@ -54,6 +54,11 @@ export function DashboardSidebar() {
   const location = useLocation();
   const { toggleSidebar, state } = useSidebar();
 
+  const isActiveRoute = (path: string) => {
+    // Check if the current path matches the menu item path
+    return location.pathname === path;
+  };
+
   return (
     <Sidebar>
       <SidebarContent>
@@ -68,11 +73,13 @@ export function DashboardSidebar() {
                   <SidebarMenuButton
                     onClick={() => navigate(item.path)}
                     tooltip={item.description}
-                    isActive={location.pathname === item.path}
+                    isActive={isActiveRoute(item.path)}
                     className={cn(
                       "group flex items-center gap-3 rounded-lg px-3 py-3 text-[15px] font-medium",
                       item.isHighlighted
                         ? "bg-primary text-white hover:bg-primary/90 justify-center"
+                        : isActiveRoute(item.path)
+                        ? "bg-primary/10 text-primary justify-start"
                         : "hover:bg-primary/10 hover:text-primary justify-start"
                     )}
                   >
@@ -81,6 +88,8 @@ export function DashboardSidebar() {
                         "h-5 w-5 shrink-0 transition-colors",
                         item.isHighlighted
                           ? "text-white"
+                          : isActiveRoute(item.path)
+                          ? "text-primary"
                           : "text-muted-foreground group-hover:text-primary"
                       )} 
                     />
