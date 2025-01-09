@@ -5,90 +5,20 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateContent from "./pages/CreateContent";
 import Settings from "./pages/Settings";
 import GenerateHooks from "./pages/GenerateHooks";
-import { DashboardLayout } from "./components/layouts/DashboardLayout";
 import { Hero } from "./components/Hero";
 import { Features } from "./components/Features";
 import { Pricing } from "./components/Pricing";
 import FreeDashboard from "./pages/FreeDashboard";
 import ProDashboard from "./pages/ProDashboard";
 import EnterpriseDashboard from "./pages/EnterpriseDashboard";
-import type { Profile } from "@/integrations/supabase/types/profiles";
 
 const queryClient = new QueryClient();
-
-const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [userProfile, setUserProfile] = useState<Profile | null>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      setIsAuthenticated(!!session);
-
-      if (session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        setUserProfile(profile);
-      }
-    };
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      setIsAuthenticated(!!session);
-      if (session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-        
-        setUserProfile(profile);
-      }
-    });
-
-    checkAuth();
-    return () => subscription.unsubscribe();
-  }, []);
-
-  if (isAuthenticated === null) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
-  }
-
-  // Redirect to appropriate dashboard based on subscription tier
-  if (userProfile) {
-    const currentPath = window.location.pathname;
-    const tierPaths = {
-      free: '/free/dashboard',
-      starter: '/dashboard',
-      pro: '/pro/dashboard',
-      enterprise: '/enterprise/dashboard'
-    };
-
-    const correctPath = tierPaths[userProfile.subscription_tier];
-    
-    if (currentPath === '/dashboard' && userProfile.subscription_tier !== 'starter') {
-      return <Navigate to={correctPath} replace />;
-    }
-
-    if (currentPath.includes('/dashboard') && !currentPath.includes(userProfile.subscription_tier)) {
-      return <Navigate to={correctPath} replace />;
-    }
-  }
-
-  return <DashboardLayout>{children}</DashboardLayout>;
-};
 
 // Landing page component
 const LandingPage = () => {
