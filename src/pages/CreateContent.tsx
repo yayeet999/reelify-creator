@@ -161,6 +161,7 @@ const CreateContent = () => {
               startTime={startTime}
               duration={duration}
               currentVideoUrl={currentVideoUrl}
+              isPaidPlan={true}  // This is the key change - we're setting isPaidPlan to true for the starter plan
             />
           </CardContent>
         </Card>
