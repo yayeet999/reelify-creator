@@ -28,24 +28,7 @@ const templates = [
   "Red flags",
   "this is about to change EVERYTHING",
   "Im about to expose",
-  "Unpopular opinion, but",
-  "I can't be the only one who",
-  "what they don't tell you about",
-  "the way i gasped when i realized",
-  "I wasn't going to share this BUT",
-  "How to go from ___ to ___",
-  "Say goodbye to __",
-  "It's never been this easy to __",
-  "Did you know that __",
-  "I wish I knew this sooner ___",
-  "Something you didn't know...",
-  "10 '' I wish I knew earlier",
-  "Nobody is talking about __",
-  "you need to STOP doing ___",
-  "STOP doing ___, instead do ___",
-  "9 scientific reasons they ___",
-  "I am constantly amazed at ___",
-  "I don't think people understand how much ___"
+  "Unpopular opinion, but"
 ];
 
 serve(async (req) => {
@@ -55,33 +38,21 @@ serve(async (req) => {
   }
 
   try {
-    const { productName, productDescription } = await req.json();
-
     if (!openAIApiKey) {
-      throw new Error('OpenAI API key not found');
+      throw new Error('OpenAI API key not configured');
     }
 
-    const prompt = `
-You are tasked with generating 20 TikTok/Reels short-form video hooks tailored for a Gen Z audience, using the following templates:
+    const { productName, productDescription } = await req.json();
 
-${templates.join("\n")}
-
-Take the following product details:
-- Product Name: ${productName}
-- Product Description: ${productDescription}
-
-Rules:
-1. Use the templates to fill in blanks or adjust phrasing for relevance.
-2. Keep each hook between 5-15 words.
-3. Make the hooks engaging, trendy, and relatable to Gen Z.
-4. Return the output as a JSON array of 20 hooks.
-
-Example Output:
-[
-  "Not me buying this new gadget",
-  "POV you tried this product and now you cant go back",
-  "BRUH why did no one tell me about this"
-]`;
+    if (!productName || !productDescription) {
+      return new Response(
+        JSON.stringify({ error: 'Product name and description are required' }), 
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
+    }
 
     console.log('Making request to OpenAI...');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -95,35 +66,72 @@ Example Output:
         messages: [
           { 
             role: 'system', 
-            content: 'You are a creative assistant for generating TikTok hooks.' 
+            content: 'You are tasked with generating engaging TikTok/Reels hooks for a Gen Z audience. Return only a JSON array of 20 hooks.' 
           },
           { 
             role: 'user', 
-            content: prompt 
+            content: `Generate 20 TikTok/Reels hooks for this product:
+              Product Name: ${productName}
+              Product Description: ${productDescription}
+              
+              Use these templates as inspiration but feel free to modify them:
+              ${templates.join("\n")}
+              
+              Rules:
+              1. Keep each hook between 5-15 words
+              2. Make them engaging and trendy for Gen Z
+              3. Return ONLY a JSON array of strings, nothing else
+              4. Each hook should be complete and ready to use`
           }
         ],
+        temperature: 0.7,
         max_tokens: 1000,
       }),
     });
 
     console.log('Received response from OpenAI');
     const data = await response.json();
-    console.log('OpenAI response:', data);
+    
+    if (!response.ok) {
+      console.error('OpenAI API error:', data);
+      throw new Error(data.error?.message || 'Error calling OpenAI API');
+    }
 
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+    if (!data.choices?.[0]?.message?.content) {
       throw new Error('Invalid response from OpenAI');
     }
 
-    const hooks = JSON.parse(data.choices[0].message.content);
+    // Parse the response content as JSON array
+    let hooks;
+    try {
+      hooks = JSON.parse(data.choices[0].message.content);
+      if (!Array.isArray(hooks)) {
+        hooks = data.choices[0].message.content.split('\n').filter(Boolean);
+      }
+    } catch (e) {
+      // If parsing fails, split by newlines as fallback
+      hooks = data.choices[0].message.content.split('\n').filter(Boolean);
+    }
 
-    return new Response(JSON.stringify({ hooks }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.log('Successfully generated hooks:', hooks);
+
+    return new Response(
+      JSON.stringify({ hooks }), 
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
+
   } catch (error) {
     console.error('Error in generate-hooks function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    return new Response(
+      JSON.stringify({ 
+        error: 'Failed to generate hooks. Please try again.' 
+      }), 
+      { 
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      }
+    );
   }
 });
