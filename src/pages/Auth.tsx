@@ -19,28 +19,7 @@ const Auth = () => {
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        // User is already logged in, redirect them
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('subscription_tier')
-          .eq('id', session.user.id)
-          .single();
-
-        if (profile) {
-          switch (profile.subscription_tier) {
-            case 'starter':
-              navigate("/dashboard");
-              break;
-            case 'pro':
-              navigate("/pro/dashboard");
-              break;
-            case 'enterprise':
-              navigate("/enterprise/dashboard");
-              break;
-            default:
-              navigate("/free/dashboard");
-          }
-        }
+        handlePostAuthFlow(session);
       }
     };
     
@@ -52,53 +31,7 @@ const Auth = () => {
       setIsLoading(true);
       try {
         if (event === 'SIGNED_IN' && session) {
-          const storedPriceId = localStorage.getItem('selectedPriceId');
-          
-          if (storedPriceId) {
-            try {
-              const { data, error } = await supabase.functions.invoke('create-checkout', {
-                body: { priceId: storedPriceId }
-              });
-
-              if (error) throw error;
-              
-              if (data?.url) {
-                localStorage.removeItem('selectedPriceId');
-                window.location.href = data.url;
-                return;
-              }
-            } catch (error) {
-              console.error('Error:', error);
-              toast.error(error.message || "Failed to process subscription");
-              localStorage.removeItem('selectedPriceId');
-            }
-          }
-
-          // Get user's subscription tier
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('subscription_tier')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profileError) {
-            throw profileError;
-          }
-
-          // Navigate based on subscription tier
-          switch (profile?.subscription_tier) {
-            case 'starter':
-              navigate("/dashboard");
-              break;
-            case 'pro':
-              navigate("/pro/dashboard");
-              break;
-            case 'enterprise':
-              navigate("/enterprise/dashboard");
-              break;
-            default:
-              navigate("/free/dashboard");
-          }
+          await handlePostAuthFlow(session);
         }
       } catch (error) {
         console.error('Auth error:', error);
@@ -110,6 +43,52 @@ const Auth = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  const handlePostAuthFlow = async (session) => {
+    const storedPriceId = localStorage.getItem('selectedPriceId');
+    
+    if (storedPriceId) {
+      try {
+        const { data, error } = await supabase.functions.invoke('create-checkout', {
+          body: { priceId: storedPriceId }
+        });
+
+        if (error) throw error;
+        
+        if (data?.url) {
+          localStorage.removeItem('selectedPriceId');
+          window.location.href = data.url;
+          return;
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        toast.error(error.message || "Failed to process subscription");
+        localStorage.removeItem('selectedPriceId');
+      }
+    }
+
+    // Get user's subscription tier
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_tier')
+      .eq('id', session.user.id)
+      .single();
+
+    // Navigate based on subscription tier
+    switch (profile?.subscription_tier) {
+      case 'starter':
+        navigate("/dashboard");
+        break;
+      case 'pro':
+        navigate("/pro/dashboard");
+        break;
+      case 'enterprise':
+        navigate("/enterprise/dashboard");
+        break;
+      default:
+        navigate("/free/dashboard");
+    }
+  };
 
   const getErrorMessage = (error: AuthError) => {
     switch (error.message) {
