@@ -49,7 +49,6 @@ export function DashboardSidebar() {
   const { toggleSidebar, state } = useSidebar();
 
   const isActiveRoute = (path: string) => {
-    // Check if the current path matches the menu item path
     return location.pathname === path;
   };
 
