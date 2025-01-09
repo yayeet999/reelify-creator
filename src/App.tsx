@@ -8,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateContent from "./pages/CreateContent";
+import Settings from "./pages/Settings";
+import GenerateHooks from "./pages/GenerateHooks";
 import { DashboardLayout } from "./components/layouts/DashboardLayout";
 import { Hero } from "./components/Hero";
 import { Features } from "./components/Features";
