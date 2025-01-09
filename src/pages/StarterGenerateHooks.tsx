@@ -5,16 +5,9 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 
 const StarterGenerateHooks = () => {
-  const [selectedTone, setSelectedTone] = useState<string>("casual");
   const [selectedLanguage, setSelectedLanguage] = useState<string>("english");
   const [inputText, setInputText] = useState("");
   const [productName, setProductName] = useState("");
-
-  const toneOptions = [
-    { value: "casual", label: "Casual (Gen Z)" },
-    { value: "professional", label: "Professional" },
-    { value: "educational", label: "Educational" },
-  ];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
@@ -73,26 +66,6 @@ const StarterGenerateHooks = () => {
                 <p className="text-xs text-muted-foreground">
                   {inputText.length}/150 characters (minimum 50)
                 </p>
-              </div>
-
-              {/* Tone Selection Cards */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Select Tone</label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {toneOptions.map((tone) => (
-                    <Card
-                      key={tone.value}
-                      className={`p-4 cursor-pointer transition-all ${
-                        selectedTone === tone.value
-                          ? "bg-primary text-white"
-                          : "hover:bg-gray-50"
-                      }`}
-                      onClick={() => setSelectedTone(tone.value)}
-                    >
-                      <p className="font-medium">{tone.label}</p>
-                    </Card>
-                  ))}
-                </div>
               </div>
 
               {/* Language Selection Cards */}
