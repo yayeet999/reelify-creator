@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Settings, FilePlus, Code, Home, ChevronLeft } from "lucide-react";
+import { FilePlus, Home, ChevronLeft } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -28,18 +28,6 @@ const menuItems = [
     icon: Home,
     path: "/dashboard",
     description: "Overview and quick actions",
-  },
-  {
-    title: "Settings",
-    icon: Settings,
-    path: "/settings",
-    description: "Configure your preferences",
-  },
-  {
-    title: "Generate Hooks",
-    icon: Code,
-    path: "/hooks",
-    description: "Custom hook generator",
   },
 ];
 
