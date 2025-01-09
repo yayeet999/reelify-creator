@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const menuItems = [
   {
@@ -47,6 +48,7 @@ export function DashboardSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toggleSidebar, state } = useSidebar();
+  const isMobile = useIsMobile();
 
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
@@ -68,12 +70,17 @@ export function DashboardSidebar() {
                     tooltip={item.description}
                     isActive={isActiveRoute(item.path)}
                     className={cn(
-                      "group flex items-center gap-3 rounded-lg px-3 py-3 text-[15px] font-medium",
+                      "group flex items-center gap-3 rounded-lg px-3 py-3 text-[15px] font-medium transition-all duration-200",
                       item.isHighlighted
-                        ? "bg-primary text-white hover:bg-primary/90 justify-center"
+                        ? cn(
+                            "bg-primary text-white hover:bg-primary/90",
+                            state === "expanded" ? "justify-start" : "justify-center",
+                            isMobile ? "w-full" : "w-auto"
+                          )
                         : isActiveRoute(item.path)
                         ? "bg-primary/10 text-primary justify-start"
-                        : "hover:bg-primary/10 hover:text-primary justify-start"
+                        : "hover:bg-primary/10 hover:text-primary justify-start",
+                      state === "collapsed" && !item.isHighlighted && "justify-center"
                     )}
                   >
                     <item.icon 
@@ -86,7 +93,15 @@ export function DashboardSidebar() {
                           : "text-muted-foreground group-hover:text-primary"
                       )} 
                     />
-                    <span className="truncate">{item.title}</span>
+                    <span 
+                      className={cn(
+                        "truncate",
+                        state === "collapsed" && "hidden",
+                        item.isHighlighted && "font-semibold"
+                      )}
+                    >
+                      {item.title}
+                    </span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ))}
