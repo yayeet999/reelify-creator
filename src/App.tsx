@@ -44,10 +44,13 @@ const LandingPage = () => {
   useEffect(() => {
     // Handle scroll to pricing section when hash is present
     if (location.hash === '#pricing') {
-      const pricingSection = document.getElementById('pricing');
-      if (pricingSection) {
-        pricingSection.scrollIntoView({ behavior: 'smooth' });
-      }
+      // Add a small delay to ensure the component is fully rendered
+      setTimeout(() => {
+        const pricingSection = document.getElementById('pricing');
+        if (pricingSection) {
+          pricingSection.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
     }
   }, [location.hash]);
 
@@ -74,7 +77,7 @@ const LandingPage = () => {
       </nav>
       <Hero />
       <Features />
-      <div id="pricing">
+      <div id="pricing" className="scroll-mt-20">
         <Pricing />
       </div>
     </div>
