@@ -10,7 +10,7 @@ const StarterGenerateHooks = () => {
   const [inputText, setInputText] = useState("");
 
   const toneOptions = [
-    { value: "casual", label: "Casual", icon: <Smile className="w-5 h-5" /> },
+    { value: "casual", label: "Casual (Gen Z)", icon: <Smile className="w-5 h-5" /> },
     { value: "professional", label: "Professional", icon: <BookOpen className="w-5 h-5" /> },
     { value: "educational", label: "Educational", icon: <Brain className="w-5 h-5" /> },
     { value: "funny", label: "Funny", icon: <Lightbulb className="w-5 h-5" /> },
