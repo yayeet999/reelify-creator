@@ -92,6 +92,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/auth" element={<Auth />} />
+          
           {/* Starter Plan Routes */}
           <Route
             path="/dashboard"
@@ -109,6 +110,7 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+
           {/* Free Plan Routes */}
           <Route
             path="/free/dashboard"
@@ -126,6 +128,7 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+
           {/* Pro Plan Routes */}
           <Route
             path="/pro/dashboard"
@@ -135,6 +138,7 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+
           {/* Enterprise Plan Routes */}
           <Route
             path="/enterprise/dashboard"
@@ -144,6 +148,7 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+
           {/* Common Routes */}
           <Route
             path="/settings"

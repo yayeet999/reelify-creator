@@ -44,7 +44,7 @@ const StarterDashboard = () => {
                 Dashboard <span className="text-2xl text-primary">(Starter Plan)</span>
               </h1>
               <p className="mt-2 text-lg text-muted-foreground">
-                Welcome back! Here's what you can do
+                Welcome to your Starter Plan dashboard! Here's what you can do
               </p>
             </div>
           </div>
@@ -65,9 +65,9 @@ const StarterDashboard = () => {
           {/* Additional Stats or Info Section */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <div className="bg-accent-purple/30 rounded-lg p-6 shadow-sm">
-              <h3 className="text-lg font-semibold mb-2">Quick Tips</h3>
+              <h3 className="text-lg font-semibold mb-2">Starter Plan Features</h3>
               <p className="text-sm text-muted-foreground">
-                Explore the dashboard to access all features and customize your experience.
+                Explore all the enhanced features available in your Starter Plan subscription.
               </p>
             </div>
             <div className="bg-accent-pink/30 rounded-lg p-6 shadow-sm">

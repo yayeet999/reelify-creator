@@ -26,7 +26,7 @@ const menuItems = [
   {
     title: "Home",
     icon: Home,
-    path: "/dashboard",  // This is the correct path for starter plan home
+    path: "/dashboard",
     description: "Overview and quick actions",
   },
   {
@@ -57,7 +57,7 @@ export function StarterDashboardSidebar() {
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 text-lg font-semibold text-primary">
-            Dashboard
+            Starter Dashboard
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1.5 pt-10">
