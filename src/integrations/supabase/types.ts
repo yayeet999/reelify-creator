@@ -9,126 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      profiles: {
-        Row: {
-          created_at: string
-          display_name: string | null
-          email: string | null
-          id: string
-          last_sign_in: string | null
-          phone: string | null
-          provider: string | null
-          provider_type: string | null
-          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id: string
-          last_sign_in?: string | null
-          phone?: string | null
-          provider?: string | null
-          provider_type?: string | null
-          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id?: string
-          last_sign_in?: string | null
-          phone?: string | null
-          provider?: string | null
-          provider_type?: string | null
-          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      subscriptions: {
-        Row: {
-          cancel_at: string | null
-          cancel_at_period_end: boolean | null
-          canceled_at: string | null
-          created_at: string
-          current_period_end: string | null
-          current_period_start: string | null
-          id: string
-          price_id: string | null
-          quantity: number | null
-          status: string | null
-          stripe_customer_id: string | null
-          stripe_subscription_id: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          cancel_at?: string | null
-          cancel_at_period_end?: boolean | null
-          canceled_at?: string | null
-          created_at?: string
-          current_period_end?: string | null
-          current_period_start?: string | null
-          id?: string
-          price_id?: string | null
-          quantity?: number | null
-          status?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          cancel_at?: string | null
-          cancel_at_period_end?: boolean | null
-          canceled_at?: string | null
-          created_at?: string
-          current_period_end?: string | null
-          current_period_start?: string | null
-          id?: string
-          price_id?: string | null
-          quantity?: number | null
-          status?: string | null
-          stripe_customer_id?: string | null
-          stripe_subscription_id?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
-      user_settings: {
-        Row: {
-          created_at: string
-          email: string | null
-          id: string
-          two_factor_enabled: boolean | null
-          two_factor_method: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          email?: string | null
-          id?: string
-          two_factor_enabled?: boolean | null
-          two_factor_method?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          email?: string | null
-          id?: string
-          two_factor_enabled?: boolean | null
-          two_factor_method?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
@@ -137,7 +18,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      subscription_tier: "free" | "starter" | "pro" | "enterprise"
+      [_ in never]: never
     }
     CompositeTypes: {
       [_ in never]: never
