@@ -19,7 +19,7 @@ const menuItems = [
   {
     title: "Create Content",
     icon: FilePlus,
-    path: "/create",
+    path: "/free/create",
     description: "Create new content",
     isHighlighted: true,
   },
