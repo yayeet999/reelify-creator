@@ -1,6 +1,9 @@
-import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from 'https://esm.sh/stripe@14.21.0'
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.45.0'
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import Stripe from "https://esm.sh/stripe@14.21.0"
+
+const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
+  apiVersion: '2023-10-16',
+})
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,62 +16,16 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders })
   }
 
-  const supabaseClient = createClient(
-    Deno.env.get('SUPABASE_URL') ?? '',
-    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-  )
-
   try {
-    // Get the session or user object
+    const { priceId } = await req.json()
+    
+    // Get the user from the request
     const authHeader = req.headers.get('Authorization')!
     const token = authHeader.replace('Bearer ', '')
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser(token)
     
-    if (userError || !user) {
-      throw new Error('User not authenticated')
-    }
-
-    const email = user?.email
-    if (!email) {
-      throw new Error('No email found')
-    }
-
-    const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
-      apiVersion: '2023-10-16',
-    })
-
-    // Get the price ID from the request body
-    const { priceId } = await req.json()
-    if (!priceId) {
-      throw new Error('No price ID provided')
-    }
-
-    console.log('Looking up customer with email:', email)
-    const customers = await stripe.customers.list({
-      email: email,
-      limit: 1
-    })
-
-    let customer_id = undefined
-    if (customers.data.length > 0) {
-      customer_id = customers.data[0].id
-      // check if already subscribed to this price
-      const subscriptions = await stripe.subscriptions.list({
-        customer: customers.data[0].id,
-        status: 'active',
-        price: priceId,
-        limit: 1
-      })
-
-      if (subscriptions.data.length > 0) {
-        throw new Error("You are already subscribed to this plan")
-      }
-    }
-
-    console.log('Creating payment session...')
+    // Create a checkout session
     const session = await stripe.checkout.sessions.create({
-      customer: customer_id,
-      customer_email: customer_id ? undefined : email,
+      payment_method_types: ['card'],
       line_items: [
         {
           price: priceId,
@@ -76,21 +33,17 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/dashboard`,
-      cancel_url: `${req.headers.get('origin')}/`,
-      client_reference_id: user.id,
-      metadata: {
-        price_id: priceId
-      }
+      success_url: `${req.headers.get('origin')}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
+      cancel_url: `${req.headers.get('origin')}/pricing`,
+      client_reference_id: token,
     })
 
-    console.log('Payment session created:', session.id)
     return new Response(
       JSON.stringify({ url: session.url }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200,
-      }
+      },
     )
   } catch (error) {
     console.error('Error:', error)
@@ -98,8 +51,8 @@ serve(async (req) => {
       JSON.stringify({ error: error.message }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 500,
-      }
+        status: 400,
+      },
     )
   }
 })
