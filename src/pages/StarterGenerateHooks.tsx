@@ -41,8 +41,16 @@ const StarterGenerateHooks = () => {
                 <Input
                   placeholder="Enter your product name..."
                   value={productName}
-                  onChange={(e) => setProductName(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 25) {
+                      setProductName(e.target.value);
+                    }
+                  }}
+                  maxLength={25}
                 />
+                <p className="text-xs text-muted-foreground">
+                  {productName.length}/25 characters
+                </p>
               </div>
 
               {/* Text Input */}
@@ -54,8 +62,17 @@ const StarterGenerateHooks = () => {
                   placeholder="Describe your product, service, or topic..."
                   className="min-h-[150px] resize-none"
                   value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 150) {
+                      setInputText(e.target.value);
+                    }
+                  }}
+                  maxLength={150}
+                  required
                 />
+                <p className="text-xs text-muted-foreground">
+                  {inputText.length}/150 characters (minimum 50)
+                </p>
               </div>
 
               {/* Tone Selection Cards */}
