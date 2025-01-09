@@ -3,11 +3,65 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 const StarterGenerateHooks = () => {
   const [selectedLanguage, setSelectedLanguage] = useState<string>("english");
   const [inputText, setInputText] = useState("");
   const [productName, setProductName] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [generatedHooks, setGeneratedHooks] = useState<string[]>([]);
+  const { toast } = useToast();
+
+  const handleGenerateHooks = async () => {
+    if (inputText.length < 50) {
+      toast({
+        title: "Description too short",
+        description: "Please enter at least 50 characters for the product description.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!productName) {
+      toast({
+        title: "Product name required",
+        description: "Please enter a product name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-hooks', {
+        body: {
+          productName,
+          productDescription: inputText,
+        },
+      });
+
+      if (error) throw error;
+
+      setGeneratedHooks(data.hooks);
+      toast({
+        title: "Hooks generated successfully!",
+        description: "Your hooks are ready to use.",
+      });
+    } catch (error) {
+      console.error('Error generating hooks:', error);
+      toast({
+        title: "Error generating hooks",
+        description: "Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
@@ -94,15 +148,43 @@ const StarterGenerateHooks = () => {
                   </Card>
                 </div>
               </div>
+
+              {/* Generate Button */}
+              <Button
+                className="w-full"
+                size="lg"
+                onClick={handleGenerateHooks}
+                disabled={isLoading || inputText.length < 50 || !productName}
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  "Generate Hooks"
+                )}
+              </Button>
             </div>
 
             {/* Right Column - Output Section */}
             <div className="bg-gray-50 rounded-lg p-4">
               <ScrollArea className="h-[500px] w-full rounded-md border">
                 <div className="p-4 space-y-4">
-                  <p className="text-muted-foreground text-center">
-                    Your generated hooks will appear here...
-                  </p>
+                  {generatedHooks.length > 0 ? (
+                    generatedHooks.map((hook, index) => (
+                      <div
+                        key={index}
+                        className="p-3 bg-white rounded-lg shadow-sm border border-gray-100"
+                      >
+                        <p className="text-sm">{hook}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground text-center">
+                      Your generated hooks will appear here...
+                    </p>
+                  )}
                 </div>
               </ScrollArea>
             </div>
