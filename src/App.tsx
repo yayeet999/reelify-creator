@@ -20,6 +20,7 @@ import EnterpriseDashboard from "./pages/EnterpriseDashboard";
 import FreeCreateContent from "./pages/FreeCreateContent";
 import StarterDashboard from "./pages/StarterDashboard";
 import StarterGenerateHooks from "./pages/StarterGenerateHooks";
+import StarterSavedHooks from "./pages/StarterSavedHooks";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { StarterDashboardLayout } from "@/components/layouts/StarterDashboardLayout";
 
@@ -123,6 +124,16 @@ const App = () => (
               <ProtectedRoute>
                 <StarterDashboardLayout>
                   <StarterGenerateHooks />
+                </StarterDashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/starter/saved-hooks"
+            element={
+              <ProtectedRoute>
+                <StarterDashboardLayout>
+                  <StarterSavedHooks />
                 </StarterDashboardLayout>
               </ProtectedRoute>
             }
