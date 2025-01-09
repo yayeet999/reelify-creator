@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import type { Profile } from "@/integrations/supabase/types/profiles";
 import type { SubscriptionTier } from "@/integrations/supabase/types/enums";
 
-export type RequiredTier = "starter" | "pro" | "enterprise";
+export type RequiredTier = SubscriptionTier;
 
 const TIER_LEVELS = {
   free: 0,
