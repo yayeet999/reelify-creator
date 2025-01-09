@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { User, Settings, FilePlus, Code } from "lucide-react";
+import { User, Settings, FilePlus } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 
 const quickStartOptions = [
@@ -20,12 +20,6 @@ const quickStartOptions = [
     description: "Start creating your first piece of content",
     icon: <FilePlus className="w-5 h-5" />,
     path: "/starter/create",
-  },
-  {
-    title: "Generate Custom Hooks",
-    description: "Create reusable React hooks for your projects",
-    icon: <Code className="w-5 h-5" />,
-    path: "/hooks",
   },
 ];
 
@@ -48,7 +42,7 @@ const StarterDashboard = () => {
         </div>
 
         {/* Quick Start Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {quickStartOptions.map((option) => (
             <QuickStartCard
               key={option.title}
