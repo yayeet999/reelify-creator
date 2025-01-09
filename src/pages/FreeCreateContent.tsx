@@ -3,7 +3,7 @@ import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { TextPositionSelector, type Position } from "@/components/video-editor/TextPositionSelector";
 import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
-import { TextPresets } from "@/components/video-editor/TextPresets";
+import { FreeTextPresets } from "@/components/video-editor/FreeTextPresets";
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { FreeVideoDownloader } from "@/components/video-editor/FreeVideoDownloader";
 import { Input } from "@/components/ui/input";
@@ -120,7 +120,7 @@ const FreeCreateContent = () => {
                 </div>
               </div>
 
-              <TextPresets 
+              <FreeTextPresets 
                 onSelect={(textColor, backgroundColor) => {
                   setTextColor(textColor);
                 }}
