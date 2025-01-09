@@ -7,6 +7,33 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Profile } from "@/integrations/supabase/types/profiles";
 
+const quickStartOptions = [
+  {
+    title: "Complete Your Profile",
+    description: "Set up your personal information and preferences",
+    icon: <User className="w-5 h-5" />,
+    path: "/profile",
+  },
+  {
+    title: "Create New Content",
+    description: "Access all premium content creation features",
+    icon: <FilePlus className="w-5 h-5" />,
+    path: "/create",
+  },
+  {
+    title: "Generate Custom Hooks",
+    description: "Create and manage custom hooks",
+    icon: <Code className="w-5 h-5" />,
+    path: "/hooks",
+  },
+  {
+    title: "Organization Settings",
+    description: "Manage your enterprise settings",
+    icon: <Settings className="w-5 h-5" />,
+    path: "/settings",
+  },
+];
+
 const ProDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
