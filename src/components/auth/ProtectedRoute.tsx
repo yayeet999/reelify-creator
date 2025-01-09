@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { StarterDashboardLayout } from "@/components/layouts/StarterDashboardLayout";
 import type { Profile } from "@/integrations/supabase/types/profiles";
 import { useToast } from "@/hooks/use-toast";
 
@@ -107,20 +105,10 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       return <Navigate to={correctPath} replace />;
     }
 
-    // Select the appropriate layout based on subscription tier
-    const getLayout = () => {
-      switch (userTier) {
-        case 'starter':
-          return StarterDashboardLayout;
-        default:
-          return DashboardLayout;
-      }
-    };
-
-    const Layout = getLayout();
-    return <Layout>{children}</Layout>;
+    // Return children directly without any layout wrapping
+    return <>{children}</>;
   }
 
-  // Fallback to default layout if no profile is found
-  return <DashboardLayout>{children}</DashboardLayout>;
+  // Return children directly if no profile is found
+  return <>{children}</>;
 };

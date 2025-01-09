@@ -20,6 +20,7 @@ import EnterpriseDashboard from "./pages/EnterpriseDashboard";
 import FreeCreateContent from "./pages/FreeCreateContent";
 import StarterDashboard from "./pages/StarterDashboard";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { StarterDashboardLayout } from "@/components/layouts/StarterDashboardLayout";
 
 const queryClient = new QueryClient();
 
@@ -99,7 +100,9 @@ const App = () => (
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <StarterDashboard />
+                <StarterDashboardLayout>
+                  <StarterDashboard />
+                </StarterDashboardLayout>
               </ProtectedRoute>
             }
           />
@@ -107,7 +110,9 @@ const App = () => (
             path="/starter/create"
             element={
               <ProtectedRoute>
-                <CreateContent />
+                <StarterDashboardLayout>
+                  <CreateContent />
+                </StarterDashboardLayout>
               </ProtectedRoute>
             }
           />
@@ -154,7 +159,7 @@ const App = () => (
             }
           />
 
-          {/* Common Routes */}
+          {/* Common Routes - Each will need their own layout handling */}
           <Route
             path="/settings"
             element={
