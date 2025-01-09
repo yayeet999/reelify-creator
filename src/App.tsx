@@ -18,6 +18,7 @@ import FreeDashboard from "./pages/FreeDashboard";
 import ProDashboard from "./pages/ProDashboard";
 import EnterpriseDashboard from "./pages/EnterpriseDashboard";
 import FreeCreateContent from "./pages/FreeCreateContent";
+import StarterDashboard from "./pages/StarterDashboard";
 
 const queryClient = new QueryClient();
 
@@ -95,7 +96,7 @@ const App = () => (
             path="/dashboard"
             element={
               <ProtectedRoute>
-                <Index />
+                <StarterDashboard />
               </ProtectedRoute>
             }
           />
@@ -112,6 +113,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <FreeCreateContent />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/starter/create"
+            element={
+              <ProtectedRoute>
+                <CreateContent />
               </ProtectedRoute>
             }
           />
