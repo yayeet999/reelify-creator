@@ -8,6 +8,14 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    // Add historyApiFallback to handle client-side routing
+    strictPort: true,
+    middlewareMode: false,
+  },
+  preview: {
+    // Also add for preview server
+    strictPort: true,
+    port: 8080,
   },
   plugins: [
     react(),
