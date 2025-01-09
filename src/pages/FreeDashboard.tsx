@@ -28,7 +28,8 @@ const FreeDashboard = () => {
       title: "Ready to upgrade?",
       description: "Let's get you started with more features!",
     });
-    navigate("/pricing");
+    // Navigate to the landing page with the pricing section hash
+    navigate("/#pricing");
   };
 
   return (
