@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
-import { Smile, BookOpen, Brain } from "lucide-react";
 
 const StarterGenerateHooks = () => {
   const [selectedTone, setSelectedTone] = useState<string>("casual");
@@ -10,9 +9,9 @@ const StarterGenerateHooks = () => {
   const [inputText, setInputText] = useState("");
 
   const toneOptions = [
-    { value: "casual", label: "Casual (Gen Z)", icon: <Smile className="w-5 h-5" /> },
-    { value: "professional", label: "Professional", icon: <BookOpen className="w-5 h-5" /> },
-    { value: "educational", label: "Educational", icon: <Brain className="w-5 h-5" /> },
+    { value: "casual", label: "Casual (Gen Z)" },
+    { value: "professional", label: "Professional" },
+    { value: "educational", label: "Educational" },
   ];
 
   return (
@@ -59,12 +58,7 @@ const StarterGenerateHooks = () => {
                       }`}
                       onClick={() => setSelectedTone(tone.value)}
                     >
-                      <div className="flex items-center gap-2">
-                        <span className={`${selectedTone === tone.value ? "text-white" : "text-primary"}`}>
-                          {tone.icon}
-                        </span>
-                        <p className="font-medium">{tone.label}</p>
-                      </div>
+                      <p className="font-medium">{tone.label}</p>
                     </Card>
                   ))}
                 </div>
