@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 // Constants for video dimensions
 const ACTUAL_VIDEO_WIDTH = 1920;
 const PREVIEW_WIDTH = 600;
-const SCALE_ADJUSTMENT = 3.2; // Adjustment factor to match preview size
+const SCALE_ADJUSTMENT = 8.5; // Increased adjustment factor to match preview size better
 
 // Cloudinary utility functions
 const calculateCloudinaryScale = (previewWidth: number, actualWidth: number) => {
