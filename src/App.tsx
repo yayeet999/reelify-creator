@@ -24,7 +24,6 @@ const queryClient = new QueryClient();
 // Landing page component
 const LandingPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-  const [userProfile, setUserProfile] = useState<Profile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -32,16 +31,6 @@ const LandingPage = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         setIsAuthenticated(!!session);
-        
-        if (session) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-          
-          setUserProfile(profile);
-        }
       } catch (error) {
         console.error('Auth check error:', error);
       } finally {
@@ -55,17 +44,6 @@ const LandingPage = () => {
     return <div>Loading...</div>;
   }
 
-  if (isAuthenticated && userProfile) {
-    const tierPaths = {
-      free: '/free/dashboard',
-      starter: '/dashboard',
-      pro: '/pro/dashboard',
-      enterprise: '/enterprise/dashboard'
-    };
-    
-    return <Navigate to={tierPaths[userProfile.subscription_tier]} replace />;
-  }
-
   return (
     <div className="min-h-screen">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b">
@@ -74,8 +52,11 @@ const LandingPage = () => {
             <Link to="/" className="text-2xl font-bold text-primary">
               notreel.ai
             </Link>
-            <Link to="/auth" className="text-primary hover:text-primary/80">
-              Sign In
+            <Link 
+              to={isAuthenticated ? "/dashboard" : "/auth"} 
+              className="text-primary hover:text-primary/80"
+            >
+              {isAuthenticated ? "Go to Dashboard" : "Sign In"}
             </Link>
           </div>
         </div>
