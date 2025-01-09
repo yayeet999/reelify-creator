@@ -17,23 +17,42 @@ import { Pricing } from "./components/Pricing";
 import FreeDashboard from "./pages/FreeDashboard";
 import ProDashboard from "./pages/ProDashboard";
 import EnterpriseDashboard from "./pages/EnterpriseDashboard";
+import type { Profile } from "@/integrations/supabase/types/profiles";
 
 const queryClient = new QueryClient();
 
 // Landing page component
 const LandingPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [userProfile, setUserProfile] = useState<Profile | null>(null);
 
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       setIsAuthenticated(!!session);
+      
+      if (session) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+        
+        setUserProfile(profile);
+      }
     };
     checkAuth();
   }, []);
 
-  if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+  if (isAuthenticated && userProfile) {
+    const tierPaths = {
+      free: '/free/dashboard',
+      starter: '/dashboard',
+      pro: '/pro/dashboard',
+      enterprise: '/enterprise/dashboard'
+    };
+    
+    return <Navigate to={tierPaths[userProfile.subscription_tier]} replace />;
   }
 
   return (
