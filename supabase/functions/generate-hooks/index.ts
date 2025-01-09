@@ -66,7 +66,7 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'You are tasked with generating engaging TikTok/Reels hooks for a Gen Z audience. Return only a JSON array of 20 hooks.' 
+            content: 'You are tasked with generating engaging TikTok/Reels hooks for a Gen Z audience. Return only a JSON array of 20 hooks, with no additional text or formatting.' 
           },
           { 
             role: 'user', 
@@ -81,7 +81,8 @@ serve(async (req) => {
               1. Keep each hook between 5-15 words
               2. Make them engaging and trendy for Gen Z
               3. Return ONLY a JSON array of strings, nothing else
-              4. Each hook should be complete and ready to use`
+              4. Each hook should be complete and ready to use
+              5. Do not include any markdown formatting or JSON syntax in the hooks themselves`
           }
         ],
         temperature: 0.7,
@@ -101,16 +102,29 @@ serve(async (req) => {
       throw new Error('Invalid response from OpenAI');
     }
 
-    // Parse the response content as JSON array
+    // Clean and parse the response
+    let content = data.choices[0].message.content;
+    
+    // Remove any markdown code block indicators and extra whitespace
+    content = content.replace(/```json\s*/g, '')
+                    .replace(/```\s*/g, '')
+                    .trim();
+
+    // Parse the JSON array
     let hooks;
     try {
-      hooks = JSON.parse(data.choices[0].message.content);
+      hooks = JSON.parse(content);
       if (!Array.isArray(hooks)) {
-        hooks = data.choices[0].message.content.split('\n').filter(Boolean);
+        throw new Error('Response is not an array');
       }
+      // Clean each hook
+      hooks = hooks.map(hook => hook.trim());
     } catch (e) {
-      // If parsing fails, split by newlines as fallback
-      hooks = data.choices[0].message.content.split('\n').filter(Boolean);
+      console.error('Error parsing hooks:', e);
+      // Fallback: split by newlines and clean up
+      hooks = content.split('\n')
+                    .map(line => line.trim())
+                    .filter(line => line && !line.startsWith('[') && !line.endsWith(']'));
     }
 
     console.log('Successfully generated hooks:', hooks);
