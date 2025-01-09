@@ -1,19 +1,21 @@
 import { useState } from "react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
+import { Smile, BookOpen, Brain, Lightbulb, MessageSquare } from "lucide-react";
 
 const StarterGenerateHooks = () => {
   const [selectedTone, setSelectedTone] = useState<string>("casual");
   const [selectedLanguage, setSelectedLanguage] = useState<string>("english");
   const [inputText, setInputText] = useState("");
+
+  const toneOptions = [
+    { value: "casual", label: "Casual", icon: <Smile className="w-5 h-5" /> },
+    { value: "professional", label: "Professional", icon: <BookOpen className="w-5 h-5" /> },
+    { value: "educational", label: "Educational", icon: <Brain className="w-5 h-5" /> },
+    { value: "funny", label: "Funny", icon: <Lightbulb className="w-5 h-5" /> },
+    { value: "serious", label: "Serious", icon: <MessageSquare className="w-5 h-5" /> },
+  ];
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
@@ -45,24 +47,29 @@ const StarterGenerateHooks = () => {
                 />
               </div>
 
-              {/* Tone Dropdown */}
+              {/* Tone Selection Cards */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Select Tone</label>
-                <Select
-                  value={selectedTone}
-                  onValueChange={(value) => setSelectedTone(value)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Select a tone" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="casual">Casual</SelectItem>
-                    <SelectItem value="professional">Professional</SelectItem>
-                    <SelectItem value="funny">Funny</SelectItem>
-                    <SelectItem value="serious">Serious</SelectItem>
-                    <SelectItem value="educational">Educational</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {toneOptions.map((tone) => (
+                    <Card
+                      key={tone.value}
+                      className={`p-4 cursor-pointer transition-all ${
+                        selectedTone === tone.value
+                          ? "bg-primary text-white"
+                          : "hover:bg-gray-50"
+                      }`}
+                      onClick={() => setSelectedTone(tone.value)}
+                    >
+                      <div className="flex items-center gap-2">
+                        <span className={`${selectedTone === tone.value ? "text-white" : "text-primary"}`}>
+                          {tone.icon}
+                        </span>
+                        <p className="font-medium">{tone.label}</p>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
               </div>
 
               {/* Language Selection Cards */}
