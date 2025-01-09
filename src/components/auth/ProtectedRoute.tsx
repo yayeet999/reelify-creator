@@ -90,21 +90,22 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   // Redirect to appropriate dashboard based on subscription tier
   if (userProfile) {
     const currentPath = window.location.pathname;
-    const tierPaths = {
-      free: '/free/dashboard',
-      starter: '/dashboard',
-      pro: '/pro/dashboard',
-      enterprise: '/enterprise/dashboard'
-    };
-
-    const correctPath = tierPaths[userProfile.subscription_tier];
     
-    if (currentPath === '/dashboard' && userProfile.subscription_tier !== 'starter') {
-      return <Navigate to={correctPath} replace />;
-    }
+    // If we're at the root dashboard route, redirect based on tier
+    if (currentPath === '/dashboard') {
+      const tierPaths = {
+        free: '/free/dashboard',
+        starter: '/dashboard',
+        pro: '/pro/dashboard',
+        enterprise: '/enterprise/dashboard'
+      };
 
-    if (currentPath.includes('/dashboard') && !currentPath.includes(userProfile.subscription_tier)) {
-      return <Navigate to={correctPath} replace />;
+      const correctPath = tierPaths[userProfile.subscription_tier];
+      
+      // Only redirect if the user is not on the starter tier
+      if (userProfile.subscription_tier !== 'starter') {
+        return <Navigate to={correctPath} replace />;
+      }
     }
   }
 
