@@ -31,7 +31,7 @@ serve(async (req) => {
         const session = event.data.object;
         console.log('Checkout session completed:', session.id);
         
-        // Update or insert subscription record
+        // Update subscription record
         const { error } = await supabase
           .from('subscriptions')
           .upsert({
@@ -43,6 +43,27 @@ serve(async (req) => {
           });
 
         if (error) throw error;
+
+        // Update user's subscription tier based on price ID
+        let tier = 'starter';
+        switch (session.metadata?.price_id) {
+          case 'price_1Qf3YWF2YoGQdvcW69wTFx7i':
+            tier = 'starter';
+            break;
+          case 'price_1Qf3aLF2YoGQdvcWiKMuplKL':
+            tier = 'pro';
+            break;
+          case 'price_1Qf3bQF2YoGQdvcWx23MIde4':
+            tier = 'enterprise';
+            break;
+        }
+
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({ subscription_tier: tier })
+          .eq('id', session.client_reference_id);
+
+        if (profileError) throw profileError;
         break;
       }
 
@@ -74,6 +95,16 @@ serve(async (req) => {
             .eq('id', subscriptionData.id);
 
           if (updateError) throw updateError;
+
+          // If subscription is cancelled/deleted, update user's tier to free
+          if (subscription.status === 'canceled' || event.type === 'customer.subscription.deleted') {
+            const { error: profileError } = await supabase
+              .from('profiles')
+              .update({ subscription_tier: 'free' })
+              .eq('id', subscriptionData.user_id);
+
+            if (profileError) throw profileError;
+          }
         }
         break;
       }

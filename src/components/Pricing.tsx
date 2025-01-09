@@ -12,9 +12,7 @@ const tiers = [
     priceId: "price_1Qf3YWF2YoGQdvcW69wTFx7i",
     description: "Perfect for content creators just getting started",
     features: [
-      "5 videos per month",
-      "Basic AI effects",
-      "720p video quality",
+      "20 videos per month",
       "Email support",
     ],
   },
@@ -24,9 +22,7 @@ const tiers = [
     priceId: "price_1Qf3aLF2YoGQdvcWiKMuplKL",
     description: "Ideal for growing creators and small businesses",
     features: [
-      "25 videos per month",
-      "Advanced AI effects",
-      "1080p video quality",
+      "75 videos per month",
       "Priority support",
       "Custom branding",
       "Analytics dashboard",
@@ -39,9 +35,7 @@ const tiers = [
     priceId: "price_1Qf3bQF2YoGQdvcWx23MIde4",
     description: "For professional creators and large teams",
     features: [
-      "Unlimited videos",
-      "Premium AI effects",
-      "4K video quality",
+      "200 videos per month",
       "24/7 priority support",
       "Custom branding",
       "Advanced analytics",
