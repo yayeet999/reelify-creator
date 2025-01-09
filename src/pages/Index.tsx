@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { User, Settings, FilePlus, Code } from "lucide-react";
+import { User, Code, FilePlus } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 
 const quickStartOptions = [
@@ -10,22 +10,16 @@ const quickStartOptions = [
     path: "/profile",
   },
   {
-    title: "Configure Settings",
-    description: "Customize your application settings",
-    icon: <Settings className="w-5 h-5" />,
-    path: "/settings",
+    title: "Generate Hooks",
+    description: "Create reusable React hooks for your projects",
+    icon: <Code className="w-5 h-5" />,
+    path: "/starter/hooks",
   },
   {
     title: "Create New Content",
     description: "Start creating your first piece of content",
     icon: <FilePlus className="w-5 h-5" />,
     path: "/create",
-  },
-  {
-    title: "Generate Custom Hooks",
-    description: "Create reusable React hooks for your projects",
-    icon: <Code className="w-5 h-5" />,
-    path: "/hooks",
   },
 ];
 
