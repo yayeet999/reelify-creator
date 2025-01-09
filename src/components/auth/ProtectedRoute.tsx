@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { StarterDashboardLayout } from "@/components/layouts/StarterDashboardLayout";
 import type { Profile } from "@/integrations/supabase/types/profiles";
 import { useToast } from "@/hooks/use-toast";
 
@@ -90,24 +91,36 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   // Redirect to appropriate dashboard based on subscription tier
   if (userProfile) {
     const currentPath = window.location.pathname;
-    
-    // If we're at the root dashboard route, redirect based on tier
-    if (currentPath === '/dashboard') {
-      const tierPaths = {
-        free: '/free/dashboard',
-        starter: '/dashboard',
-        pro: '/pro/dashboard',
-        enterprise: '/enterprise/dashboard'
-      };
+    const tierPaths = {
+      free: '/free/dashboard',
+      starter: '/dashboard',
+      pro: '/pro/dashboard',
+      enterprise: '/enterprise/dashboard'
+    };
 
-      const correctPath = tierPaths[userProfile.subscription_tier];
-      
-      // Only redirect if the user is not on the starter tier
-      if (userProfile.subscription_tier !== 'starter') {
-        return <Navigate to={correctPath} replace />;
-      }
+    // Check if user is trying to access a path that doesn't match their tier
+    const userTier = userProfile.subscription_tier;
+    const correctPath = tierPaths[userTier];
+    
+    // If user is on a dashboard path but it's not the correct one for their tier
+    if (Object.values(tierPaths).includes(currentPath) && currentPath !== correctPath) {
+      return <Navigate to={correctPath} replace />;
     }
+
+    // Select the appropriate layout based on subscription tier
+    const getLayout = () => {
+      switch (userTier) {
+        case 'starter':
+          return StarterDashboardLayout;
+        default:
+          return DashboardLayout;
+      }
+    };
+
+    const Layout = getLayout();
+    return <Layout>{children}</Layout>;
   }
 
+  // Fallback to default layout if no profile is found
   return <DashboardLayout>{children}</DashboardLayout>;
 };
