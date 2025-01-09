@@ -1,5 +1,35 @@
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+
+// Constants for video dimensions
+const ACTUAL_VIDEO_WIDTH = 1920;
+const PREVIEW_WIDTH = 600;
+
+// Cloudinary utility functions
+const calculateCloudinaryScale = (previewWidth: number, actualWidth: number) => {
+  return (previewWidth / actualWidth);
+};
+
+const getCloudinaryPosition = (position: "top" | "middle" | "bottom") => {
+  switch (position) {
+    case "top":
+      return "g_north";
+    case "bottom":
+      return "g_south";
+    default:
+      return "g_center";
+  }
+};
+
+const getCloudinaryAnimation = (animation: "none" | "fade") => {
+  switch (animation) {
+    case "fade":
+      return "e_fade:2000";
+    default:
+      return "";
+  }
+};
 
 interface VideoDownloaderProps {
   textOverlay: string;
@@ -25,6 +55,7 @@ export const VideoDownloader = ({
   isPaidPlan = false,
 }: VideoDownloaderProps) => {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const generateCloudinaryUrl = () => {
     if (!textOverlay) return currentVideoUrl;
