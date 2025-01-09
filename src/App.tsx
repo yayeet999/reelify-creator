@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -17,7 +17,7 @@ import { Pricing } from "./components/Pricing";
 import FreeDashboard from "./pages/FreeDashboard";
 import ProDashboard from "./pages/ProDashboard";
 import EnterpriseDashboard from "./pages/EnterpriseDashboard";
-import type { Profile } from "@/integrations/supabase/types/profiles";
+import FreeCreateContent from "./pages/FreeCreateContent";
 
 const queryClient = new QueryClient();
 
@@ -106,6 +106,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <FreeDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/free/create"
+            element={
+              <ProtectedRoute>
+                <FreeCreateContent />
               </ProtectedRoute>
             }
           />

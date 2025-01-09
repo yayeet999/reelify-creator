@@ -1,171 +1,94 @@
-import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { Video, Type, Loader2 } from "lucide-react";
-import { TextPositionSelector } from "@/components/video-editor/TextPositionSelector";
-import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
-import { TimelineControl } from "@/components/video-editor/TimelineControl";
-import { VideoPreview } from "@/components/video-editor/VideoPreview";
-import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
-import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
-import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
+import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+import { Crown } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const FreeCreateContent = () => {
-  const { isLoading, isAuthorized } = useSubscriptionGuard("free");
-  const [textOverlay, setTextOverlay] = useState("");
-  const [textSize, setTextSize] = useState([16]);
-  const [textColor, setTextColor] = useState("#FFFFFF");
-  const [textPosition, setTextPosition] = useState<"top" | "middle" | "bottom">("middle");
-  const [animation, setAnimation] = useState<AnimationType>("none");
-  const [startTime, setStartTime] = useState(0);
-  const [duration, setDuration] = useState(5);
-  const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4");
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!isAuthorized) {
-    return null; // The hook will handle navigation and toast notification
-  }
-
-  const handleTextOverlayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const text = e.target.value;
-    if (text.length <= 100) {
-      setTextOverlay(text);
-    }
+  const handleUpgrade = () => {
+    toast({
+      title: "Ready to upgrade?",
+      description: "Let's get you started with more features!",
+    });
+    navigate("/#pricing");
   };
 
   return (
-    <div className="container mx-auto p-6 animate-fade-up">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-primary">Create Content</h1>
-        <p className="text-muted-foreground mt-1">
-          Create and customize your short-form video content (Free Plan)
-        </p>
+    <DashboardLayout>
+      <div className="container mx-auto px-4 py-8 max-w-7xl">
+        <div className="space-y-8">
+          {/* Header Section */}
+          <div className="bg-gray-50 rounded-lg p-6 shadow-sm border border-gray-200">
+            <div className="max-w-3xl">
+              <h1 className="text-4xl font-bold tracking-tight text-gray-900">
+                Create Content <span className="text-2xl text-gray-600">(Free Plan)</span>
+              </h1>
+              <p className="mt-2 text-lg text-muted-foreground">
+                Start creating amazing content with our free tier features.
+              </p>
+              <Button 
+                onClick={handleUpgrade}
+                className="mt-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+              >
+                <Crown className="mr-2 h-4 w-4" />
+                Upgrade to Pro
+              </Button>
+            </div>
+          </div>
+
+          {/* Features Grid */}
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+              <h3 className="text-lg font-semibold mb-2">Free Tier Features</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>• Basic text overlays</li>
+                <li>• Standard video templates</li>
+                <li>• 720p video quality</li>
+                <li>• Up to 30-second videos</li>
+              </ul>
+            </div>
+
+            <div className="bg-purple-50/50 rounded-lg p-6 shadow-sm border border-purple-100">
+              <h3 className="text-lg font-semibold mb-2">Pro Features Available</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>• Advanced text animations</li>
+                <li>• Premium templates</li>
+                <li>• 4K video quality</li>
+                <li>• Unlimited video length</li>
+              </ul>
+            </div>
+
+            <div className="bg-blue-50/50 rounded-lg p-6 shadow-sm border border-blue-100">
+              <h3 className="text-lg font-semibold mb-2">Coming Soon</h3>
+              <ul className="space-y-2 text-sm text-muted-foreground">
+                <li>• AI-powered editing</li>
+                <li>• Custom branding</li>
+                <li>• Team collaboration</li>
+                <li>• Analytics dashboard</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Getting Started Section */}
+          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 shadow-sm border border-gray-200">
+            <h2 className="text-2xl font-semibold mb-4">Getting Started</h2>
+            <p className="text-muted-foreground mb-4">
+              Ready to create your first video? Upgrade to our Pro plan to unlock all features and start creating professional content today.
+            </p>
+            <Button 
+              onClick={handleUpgrade}
+              variant="outline"
+              className="border-purple-200 hover:bg-purple-50"
+            >
+              View Pricing Plans
+            </Button>
+          </div>
+        </div>
       </div>
-
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-        {/* Video Preview Area */}
-        <Card className="xl:col-span-1 bg-accent-purple/20">
-          <CardHeader className="pb-4">
-            <CardTitle className="flex items-center gap-2">
-              <Video className="w-5 h-5" />
-              <span>Video Preview</span>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <VideoPreview
-              videoUrl={currentVideoUrl}
-              text={textOverlay}
-              textColor={textColor}
-              textSize={textSize[0]}
-              position={textPosition}
-              animation={animation}
-            />
-            <VideoThumbnailGrid 
-              currentVideoUrl={currentVideoUrl}
-              onVideoSelect={setCurrentVideoUrl}
-            />
-          </CardContent>
-        </Card>
-
-        {/* Content Configuration */}
-        <Card className="xl:col-span-2">
-          <CardHeader className="pb-4">
-            <CardTitle>Text Overlay Settings</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-1.5">
-              <Label>Text Overlay ({100 - textOverlay.length} characters remaining)</Label>
-              <Textarea
-                placeholder="Add text overlay to your video"
-                value={textOverlay}
-                onChange={handleTextOverlayChange}
-                maxLength={100}
-                className="resize-none h-20"
-              />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <Label>Text Position</Label>
-                <TextPositionSelector
-                  position={textPosition}
-                  onChange={setTextPosition}
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <Label>Animation</Label>
-                <TextAnimationSelector
-                  animation={animation}
-                  onChange={setAnimation}
-                />
-              </div>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Timing</Label>
-              <TimelineControl
-                startTime={startTime}
-                duration={duration}
-                videoDuration={30}
-                onStartTimeChange={setStartTime}
-                onDurationChange={setDuration}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Text Size: {textSize}px</Label>
-              <Slider
-                value={textSize}
-                onValueChange={setTextSize}
-                min={12}
-                max={37}
-                step={1}
-              />
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Text Color</Label>
-              <div className="flex gap-2">
-                <Input
-                  type="color"
-                  value={textColor}
-                  onChange={(e) => setTextColor(e.target.value)}
-                  className="w-20 h-10 p-1"
-                />
-                <Input
-                  value={textColor}
-                  onChange={(e) => setTextColor(e.target.value)}
-                  placeholder="#FFFFFF"
-                  className="flex-1"
-                />
-              </div>
-            </div>
-
-            <VideoDownloader 
-              textOverlay={textOverlay}
-              textColor={textColor}
-              textSize={textSize[0]}
-              textPosition={textPosition}
-              animation={animation}
-              startTime={startTime}
-              duration={duration}
-              currentVideoUrl={currentVideoUrl}
-            />
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+    </DashboardLayout>
   );
 };
 
