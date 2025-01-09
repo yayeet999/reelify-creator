@@ -135,6 +135,7 @@ const FreeCreateContent = () => {
                 startTime={startTime}
                 duration={duration}
                 currentVideoUrl={currentVideoUrl}
+                isPaidPlan={false}
               />
             </CardContent>
           </Card>

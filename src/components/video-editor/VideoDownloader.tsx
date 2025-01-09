@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { calculateCloudinaryScale, getCloudinaryPosition, getCloudinaryAnimation } from "@/utils/cloudinaryUtils";
+import { useNavigate } from "react-router-dom";
 
 interface VideoDownloaderProps {
   textOverlay: string;
@@ -11,6 +10,7 @@ interface VideoDownloaderProps {
   startTime: number;
   duration: number;
   currentVideoUrl: string;
+  isPaidPlan?: boolean;
 }
 
 export const VideoDownloader = ({
@@ -22,10 +22,9 @@ export const VideoDownloader = ({
   startTime,
   duration,
   currentVideoUrl,
+  isPaidPlan = false,
 }: VideoDownloaderProps) => {
-  const { toast } = useToast();
-  const PREVIEW_WIDTH = 240;
-  const ACTUAL_VIDEO_WIDTH = 1080;
+  const navigate = useNavigate();
 
   const generateCloudinaryUrl = () => {
     if (!textOverlay) return currentVideoUrl;
@@ -100,6 +99,19 @@ export const VideoDownloader = ({
       });
     }
   };
+
+  if (!isPaidPlan) {
+    return (
+      <Button 
+        className="w-full mt-4 bg-primary hover:bg-primary/90"
+        onClick={() => {
+          navigate('/#pricing');
+        }}
+      >
+        Upgrade to Download
+      </Button>
+    );
+  }
 
   return (
     <Button 
