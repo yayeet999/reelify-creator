@@ -1,26 +1,10 @@
 import { useNavigate } from "react-router-dom";
-import { User, Settings, FilePlus, Code, Crown } from "lucide-react";
-import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
+import { User, Settings, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import type { Profile } from "@/integrations/supabase/types/profiles";
-
-const quickStartOptions = [
-  {
-    title: "Complete Your Profile",
-    description: "Set up your personal information and preferences",
-    icon: <User className="w-5 h-5" />,
-    path: "/profile",
-  },
-  {
-    title: "Create New Content",
-    description: "Start creating your first piece of content (Limited features)",
-    icon: <FilePlus className="w-5 h-5" />,
-    path: "/create",
-  },
-];
 
 const FreeDashboard = () => {
   const navigate = useNavigate();
@@ -83,19 +67,6 @@ const FreeDashboard = () => {
               Upgrade Now
             </Button>
           </div>
-        </div>
-
-        {/* Quick Start Grid */}
-        <div className="grid gap-6 md:grid-cols-2">
-          {quickStartOptions.map((option) => (
-            <QuickStartCard
-              key={option.title}
-              title={option.title}
-              description={option.description}
-              icon={option.icon}
-              onClick={() => navigate(option.path)}
-            />
-          ))}
         </div>
 
         {/* Feature Limitations Section */}
