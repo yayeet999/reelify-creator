@@ -1,12 +1,23 @@
 import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Trash2, Folder } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
+interface SavedHook {
+  id: string;
+  hook_text: string;
+  product_name: string;
+  created_at: string;
+}
+
+interface GroupedHooks {
+  [key: string]: SavedHook[];
+}
+
 const StarterSavedHooks = () => {
-  const [savedHooks, setSavedHooks] = useState<{ id: string; hook_text: string }[]>([]);
+  const [savedHooks, setSavedHooks] = useState<GroupedHooks>({});
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
 
@@ -18,11 +29,22 @@ const StarterSavedHooks = () => {
     try {
       const { data, error } = await supabase
         .from('saved_hooks')
-        .select('id, hook_text')
+        .select('*')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setSavedHooks(data || []);
+
+      // Group hooks by product name
+      const grouped = (data || []).reduce((acc: GroupedHooks, hook: SavedHook) => {
+        const productName = hook.product_name || 'Uncategorized';
+        if (!acc[productName]) {
+          acc[productName] = [];
+        }
+        acc[productName].push(hook);
+        return acc;
+      }, {});
+
+      setSavedHooks(grouped);
     } catch (error) {
       console.error('Error fetching saved hooks:', error);
       toast({
@@ -44,7 +66,16 @@ const StarterSavedHooks = () => {
 
       if (error) throw error;
 
-      setSavedHooks(prevHooks => prevHooks.filter(hook => hook.id !== id));
+      // Update the UI after successful deletion
+      const updatedHooks = { ...savedHooks };
+      Object.keys(updatedHooks).forEach(productName => {
+        updatedHooks[productName] = updatedHooks[productName].filter(hook => hook.id !== id);
+        if (updatedHooks[productName].length === 0) {
+          delete updatedHooks[productName];
+        }
+      });
+      setSavedHooks(updatedHooks);
+
       toast({
         title: "Hook deleted",
         description: "The hook has been removed from your saved hooks.",
@@ -87,22 +118,32 @@ const StarterSavedHooks = () => {
 
         <div className="bg-white rounded-lg shadow-sm border border-gray-100">
           <ScrollArea className="h-[500px] w-full rounded-md">
-            <div className="p-4 space-y-4">
-              {savedHooks.length > 0 ? (
-                savedHooks.map((hook) => (
-                  <div
-                    key={hook.id}
-                    className="p-4 bg-accent/10 rounded-lg relative group"
-                  >
-                    <p className="text-sm pr-10">{hook.hook_text}</p>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => deleteHook(hook.id)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
+            <div className="p-4 space-y-6">
+              {Object.keys(savedHooks).length > 0 ? (
+                Object.entries(savedHooks).map(([productName, hooks]) => (
+                  <div key={productName} className="space-y-3">
+                    <div className="flex items-center gap-2 text-lg font-semibold text-primary">
+                      <Folder className="h-5 w-5" />
+                      <h2>{productName}</h2>
+                    </div>
+                    <div className="space-y-3 pl-7">
+                      {hooks.map((hook) => (
+                        <div
+                          key={hook.id}
+                          className="p-4 bg-accent/10 rounded-lg relative group"
+                        >
+                          <p className="text-sm pr-10">{hook.hook_text}</p>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={() => deleteHook(hook.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ))
               ) : (
