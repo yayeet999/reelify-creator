@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
@@ -46,9 +45,20 @@ const StarterGenerateHooks = () => {
       if (error) throw error;
 
       setGeneratedHooks(data.hooks);
+      
+      // Automatically save generated hooks
+      for (const hookText of data.hooks) {
+        await supabase
+          .from('saved_hooks')
+          .insert({
+            hook_text: hookText,
+            product_name: productName
+          });
+      }
+
       toast({
-        title: "Hooks generated successfully!",
-        description: "Your hooks are ready to use.",
+        title: "Hooks generated and saved!",
+        description: "Your hooks have been generated and automatically saved.",
       });
     } catch (error) {
       console.error('Error generating hooks:', error);
@@ -75,11 +85,8 @@ const StarterGenerateHooks = () => {
             </p>
           </div>
 
-          {/* Main content grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Left Column - Input Section */}
             <div className="space-y-6">
-              {/* Product Name Input */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">
                   What's your product?
@@ -99,7 +106,6 @@ const StarterGenerateHooks = () => {
                 </p>
               </div>
 
-              {/* Text Input */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">
                   Product Description:
@@ -121,7 +127,6 @@ const StarterGenerateHooks = () => {
                 </p>
               </div>
 
-              {/* Generate Button */}
               <Button
                 className="w-full"
                 size="lg"
@@ -139,7 +144,6 @@ const StarterGenerateHooks = () => {
               </Button>
             </div>
 
-            {/* Right Column - Output Section */}
             <div className="bg-gray-50 rounded-lg p-4">
               <ScrollArea className="h-[500px] w-full rounded-md border">
                 <div className="p-4 space-y-4">

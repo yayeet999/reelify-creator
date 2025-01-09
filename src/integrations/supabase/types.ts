@@ -53,6 +53,7 @@ export type Database = {
           created_at: string
           hook_text: string
           id: string
+          product_name: string
           updated_at: string
           user_id: string
         }
@@ -60,6 +61,7 @@ export type Database = {
           created_at?: string
           hook_text: string
           id?: string
+          product_name: string
           updated_at?: string
           user_id: string
         }
@@ -67,6 +69,7 @@ export type Database = {
           created_at?: string
           hook_text?: string
           id?: string
+          product_name?: string
           updated_at?: string
           user_id?: string
         }
