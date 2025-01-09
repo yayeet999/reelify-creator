@@ -44,7 +44,7 @@ const ProDashboard = () => {
         <div className="bg-purple-50 rounded-lg p-6 shadow-sm border border-purple-200">
           <div className="max-w-3xl">
             <h1 className="text-4xl font-bold tracking-tight text-purple-900">
-              Pro Dashboard
+              Dashboard <span className="text-2xl text-purple-600">(Pro Plan)</span>
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
               Welcome to your pro dashboard. Unlock enterprise features for even more capabilities!

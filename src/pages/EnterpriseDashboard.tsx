@@ -41,7 +41,7 @@ const EnterpriseDashboard = () => {
             <div className="flex items-center gap-3">
               <Building2 className="h-8 w-8 text-amber-600" />
               <h1 className="text-4xl font-bold tracking-tight text-amber-900">
-                Enterprise Dashboard
+                Dashboard <span className="text-2xl text-amber-600">(Enterprise Plan)</span>
               </h1>
             </div>
             <p className="mt-2 text-lg text-muted-foreground">

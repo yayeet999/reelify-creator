@@ -38,7 +38,7 @@ const FreeDashboard = () => {
         <div className="bg-gray-50 rounded-lg p-6 shadow-sm border border-gray-200">
           <div className="max-w-3xl">
             <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-              Free Dashboard
+              Dashboard <span className="text-2xl text-gray-600">(Free Plan)</span>
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
               Welcome to your free tier dashboard. Upgrade to unlock more features!
