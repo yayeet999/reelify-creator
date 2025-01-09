@@ -4,7 +4,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2, Save } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -59,33 +59,6 @@ const StarterGenerateHooks = () => {
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const handleSaveHook = async (hookText: string) => {
-    try {
-      const { error } = await supabase
-        .from('saved_hooks')
-        .insert([
-          { 
-            hook_text: hookText,
-            product_name: productName 
-          }
-        ]);
-
-      if (error) throw error;
-
-      toast({
-        title: "Hook saved!",
-        description: "You can find it in your Saved Hooks tab.",
-      });
-    } catch (error) {
-      console.error('Error saving hook:', error);
-      toast({
-        title: "Error saving hook",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
     }
   };
 
@@ -174,17 +147,9 @@ const StarterGenerateHooks = () => {
                     generatedHooks.map((hook, index) => (
                       <div
                         key={index}
-                        className="p-3 bg-white rounded-lg shadow-sm border border-gray-100 relative group"
+                        className="p-3 bg-white rounded-lg shadow-sm border border-gray-100"
                       >
-                        <p className="text-sm pr-10">{hook}</p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
-                          onClick={() => handleSaveHook(hook)}
-                        >
-                          <Save className="h-4 w-4 text-primary" />
-                        </Button>
+                        <p className="text-sm">{hook}</p>
                       </div>
                     ))
                   ) : (
