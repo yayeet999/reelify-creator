@@ -8,75 +8,104 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import type { AuthError } from "@supabase/supabase-js";
-import type { SubscriptionTier } from "@/integrations/supabase/types/enums";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const checkSubscriptionStatus = async (userId: string) => {
-    try {
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('subscription_tier')
-        .eq('id', userId)
-        .single();
+  useEffect(() => {
+    // Check if user is already authenticated
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        // User is already logged in, redirect them
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('subscription_tier')
+          .eq('id', session.user.id)
+          .single();
 
-      if (profileError) throw profileError;
-
-      const tier = profile?.subscription_tier || 'free';
-      localStorage.setItem('subscriptionTier', tier);
-      
-      // Navigate based on subscription tier
-      switch (tier) {
-        case 'starter':
-          navigate("/dashboard");
-          break;
-        case 'pro':
-          navigate("/pro/dashboard");
-          break;
-        case 'enterprise':
-          navigate("/enterprise/dashboard");
-          break;
-        default:
-          navigate("/free/dashboard");
+        if (profile) {
+          switch (profile.subscription_tier) {
+            case 'starter':
+              navigate("/dashboard");
+              break;
+            case 'pro':
+              navigate("/pro/dashboard");
+              break;
+            case 'enterprise':
+              navigate("/enterprise/dashboard");
+              break;
+            default:
+              navigate("/free/dashboard");
+          }
+        }
       }
-    } catch (error) {
-      console.error('Error checking subscription:', error);
-      toast.error("Failed to verify subscription status. Please try again.");
-    }
-  };
+    };
+    
+    checkSession();
+  }, [navigate]);
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       setIsLoading(true);
-      if (event === 'SIGNED_IN' && session) {
-        const storedPriceId = localStorage.getItem('selectedPriceId');
-        
-        if (storedPriceId) {
-          try {
-            const { data, error } = await supabase.functions.invoke('create-checkout', {
-              body: { priceId: storedPriceId }
-            });
+      try {
+        if (event === 'SIGNED_IN' && session) {
+          const storedPriceId = localStorage.getItem('selectedPriceId');
+          
+          if (storedPriceId) {
+            try {
+              const { data, error } = await supabase.functions.invoke('create-checkout', {
+                body: { priceId: storedPriceId }
+              });
 
-            if (error) throw error;
-            
-            if (data?.url) {
+              if (error) throw error;
+              
+              if (data?.url) {
+                localStorage.removeItem('selectedPriceId');
+                window.location.href = data.url;
+                return;
+              }
+            } catch (error) {
+              console.error('Error:', error);
+              toast.error(error.message || "Failed to process subscription");
               localStorage.removeItem('selectedPriceId');
-              window.location.href = data.url;
-              return;
             }
-          } catch (error) {
-            console.error('Error:', error);
-            toast.error(error.message || "Failed to process subscription");
-            localStorage.removeItem('selectedPriceId');
+          }
+
+          // Get user's subscription tier
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('subscription_tier')
+            .eq('id', session.user.id)
+            .single();
+
+          if (profileError) {
+            throw profileError;
+          }
+
+          // Navigate based on subscription tier
+          switch (profile?.subscription_tier) {
+            case 'starter':
+              navigate("/dashboard");
+              break;
+            case 'pro':
+              navigate("/pro/dashboard");
+              break;
+            case 'enterprise':
+              navigate("/enterprise/dashboard");
+              break;
+            default:
+              navigate("/free/dashboard");
           }
         }
-
-        await checkSubscriptionStatus(session.user.id);
+      } catch (error) {
+        console.error('Auth error:', error);
+        setErrorMessage(getErrorMessage(error));
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return () => subscription.unsubscribe();
