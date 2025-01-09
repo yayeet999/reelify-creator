@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Link, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -25,6 +25,7 @@ const queryClient = new QueryClient();
 const LandingPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const location = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -39,6 +40,16 @@ const LandingPage = () => {
     };
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    // Handle scroll to pricing section when hash is present
+    if (location.hash === '#pricing') {
+      const pricingSection = document.getElementById('pricing');
+      if (pricingSection) {
+        pricingSection.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+  }, [location.hash]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -63,7 +74,9 @@ const LandingPage = () => {
       </nav>
       <Hero />
       <Features />
-      <Pricing />
+      <div id="pricing">
+        <Pricing />
+      </div>
     </div>
   );
 };
