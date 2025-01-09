@@ -33,7 +33,7 @@ const menuItems = [
     title: "Profile",
     icon: User,
     path: "/profile",
-    description: "Manage your profile",
+    description: "View your profile information",
   },
   {
     title: "Settings",
