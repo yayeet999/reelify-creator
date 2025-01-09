@@ -144,7 +144,7 @@ export const Pricing = () => {
                     Processing...
                   </span>
                 ) : (
-                  {`Buy ${tier.name} Plan`}
+                  'Get Started'
                 )}
               </button>
             </div>
