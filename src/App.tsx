@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
@@ -42,9 +42,7 @@ const LandingPage = () => {
   }, []);
 
   useEffect(() => {
-    // Handle scroll to pricing section when hash is present
     if (location.hash === '#pricing') {
-      // Add a small delay to ensure the component is fully rendered
       setTimeout(() => {
         const pricingSection = document.getElementById('pricing');
         if (pricingSection) {

@@ -1,20 +1,10 @@
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
-import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const FreeCreateContent = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  const handleUpgrade = () => {
-    toast({
-      title: "Ready to upgrade?",
-      description: "Let's get you started with more features!",
-    });
-    navigate("/#pricing");
-  };
 
   return (
     <DashboardLayout>
@@ -29,13 +19,6 @@ const FreeCreateContent = () => {
               <p className="mt-2 text-lg text-muted-foreground">
                 Start creating amazing content with our free tier features.
               </p>
-              <Button 
-                onClick={handleUpgrade}
-                className="mt-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-              >
-                <Crown className="mr-2 h-4 w-4" />
-                Upgrade to Pro
-              </Button>
             </div>
           </div>
 
@@ -70,21 +53,6 @@ const FreeCreateContent = () => {
                 <li>• Analytics dashboard</li>
               </ul>
             </div>
-          </div>
-
-          {/* Getting Started Section */}
-          <div className="bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg p-6 shadow-sm border border-gray-200">
-            <h2 className="text-2xl font-semibold mb-4">Getting Started</h2>
-            <p className="text-muted-foreground mb-4">
-              Ready to create your first video? Upgrade to our Pro plan to unlock all features and start creating professional content today.
-            </p>
-            <Button 
-              onClick={handleUpgrade}
-              variant="outline"
-              className="border-purple-200 hover:bg-purple-50"
-            >
-              View Pricing Plans
-            </Button>
           </div>
         </div>
       </div>
