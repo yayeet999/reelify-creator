@@ -1,36 +1,6 @@
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
-
-// Constants for video dimensions
-const ACTUAL_VIDEO_WIDTH = 1920;
-const PREVIEW_WIDTH = 600;
-const SCALE_ADJUSTMENT = 8.5; // Increased adjustment factor to match preview size better
-
-// Cloudinary utility functions
-const calculateCloudinaryScale = (previewWidth: number, actualWidth: number) => {
-  return (previewWidth / actualWidth) * SCALE_ADJUSTMENT;
-};
-
-const getCloudinaryPosition = (position: "top" | "middle" | "bottom") => {
-  switch (position) {
-    case "top":
-      return "g_north";
-    case "bottom":
-      return "g_south";
-    default:
-      return "g_center";
-  }
-};
-
-const getCloudinaryAnimation = (animation: "none" | "fade") => {
-  switch (animation) {
-    case "fade":
-      return "e_fade:2000";
-    default:
-      return "";
-  }
-};
+import { calculateCloudinaryScale, getCloudinaryPosition, getCloudinaryAnimation } from "@/utils/cloudinaryUtils";
 
 interface VideoDownloaderProps {
   textOverlay: string;
@@ -41,7 +11,6 @@ interface VideoDownloaderProps {
   startTime: number;
   duration: number;
   currentVideoUrl: string;
-  isPaidPlan?: boolean;
 }
 
 export const VideoDownloader = ({
@@ -53,10 +22,10 @@ export const VideoDownloader = ({
   startTime,
   duration,
   currentVideoUrl,
-  isPaidPlan = false,
 }: VideoDownloaderProps) => {
-  const navigate = useNavigate();
   const { toast } = useToast();
+  const PREVIEW_WIDTH = 240;
+  const ACTUAL_VIDEO_WIDTH = 1080;
 
   const generateCloudinaryUrl = () => {
     if (!textOverlay) return currentVideoUrl;
@@ -73,7 +42,7 @@ export const VideoDownloader = ({
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
-      const cloudinaryFontSize = Math.round(textSize / calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH));
+      const cloudinaryFontSize = textSize * calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH);
       const position = getCloudinaryPosition(textPosition);
       const animationEffect = getCloudinaryAnimation(animation);
 
@@ -131,19 +100,6 @@ export const VideoDownloader = ({
       });
     }
   };
-
-  if (!isPaidPlan) {
-    return (
-      <Button 
-        className="w-full mt-4 bg-primary hover:bg-primary/90"
-        onClick={() => {
-          navigate('/#pricing');
-        }}
-      >
-        Upgrade to Download
-      </Button>
-    );
-  }
 
   return (
     <Button 

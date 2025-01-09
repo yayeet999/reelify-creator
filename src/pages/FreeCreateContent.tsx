@@ -5,7 +5,7 @@ import { TextPositionSelector, type Position } from "@/components/video-editor/T
 import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
 import { TextPresets } from "@/components/video-editor/TextPresets";
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
-import { FreeVideoDownloader } from "@/components/video-editor/FreeVideoDownloader";
+import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
@@ -126,7 +126,7 @@ const FreeCreateContent = () => {
                 }}
               />
 
-              <FreeVideoDownloader 
+              <VideoDownloader 
                 textOverlay={textOverlay}
                 textColor={textColor}
                 textSize={textSize[0]}
