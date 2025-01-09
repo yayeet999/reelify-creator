@@ -28,18 +28,6 @@ const FreeCreateContent = () => {
     <DashboardLayout>
       <div className="container mx-auto px-4 py-8 max-w-7xl">
         <div className="space-y-8">
-          {/* Header Section */}
-          <div className="bg-gray-50 rounded-lg p-6 shadow-sm border border-gray-200">
-            <div className="max-w-3xl">
-              <h1 className="text-4xl font-bold tracking-tight text-gray-900">
-                Starter Dashboard
-              </h1>
-              <p className="mt-2 text-lg text-muted-foreground">
-                Create and manage your content with our starter tier features
-              </p>
-            </div>
-          </div>
-
           {/* Main Content Tabs */}
           <Tabs defaultValue="create" className="space-y-4">
             <TabsList>
