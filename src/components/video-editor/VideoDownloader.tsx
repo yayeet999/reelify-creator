@@ -5,10 +5,11 @@ import { useToast } from "@/hooks/use-toast";
 // Constants for video dimensions
 const ACTUAL_VIDEO_WIDTH = 1920;
 const PREVIEW_WIDTH = 600;
+const SCALE_ADJUSTMENT = 3.2; // Adjustment factor to match preview size
 
 // Cloudinary utility functions
 const calculateCloudinaryScale = (previewWidth: number, actualWidth: number) => {
-  return (previewWidth / actualWidth);
+  return (previewWidth / actualWidth) * SCALE_ADJUSTMENT;
 };
 
 const getCloudinaryPosition = (position: "top" | "middle" | "bottom") => {
@@ -72,7 +73,7 @@ export const VideoDownloader = ({
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
       const encodedText = encodeURIComponent(textOverlay);
       const colorHex = textColor.replace('#', '');
-      const cloudinaryFontSize = textSize * calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH);
+      const cloudinaryFontSize = Math.round(textSize / calculateCloudinaryScale(PREVIEW_WIDTH, ACTUAL_VIDEO_WIDTH));
       const position = getCloudinaryPosition(textPosition);
       const animationEffect = getCloudinaryAnimation(animation);
 
