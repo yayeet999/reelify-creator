@@ -145,7 +145,8 @@ export const Pricing = () => {
                   </span>
                 ) : (
                   tier.name === "Starter" ? "Buy Starter Plan" : 
-                  tier.name === "Pro" ? "Buy Pro Plan" : "Get Started"
+                  tier.name === "Pro" ? "Buy Pro Plan" : 
+                  "Buy Enterprise Plan"
                 )}
               </button>
             </div>
