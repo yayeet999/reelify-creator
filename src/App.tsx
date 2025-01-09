@@ -19,6 +19,7 @@ import ProDashboard from "./pages/ProDashboard";
 import EnterpriseDashboard from "./pages/EnterpriseDashboard";
 import FreeCreateContent from "./pages/FreeCreateContent";
 import StarterDashboard from "./pages/StarterDashboard";
+import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 
 const queryClient = new QueryClient();
 
@@ -116,7 +117,9 @@ const App = () => (
             path="/free/dashboard"
             element={
               <ProtectedRoute>
-                <FreeDashboard />
+                <DashboardLayout>
+                  <FreeDashboard />
+                </DashboardLayout>
               </ProtectedRoute>
             }
           />
@@ -124,7 +127,9 @@ const App = () => (
             path="/free/create"
             element={
               <ProtectedRoute>
-                <FreeCreateContent />
+                <DashboardLayout>
+                  <FreeCreateContent />
+                </DashboardLayout>
               </ProtectedRoute>
             }
           />

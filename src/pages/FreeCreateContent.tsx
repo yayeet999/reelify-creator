@@ -1,4 +1,3 @@
-import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { useState } from "react";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
@@ -24,126 +23,124 @@ const FreeCreateContent = () => {
   const [duration, setDuration] = useState(5);
 
   return (
-    <DashboardLayout>
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
-        <div className="space-y-8">
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
-            {/* Video Preview Area */}
-            <Card className="xl:col-span-1 bg-accent-purple/20">
-              <CardContent className="space-y-4 pt-6">
-                <VideoPreview
-                  videoUrl={currentVideoUrl}
-                  text={textOverlay}
-                  textColor={textColor}
-                  textSize={textSize[0]}
-                  position={position}
-                  animation={animation}
-                />
-                <VideoThumbnailGrid 
-                  currentVideoUrl={currentVideoUrl}
-                  onVideoSelect={setCurrentVideoUrl}
-                />
-              </CardContent>
-            </Card>
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+          {/* Video Preview Area */}
+          <Card className="xl:col-span-1 bg-accent-purple/20">
+            <CardContent className="space-y-4 pt-6">
+              <VideoPreview
+                videoUrl={currentVideoUrl}
+                text={textOverlay}
+                textColor={textColor}
+                textSize={textSize[0]}
+                position={position}
+                animation={animation}
+              />
+              <VideoThumbnailGrid 
+                currentVideoUrl={currentVideoUrl}
+                onVideoSelect={setCurrentVideoUrl}
+              />
+            </CardContent>
+          </Card>
 
-            {/* Content Configuration */}
-            <Card className="xl:col-span-2">
-              <CardContent className="space-y-4 pt-6">
-                <div className="space-y-1.5">
-                  <Label>Text Overlay ({100 - textOverlay.length} characters remaining)</Label>
-                  <Input
-                    placeholder="Add text overlay to your video"
-                    value={textOverlay}
-                    onChange={(e) => {
-                      const text = e.target.value;
-                      if (text.length <= 100) {
-                        setTextOverlay(text);
-                      }
-                    }}
-                    maxLength={100}
-                  />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="space-y-1.5">
-                    <Label>Text Position</Label>
-                    <TextPositionSelector
-                      position={position}
-                      onChange={setPosition}
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label>Animation</Label>
-                    <TextAnimationSelector
-                      animation={animation}
-                      onChange={setAnimation}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label>Timing</Label>
-                  <TimelineControl
-                    startTime={startTime}
-                    duration={duration}
-                    videoDuration={30}
-                    onStartTimeChange={setStartTime}
-                    onDurationChange={setDuration}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label>Text Size: {textSize}px</Label>
-                  <Slider
-                    value={textSize}
-                    onValueChange={setTextSize}
-                    min={12}
-                    max={37}
-                    step={1}
-                  />
-                </div>
-
-                <div className="space-y-1.5">
-                  <Label>Text Color</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="color"
-                      value={textColor}
-                      onChange={(e) => setTextColor(e.target.value)}
-                      className="w-20 h-10 p-1"
-                    />
-                    <Input
-                      value={textColor}
-                      onChange={(e) => setTextColor(e.target.value)}
-                      placeholder="#FFFFFF"
-                      className="flex-1"
-                    />
-                  </div>
-                </div>
-
-                <TextPresets 
-                  onSelect={(textColor, backgroundColor) => {
-                    setTextColor(textColor);
+          {/* Content Configuration */}
+          <Card className="xl:col-span-2">
+            <CardContent className="space-y-4 pt-6">
+              <div className="space-y-1.5">
+                <Label>Text Overlay ({100 - textOverlay.length} characters remaining)</Label>
+                <Input
+                  placeholder="Add text overlay to your video"
+                  value={textOverlay}
+                  onChange={(e) => {
+                    const text = e.target.value;
+                    if (text.length <= 100) {
+                      setTextOverlay(text);
+                    }
                   }}
+                  maxLength={100}
                 />
+              </div>
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <Label>Text Position</Label>
+                  <TextPositionSelector
+                    position={position}
+                    onChange={setPosition}
+                  />
+                </div>
 
-                <VideoDownloader 
-                  textOverlay={textOverlay}
-                  textColor={textColor}
-                  textSize={textSize[0]}
-                  textPosition={position}
-                  animation={animation}
+                <div className="space-y-1.5">
+                  <Label>Animation</Label>
+                  <TextAnimationSelector
+                    animation={animation}
+                    onChange={setAnimation}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Timing</Label>
+                <TimelineControl
                   startTime={startTime}
                   duration={duration}
-                  currentVideoUrl={currentVideoUrl}
+                  videoDuration={30}
+                  onStartTimeChange={setStartTime}
+                  onDurationChange={setDuration}
                 />
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Text Size: {textSize}px</Label>
+                <Slider
+                  value={textSize}
+                  onValueChange={setTextSize}
+                  min={12}
+                  max={37}
+                  step={1}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Text Color</Label>
+                <div className="flex gap-2">
+                  <Input
+                    type="color"
+                    value={textColor}
+                    onChange={(e) => setTextColor(e.target.value)}
+                    className="w-20 h-10 p-1"
+                  />
+                  <Input
+                    value={textColor}
+                    onChange={(e) => setTextColor(e.target.value)}
+                    placeholder="#FFFFFF"
+                    className="flex-1"
+                  />
+                </div>
+              </div>
+
+              <TextPresets 
+                onSelect={(textColor, backgroundColor) => {
+                  setTextColor(textColor);
+                }}
+              />
+
+              <VideoDownloader 
+                textOverlay={textOverlay}
+                textColor={textColor}
+                textSize={textSize[0]}
+                textPosition={position}
+                animation={animation}
+                startTime={startTime}
+                duration={duration}
+                currentVideoUrl={currentVideoUrl}
+              />
+            </CardContent>
+          </Card>
         </div>
       </div>
-    </DashboardLayout>
+    </div>
   );
 };
 
