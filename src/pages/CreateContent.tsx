@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -12,6 +12,14 @@ import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { supabase } from "@/integrations/supabase/client";
+
+interface SavedHook {
+  id: string;
+  hook_text: string;
+  product_name: string;
+}
 
 const CreateContent = () => {
   const { isLoading, isAuthorized } = useSubscriptionGuard("starter");
@@ -23,6 +31,24 @@ const CreateContent = () => {
   const [startTime, setStartTime] = useState(0);
   const [duration, setDuration] = useState(5);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4");
+  const [savedHooks, setSavedHooks] = useState<SavedHook[]>([]);
+
+  useEffect(() => {
+    const fetchSavedHooks = async () => {
+      const { data, error } = await supabase
+        .from('saved_hooks')
+        .select('id, hook_text, product_name');
+      
+      if (error) {
+        console.error('Error fetching saved hooks:', error);
+        return;
+      }
+
+      setSavedHooks(data || []);
+    };
+
+    fetchSavedHooks();
+  }, []);
 
   if (isLoading) {
     return (
@@ -33,7 +59,7 @@ const CreateContent = () => {
   }
 
   if (!isAuthorized) {
-    return null; // The hook will handle navigation and toast notification
+    return null;
   }
 
   const handleTextOverlayChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -42,6 +68,22 @@ const CreateContent = () => {
       setTextOverlay(text);
     }
   };
+
+  const handleSavedHookSelect = (hookId: string) => {
+    const selectedHook = savedHooks.find(hook => hook.id === hookId);
+    if (selectedHook) {
+      setTextOverlay(selectedHook.hook_text);
+    }
+  };
+
+  // Group hooks by product name
+  const groupedHooks = savedHooks.reduce((acc, hook) => {
+    if (!acc[hook.product_name]) {
+      acc[hook.product_name] = [];
+    }
+    acc[hook.product_name].push(hook);
+    return acc;
+  }, {} as Record<string, SavedHook[]>);
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
@@ -83,6 +125,29 @@ const CreateContent = () => {
             <CardTitle>Text Overlay Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            <div className="space-y-1.5">
+              <Label>Select from Saved Hooks</Label>
+              <Select onValueChange={handleSavedHookSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Choose a saved hook..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(groupedHooks).map(([productName, hooks]) => (
+                    <SelectGroup key={productName}>
+                      <SelectLabel>{productName}</SelectLabel>
+                      {hooks.map((hook) => (
+                        <SelectItem key={hook.id} value={hook.id}>
+                          {hook.hook_text.length > 50 
+                            ? `${hook.hook_text.substring(0, 50)}...` 
+                            : hook.hook_text}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             <div className="space-y-1.5">
               <Label>Text Overlay ({100 - textOverlay.length} characters remaining)</Label>
               <Textarea
