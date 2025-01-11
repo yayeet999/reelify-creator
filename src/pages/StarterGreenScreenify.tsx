@@ -13,7 +13,7 @@ interface ImageUpload {
 }
 
 const StarterGreenScreenify = () => {
-  const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736577684/green1_1080p_ftqbm8.mp4");
+  const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736580998/realgreen1_rnukxx.mp4");
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>(
     Array(5).fill({ file: null, timestamp: 0 })
   );

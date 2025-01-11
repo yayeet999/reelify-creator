@@ -43,7 +43,7 @@ export const GreenScreenVideoPreview = ({
     let url = "https://res.cloudinary.com/fornotreel/video/upload";
 
     // Add quality and format optimization
-    url += "/q_auto:good,f_auto";
+    url += "/q_auto,f_auto";
 
     // Add image underlays at specific timestamps if available
     imageUploads.forEach((upload) => {
@@ -73,7 +73,7 @@ export const GreenScreenVideoPreview = ({
       url += `/${videoId}`;
     }
 
-    console.log("Generated Green Screen URL:", url);
+    console.log("Generated URL:", url);
     return url;
   };
 
