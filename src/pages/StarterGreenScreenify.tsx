@@ -1,22 +1,49 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Video, Upload } from "lucide-react";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoThumbnailGrid } from "@/components/video-editor/GreenScreenVideoThumbnailGrid";
+import { TimelineVisualizer } from "@/components/video-editor/TimelineVisualizer";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 
+interface ImageUpload {
+  file: File | null;
+  timestamp: number;
+}
+
 const StarterGreenScreenify = () => {
   const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736577684/green1_1080p_ftqbm8.mp4");
+  const [imageUploads, setImageUploads] = useState<ImageUpload[]>(
+    Array(5).fill({ file: null, timestamp: 0 })
+  );
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const { toast } = useToast();
   
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
     if (file) {
-      // TODO: Handle image upload
-      toast({
-        title: "Coming Soon",
-        description: "Image upload functionality will be available soon!",
+      setImageUploads(prev => {
+        const newUploads = [...prev];
+        newUploads[index] = {
+          ...newUploads[index],
+          file
+        };
+        return newUploads;
+      });
+    }
+  };
+
+  const handleTimeUpdate = (time: number) => {
+    if (selectedSlot !== null) {
+      setImageUploads(prev => {
+        const newUploads = [...prev];
+        newUploads[selectedSlot] = {
+          ...newUploads[selectedSlot],
+          timestamp: time
+        };
+        return newUploads;
       });
     }
   };
@@ -47,12 +74,17 @@ const StarterGreenScreenify = () => {
             </CardHeader>
             <CardContent className="space-y-4">
               <VideoPreview
+                videoRef={videoRef}
                 videoUrl={currentVideoUrl}
                 text=""
                 textColor=""
                 textSize={16}
                 position="middle"
                 animation="none"
+              />
+              <TimelineVisualizer 
+                videoRef={videoRef}
+                onTimeUpdate={handleTimeUpdate}
               />
               <VideoThumbnailGrid 
                 currentVideoUrl={currentVideoUrl}
@@ -70,39 +102,46 @@ const StarterGreenScreenify = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="image-upload"
-                  />
-                  <label
-                    htmlFor="image-upload"
-                    className="cursor-pointer flex flex-col items-center justify-center space-y-2"
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {imageUploads.map((upload, index) => (
+                  <div 
+                    key={index}
+                    className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-all ${
+                      selectedSlot === index ? 'border-primary' : 'border-gray-200'
+                    } ${upload.file ? 'bg-gray-50' : ''}`}
+                    onClick={() => setSelectedSlot(index)}
                   >
-                    <Upload className="w-8 h-8 text-gray-400" />
-                    <span className="text-sm text-gray-500">Upload Image 1</span>
-                  </label>
-                </div>
-                <div className="border-2 border-dashed border-gray-200 rounded-lg p-4 text-center">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageUpload}
-                    className="hidden"
-                    id="image-upload-2"
-                  />
-                  <label
-                    htmlFor="image-upload-2"
-                    className="cursor-pointer flex flex-col items-center justify-center space-y-2"
-                  >
-                    <Upload className="w-8 h-8 text-gray-400" />
-                    <span className="text-sm text-gray-500">Upload Image 2</span>
-                  </label>
-                </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, index)}
+                      className="hidden"
+                      id={`image-upload-${index}`}
+                    />
+                    <label
+                      htmlFor={`image-upload-${index}`}
+                      className="cursor-pointer flex flex-col items-center justify-center space-y-2"
+                    >
+                      {upload.file ? (
+                        <>
+                          <img
+                            src={URL.createObjectURL(upload.file)}
+                            alt={`Upload ${index + 1}`}
+                            className="w-full h-32 object-cover rounded"
+                          />
+                          <span className="text-sm text-gray-500">
+                            Time: {upload.timestamp.toFixed(1)}s
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <Upload className="w-8 h-8 text-gray-400" />
+                          <span className="text-sm text-gray-500">Upload Image {index + 1}</span>
+                        </>
+                      )}
+                    </label>
+                  </div>
+                ))}
               </div>
               <Button 
                 className="w-full"

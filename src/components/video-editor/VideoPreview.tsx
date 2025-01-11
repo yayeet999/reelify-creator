@@ -9,6 +9,7 @@ interface VideoPreviewProps {
   textSize: number;
   position: Position;
   animation: AnimationType;
+  videoRef?: React.RefObject<HTMLVideoElement>;
 }
 
 export const VideoPreview = ({
@@ -18,8 +19,10 @@ export const VideoPreview = ({
   textSize,
   position,
   animation,
+  videoRef: externalVideoRef,
 }: VideoPreviewProps) => {
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const internalVideoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = externalVideoRef || internalVideoRef;
   const [isLoading, setIsLoading] = useState(true);
   const [prevVideoUrl, setPrevVideoUrl] = useState(videoUrl);
 
