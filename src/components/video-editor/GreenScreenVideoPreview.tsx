@@ -5,7 +5,8 @@ interface GreenScreenVideoPreviewProps {
   videoRef?: React.RefObject<HTMLVideoElement>;
   imageUploads: Array<{
     file: File | null;
-    timestamp: number;
+    startTime: number;
+    endTime: number;
     isPreviewEnabled?: boolean;
   }>;
 }
@@ -52,11 +53,15 @@ export const GreenScreenVideoPreview = ({
         // Draw enabled background images at their timestamps
         imageUploads.forEach(upload => {
           if (upload.file && upload.isPreviewEnabled && 
-              Math.abs(videoElement.currentTime - upload.timestamp) < 0.1) {
+              videoElement.currentTime >= upload.startTime && 
+              videoElement.currentTime <= upload.endTime) {
             const img = new Image();
             img.src = URL.createObjectURL(upload.file);
             img.onload = () => {
-              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              // Check image dimensions
+              if (img.width === 1080 && img.height === 1920) {
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              }
               URL.revokeObjectURL(img.src);
             };
           }
