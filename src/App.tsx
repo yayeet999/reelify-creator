@@ -21,6 +21,7 @@ import FreeCreateContent from "./pages/FreeCreateContent";
 import StarterDashboard from "./pages/StarterDashboard";
 import StarterGenerateHooks from "./pages/StarterGenerateHooks";
 import StarterSavedHooks from "./pages/StarterSavedHooks";
+import StarterGreenScreenify from "./pages/StarterGreenScreenify";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { StarterDashboardLayout } from "@/components/layouts/StarterDashboardLayout";
 
@@ -134,6 +135,16 @@ const App = () => (
               <ProtectedRoute>
                 <StarterDashboardLayout>
                   <StarterSavedHooks />
+                </StarterDashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/starter/green-screenify"
+            element={
+              <ProtectedRoute>
+                <StarterDashboardLayout>
+                  <StarterGreenScreenify />
                 </StarterDashboardLayout>
               </ProtectedRoute>
             }
