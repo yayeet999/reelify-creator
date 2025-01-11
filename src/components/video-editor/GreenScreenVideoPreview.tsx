@@ -34,7 +34,7 @@ export const GreenScreenVideoPreview = ({
       
       playVideo();
     }
-  }, [videoUrl]);
+  }, [videoUrl, videoRef]);
 
   const generateCloudinaryUrl = () => {
     if (!videoUrl) return videoUrl;
@@ -55,24 +55,16 @@ export const GreenScreenVideoPreview = ({
     // Add image underlays at specific timestamps if available
     imageUploads.forEach((upload, index) => {
       if (upload.file) {
-        // Create a data URL for the image
-        const reader = new FileReader();
-        reader.readAsDataURL(upload.file);
-        reader.onloadend = () => {
-          const base64data = reader.result;
-          console.log(`Image ${index} loaded as base64:`, base64data?.toString().substring(0, 50) + "...");
-        };
-
         // Add underlay transformation for each image
-        url += `/u_${upload.file.name}`;
+        url += `/u_${encodeURIComponent(upload.file.name)}`;
         if (upload.timestamp > 0) {
-          url += `,so_${upload.timestamp}`;
+          url += `,so_${Math.round(upload.timestamp)}`;
         }
         url += "/fl_layer_apply";
       }
     });
 
-    url += `/${publicId}.mp4`;
+    url += `/${publicId}`;
     console.log("Generated URL:", url);
     return url;
   };
@@ -86,7 +78,6 @@ export const GreenScreenVideoPreview = ({
         autoPlay
         muted
         loop
-        controls={false}
         playsInline
         preload="auto"
         onLoadedData={() => setIsLoading(false)}
