@@ -18,11 +18,19 @@ export const TimelineVisualizer = ({ videoRef, onTimeUpdate }: TimelineVisualize
     const handleTimeUpdate = () => {
       if (!isSeekingRef.current) {
         setCurrentTime(video.currentTime);
+        if (onTimeUpdate) {
+          onTimeUpdate(video.currentTime);
+        }
       }
     };
 
     const handleLoadedMetadata = () => {
       setDuration(video.duration);
+      // Set initial time to 0 when video loads
+      setCurrentTime(0);
+      if (onTimeUpdate) {
+        onTimeUpdate(0);
+      }
     };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
@@ -32,7 +40,7 @@ export const TimelineVisualizer = ({ videoRef, onTimeUpdate }: TimelineVisualize
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
-  }, [videoRef]);
+  }, [videoRef, onTimeUpdate]);
 
   const handleSliderChange = (values: number[]) => {
     const time = values[0];
