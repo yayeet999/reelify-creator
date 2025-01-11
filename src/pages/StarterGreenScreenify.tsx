@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Video, Upload } from "lucide-react";
+import { Video, Upload, Clock, Check } from "lucide-react";
 import { GreenScreenVideoPreview } from "@/components/video-editor/GreenScreenVideoPreview";
 import { VideoThumbnailGrid } from "@/components/video-editor/GreenScreenVideoThumbnailGrid";
 import { TimelineVisualizer } from "@/components/video-editor/TimelineVisualizer";
@@ -10,12 +10,13 @@ import { useToast } from "@/hooks/use-toast";
 interface ImageUpload {
   file: File | null;
   timestamp: number;
+  isPreviewEnabled?: boolean;
 }
 
 const StarterGreenScreenify = () => {
   const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736580998/realgreen1_rnukxx.mp4");
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>(
-    Array(5).fill({ file: null, timestamp: 0 })
+    Array(5).fill({ file: null, timestamp: 0, isPreviewEnabled: false })
   );
   const videoRef = useRef<HTMLVideoElement>(null);
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
@@ -24,39 +25,19 @@ const StarterGreenScreenify = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Upload to Cloudinary
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', 'ml_default');
-
-      fetch('https://api.cloudinary.com/v1_1/fornotreel/image/upload', {
-        method: 'POST',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Upload successful:', data);
-        setImageUploads(prev => {
-          const newUploads = [...prev];
-          newUploads[index] = {
-            ...newUploads[index],
-            file
-          };
-          return newUploads;
-        });
-        
-        toast({
-          title: "Image uploaded successfully",
-          description: "You can now set the timestamp for this image.",
-        });
-      })
-      .catch(error => {
-        console.error('Upload error:', error);
-        toast({
-          title: "Upload failed",
-          description: "There was an error uploading your image. Please try again.",
-          variant: "destructive",
-        });
+      setImageUploads(prev => {
+        const newUploads = [...prev];
+        newUploads[index] = {
+          ...newUploads[index],
+          file,
+          isPreviewEnabled: false
+        };
+        return newUploads;
+      });
+      
+      toast({
+        title: "Image uploaded successfully",
+        description: "You can now set the timestamp for this image.",
       });
     }
   };
@@ -72,6 +53,51 @@ const StarterGreenScreenify = () => {
         return newUploads;
       });
     }
+  };
+
+  const toggleImagePreview = (index: number) => {
+    setImageUploads(prev => {
+      const newUploads = [...prev];
+      newUploads[index] = {
+        ...newUploads[index],
+        isPreviewEnabled: !newUploads[index].isPreviewEnabled
+      };
+      return newUploads;
+    });
+  };
+
+  const generateFinalVideo = () => {
+    // Only generate Cloudinary URL with image underlays when generating final video
+    let url = "https://res.cloudinary.com/fornotreel/video/upload";
+    url += "/q_auto,f_auto";
+
+    // Add image underlays at specific timestamps if enabled
+    imageUploads.forEach((upload) => {
+      if (upload.file && upload.isPreviewEnabled) {
+        try {
+          const cleanFileName = encodeURIComponent(upload.file.name.replace(/[^a-zA-Z0-9]/g, '_'));
+          url += `/u_${cleanFileName}`;
+          if (upload.timestamp > 0) {
+            url += `,so_${Math.round(upload.timestamp)}`;
+          }
+          url += "/fl_layer_apply";
+        } catch (error) {
+          console.error("Error processing image upload:", error);
+        }
+      }
+    });
+
+    const videoId = currentVideoUrl.split('/').pop()?.split('.')[0];
+    if (videoId) {
+      url += `/${videoId}`;
+    }
+
+    console.log("Generated Final URL:", url);
+    
+    toast({
+      title: "Processing Video",
+      description: "Your video is being processed with the selected images...",
+    });
   };
 
   return (
@@ -102,7 +128,7 @@ const StarterGreenScreenify = () => {
               <GreenScreenVideoPreview
                 videoRef={videoRef}
                 videoUrl={currentVideoUrl}
-                imageUploads={imageUploads}
+                imageUploads={imageUploads.filter(upload => upload.isPreviewEnabled)}
               />
               <TimelineVisualizer 
                 videoRef={videoRef}
@@ -145,16 +171,34 @@ const StarterGreenScreenify = () => {
                       className="cursor-pointer flex flex-col items-center justify-center space-y-2"
                     >
                       {upload.file ? (
-                        <>
+                        <div className="space-y-2">
                           <img
                             src={URL.createObjectURL(upload.file)}
                             alt={`Upload ${index + 1}`}
                             className="w-full h-32 object-cover rounded"
                           />
-                          <span className="text-sm text-gray-500">
-                            Time: {upload.timestamp.toFixed(1)}s
-                          </span>
-                        </>
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1 text-sm text-gray-500">
+                              <Clock className="w-4 h-4" />
+                              <span>{upload.timestamp.toFixed(1)}s</span>
+                            </div>
+                            <Button
+                              size="sm"
+                              variant={upload.isPreviewEnabled ? "default" : "outline"}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleImagePreview(index);
+                              }}
+                            >
+                              {upload.isPreviewEnabled ? (
+                                <Check className="w-4 h-4" />
+                              ) : (
+                                "Preview"
+                              )}
+                            </Button>
+                          </div>
+                        </div>
                       ) : (
                         <>
                           <Upload className="w-8 h-8 text-gray-400" />
@@ -167,12 +211,7 @@ const StarterGreenScreenify = () => {
               </div>
               <Button 
                 className="w-full"
-                onClick={() => {
-                  toast({
-                    title: "Processing Video",
-                    description: "Your video is being processed with the green screen effect...",
-                  });
-                }}
+                onClick={generateFinalVideo}
               >
                 Generate Video
               </Button>
