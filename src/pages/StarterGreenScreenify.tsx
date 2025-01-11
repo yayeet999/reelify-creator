@@ -2,77 +2,57 @@ import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Video, Upload, Clock, Check } from "lucide-react";
 import { GreenScreenVideoPreview } from "@/components/video-editor/GreenScreenVideoPreview";
-import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
+import { VideoThumbnailGrid } from "@/components/video-editor/GreenScreenVideoThumbnailGrid";
 import { TimelineVisualizer } from "@/components/video-editor/TimelineVisualizer";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { Slider } from "@/components/ui/slider";
-import { Label } from "@/components/ui/label";
 
 interface ImageUpload {
   file: File | null;
-  startTime: number;
-  endTime: number;
+  timestamp: number;
   isPreviewEnabled?: boolean;
 }
 
 const StarterGreenScreenify = () => {
   const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736580998/realgreen1_rnukxx.mp4");
   const [imageUploads, setImageUploads] = useState<ImageUpload[]>(
-    Array(5).fill({ file: null, startTime: 0, endTime: 5, isPreviewEnabled: false })
+    Array(5).fill({ file: null, timestamp: 0, isPreviewEnabled: false })
   );
   const videoRef = useRef<HTMLVideoElement>(null);
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null);
   const { toast } = useToast();
   
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
     if (file) {
-      // Check image dimensions before uploading
-      const img = new Image();
-      img.src = URL.createObjectURL(file);
+      setImageUploads(prev => {
+        const newUploads = [...prev];
+        newUploads[index] = {
+          ...newUploads[index],
+          file,
+          isPreviewEnabled: false
+        };
+        return newUploads;
+      });
       
-      img.onload = () => {
-        URL.revokeObjectURL(img.src);
-        
-        if (img.width === 1080 && img.height === 1920) {
-          setImageUploads(prev => {
-            const newUploads = [...prev];
-            newUploads[index] = {
-              ...newUploads[index],
-              file,
-              isPreviewEnabled: false,
-              startTime: 0,
-              endTime: 5
-            };
-            return newUploads;
-          });
-          
-          toast({
-            title: "Image uploaded successfully",
-            description: "You can now set the time range for this image.",
-          });
-        } else {
-          toast({
-            title: "Invalid image dimensions",
-            description: "Please upload an image with dimensions 1080x1920.",
-            variant: "destructive"
-          });
-        }
-      };
+      toast({
+        title: "Image uploaded successfully",
+        description: "You can now set the timestamp for this image.",
+      });
     }
   };
 
-  const handleTimeRangeChange = (index: number, startTime: number, endTime: number) => {
-    setImageUploads(prev => {
-      const newUploads = [...prev];
-      newUploads[index] = {
-        ...newUploads[index],
-        startTime,
-        endTime
-      };
-      return newUploads;
-    });
+  const handleTimeUpdate = (time: number) => {
+    if (selectedSlot !== null) {
+      setImageUploads(prev => {
+        const newUploads = [...prev];
+        newUploads[selectedSlot] = {
+          ...newUploads[selectedSlot],
+          timestamp: time
+        };
+        return newUploads;
+      });
+    }
   };
 
   const toggleImagePreview = (index: number) => {
@@ -83,6 +63,40 @@ const StarterGreenScreenify = () => {
         isPreviewEnabled: !newUploads[index].isPreviewEnabled
       };
       return newUploads;
+    });
+  };
+
+  const generateFinalVideo = () => {
+    // Only generate Cloudinary URL with image underlays when generating final video
+    let url = "https://res.cloudinary.com/fornotreel/video/upload";
+    url += "/q_auto,f_auto";
+
+    // Add image underlays at specific timestamps if enabled
+    imageUploads.forEach((upload) => {
+      if (upload.file && upload.isPreviewEnabled) {
+        try {
+          const cleanFileName = encodeURIComponent(upload.file.name.replace(/[^a-zA-Z0-9]/g, '_'));
+          url += `/u_${cleanFileName}`;
+          if (upload.timestamp > 0) {
+            url += `,so_${Math.round(upload.timestamp)}`;
+          }
+          url += "/fl_layer_apply";
+        } catch (error) {
+          console.error("Error processing image upload:", error);
+        }
+      }
+    });
+
+    const videoId = currentVideoUrl.split('/').pop()?.split('.')[0];
+    if (videoId) {
+      url += `/${videoId}`;
+    }
+
+    console.log("Generated Final URL:", url);
+    
+    toast({
+      title: "Processing Video",
+      description: "Your video is being processed with the selected images...",
     });
   };
 
@@ -114,11 +128,11 @@ const StarterGreenScreenify = () => {
               <GreenScreenVideoPreview
                 videoRef={videoRef}
                 videoUrl={currentVideoUrl}
-                imageUploads={imageUploads}
+                imageUploads={imageUploads.filter(upload => upload.isPreviewEnabled)}
               />
               <TimelineVisualizer 
                 videoRef={videoRef}
-                onTimeUpdate={() => {}}
+                onTimeUpdate={handleTimeUpdate}
               />
               <VideoThumbnailGrid 
                 currentVideoUrl={currentVideoUrl}
@@ -163,23 +177,11 @@ const StarterGreenScreenify = () => {
                             alt={`Upload ${index + 1}`}
                             className="w-full h-32 object-cover rounded"
                           />
-                          <div className="space-y-2 p-2">
-                            <Label className="text-sm">Start Time (s)</Label>
-                            <Slider
-                              value={[upload.startTime]}
-                              onValueChange={([value]) => handleTimeRangeChange(index, value, upload.endTime)}
-                              max={30}
-                              step={0.1}
-                              className="mb-2"
-                            />
-                            <Label className="text-sm">End Time (s)</Label>
-                            <Slider
-                              value={[upload.endTime]}
-                              onValueChange={([value]) => handleTimeRangeChange(index, upload.startTime, value)}
-                              max={30}
-                              step={0.1}
-                              className="mb-2"
-                            />
+                          <div className="flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-1 text-sm text-gray-500">
+                              <Clock className="w-4 h-4" />
+                              <span>{upload.timestamp.toFixed(1)}s</span>
+                            </div>
                             <Button
                               size="sm"
                               variant={upload.isPreviewEnabled ? "default" : "outline"}
@@ -188,12 +190,12 @@ const StarterGreenScreenify = () => {
                                 e.stopPropagation();
                                 toggleImagePreview(index);
                               }}
-                              className="w-full"
                             >
                               {upload.isPreviewEnabled ? (
-                                <Check className="w-4 h-4 mr-2" />
-                              ) : null}
-                              {upload.isPreviewEnabled ? "Previewing" : "Preview"}
+                                <Check className="w-4 h-4" />
+                              ) : (
+                                "Preview"
+                              )}
                             </Button>
                           </div>
                         </div>
@@ -201,13 +203,18 @@ const StarterGreenScreenify = () => {
                         <>
                           <Upload className="w-8 h-8 text-gray-400" />
                           <span className="text-sm text-gray-500">Upload Image {index + 1}</span>
-                          <span className="text-xs text-gray-400">(1080x1920)</span>
                         </>
                       )}
                     </label>
                   </div>
                 ))}
               </div>
+              <Button 
+                className="w-full"
+                onClick={generateFinalVideo}
+              >
+                Generate Video
+              </Button>
             </CardContent>
           </Card>
         </div>
