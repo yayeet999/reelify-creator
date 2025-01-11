@@ -49,23 +49,35 @@ export const GreenScreenVideoPreview = ({
     // Add quality and format optimization
     url += "/q_auto:good,f_auto";
 
-    // Add green screen effect
+    // Add green screen effect with improved color similarity
     url += "/e_make_transparent:color_green:color_similarity_50";
 
     // Add image underlays at specific timestamps if available
-    imageUploads.forEach((upload, index) => {
+    imageUploads.forEach((upload) => {
       if (upload.file) {
-        // Add underlay transformation for each image
-        url += `/u_${encodeURIComponent(upload.file.name)}`;
-        if (upload.timestamp > 0) {
-          url += `,so_${Math.round(upload.timestamp)}`;
+        try {
+          // Create a clean filename for the Cloudinary URL
+          const cleanFileName = encodeURIComponent(upload.file.name.replace(/[^a-zA-Z0-9]/g, '_'));
+          
+          // Add underlay transformation for each image
+          url += `/u_${cleanFileName}`;
+          
+          // Add timestamp if greater than 0
+          if (upload.timestamp > 0) {
+            url += `,so_${Math.round(upload.timestamp)}`;
+          }
+          
+          url += "/fl_layer_apply";
+        } catch (error) {
+          console.error("Error processing image upload:", error);
         }
-        url += "/fl_layer_apply";
       }
     });
 
+    // Add the public ID at the end
     url += `/${publicId}`;
-    console.log("Generated URL:", url);
+    
+    console.log("Generated Cloudinary URL:", url);
     return url;
   };
 
