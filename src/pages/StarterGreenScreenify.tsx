@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Video, Upload, Clock, Check } from "lucide-react";
 import { GreenScreenVideoPreview } from "@/components/video-editor/GreenScreenVideoPreview";
-import { VideoThumbnailGrid } from "@/components/video-editor/GreenScreenVideoThumbnailGrid";
+import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { TimelineVisualizer } from "@/components/video-editor/TimelineVisualizer";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
@@ -23,6 +23,9 @@ const StarterGreenScreenify = () => {
   const { toast } = useToast();
   
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     const file = e.target.files?.[0];
     if (file) {
       setImageUploads(prev => {
@@ -67,11 +70,9 @@ const StarterGreenScreenify = () => {
   };
 
   const generateFinalVideo = () => {
-    // Only generate Cloudinary URL with image underlays when generating final video
     let url = "https://res.cloudinary.com/fornotreel/video/upload";
     url += "/q_auto,f_auto";
 
-    // Add image underlays at specific timestamps if enabled
     imageUploads.forEach((upload) => {
       if (upload.file && upload.isPreviewEnabled) {
         try {
@@ -165,10 +166,12 @@ const StarterGreenScreenify = () => {
                       onChange={(e) => handleImageUpload(e, index)}
                       className="hidden"
                       id={`image-upload-${index}`}
+                      onClick={(e) => e.stopPropagation()}
                     />
                     <label
                       htmlFor={`image-upload-${index}`}
                       className="cursor-pointer flex flex-col items-center justify-center space-y-2"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       {upload.file ? (
                         <div className="space-y-2">
