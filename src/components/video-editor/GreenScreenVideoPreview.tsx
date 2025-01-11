@@ -21,16 +21,17 @@ export const GreenScreenVideoPreview = ({
   useEffect(() => {
     const videoElement = videoRef.current;
     if (videoElement) {
+      setIsLoading(true);
+      videoElement.currentTime = 0;
+      
       const playVideo = async () => {
         try {
-          videoElement.currentTime = 0;
           await videoElement.play();
         } catch (error) {
-          console.error("Video autoplay failed:", error);
+          console.log("Video autoplay failed:", error);
         }
       };
-
-      setIsLoading(true);
+      
       playVideo();
     }
   }, [videoUrl, videoRef]);
@@ -38,7 +39,11 @@ export const GreenScreenVideoPreview = ({
   const generateCloudinaryUrl = () => {
     if (!videoUrl) return videoUrl;
 
-    // Base Cloudinary URL
+    // Extract the version and public ID from the currentVideoUrl
+    const matches = videoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
+    if (!matches) return videoUrl;
+    
+    const publicId = matches[1];
     let url = "https://res.cloudinary.com/fornotreel/video/upload";
 
     // Add quality and format optimization
@@ -47,21 +52,12 @@ export const GreenScreenVideoPreview = ({
     // Add green screen effect with improved color similarity
     url += "/e_make_transparent:color_green:color_similarity_50";
 
-    // Extract the version and public ID from the videoUrl
-    const matches = videoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
-    if (!matches) {
-      console.error("Could not extract public ID from video URL");
-      return videoUrl;
-    }
-    
-    const publicId = matches[1];
-
     // Add image underlays at specific timestamps if available
     imageUploads.forEach((upload) => {
       if (upload.file) {
         try {
           // Create a clean filename for the Cloudinary URL
-          const cleanFileName = upload.file.name.replace(/[^a-zA-Z0-9]/g, '_');
+          const cleanFileName = encodeURIComponent(upload.file.name.replace(/[^a-zA-Z0-9]/g, '_'));
           
           // Add underlay transformation for each image
           url += `/u_${cleanFileName}`;
@@ -97,7 +93,6 @@ export const GreenScreenVideoPreview = ({
         playsInline
         preload="auto"
         onLoadedData={() => setIsLoading(false)}
-        onError={(e) => console.error("Video error:", e)}
       />
     </div>
   );
