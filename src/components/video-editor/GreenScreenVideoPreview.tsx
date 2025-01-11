@@ -28,7 +28,7 @@ export const GreenScreenVideoPreview = ({
         try {
           await videoElement.play();
         } catch (error) {
-          console.log("Video autoplay failed:", error);
+          console.error("Video autoplay failed:", error);
         }
       };
       
@@ -36,20 +36,16 @@ export const GreenScreenVideoPreview = ({
     }
   }, [videoUrl, videoRef]);
 
-  const generateCloudinaryUrl = () => {
-    if (!videoUrl) return videoUrl;
+  const generateGreenScreenUrl = () => {
+    if (!videoUrl) return "";
 
-    // Extract the version and public ID from the currentVideoUrl
-    const matches = videoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
-    if (!matches) return videoUrl;
-    
-    const publicId = matches[1];
+    // Start with base URL
     let url = "https://res.cloudinary.com/fornotreel/video/upload";
 
     // Add quality and format optimization
     url += "/q_auto:good,f_auto";
 
-    // Add green screen effect with improved color similarity
+    // Add green screen effect
     url += "/e_make_transparent:color_green:color_similarity_50";
 
     // Add image underlays at specific timestamps if available
@@ -74,10 +70,13 @@ export const GreenScreenVideoPreview = ({
       }
     });
 
-    // Add the public ID at the end
-    url += `/${publicId}`;
-    
-    console.log("Generated Cloudinary URL:", url);
+    // Extract and add the video ID from the original URL
+    const videoId = videoUrl.split('/').pop()?.split('.')[0];
+    if (videoId) {
+      url += `/${videoId}`;
+    }
+
+    console.log("Generated Green Screen URL:", url);
     return url;
   };
 
@@ -86,13 +85,17 @@ export const GreenScreenVideoPreview = ({
       <video 
         ref={videoRef}
         className={`w-full h-full rounded-lg object-cover z-[2] transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
-        src={generateCloudinaryUrl()}
+        src={generateGreenScreenUrl()}
         autoPlay
         muted
         loop
         playsInline
         preload="auto"
         onLoadedData={() => setIsLoading(false)}
+        onError={(e) => {
+          console.error("Video loading error:", e);
+          setIsLoading(false);
+        }}
       />
     </div>
   );

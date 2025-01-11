@@ -27,7 +27,7 @@ const StarterGreenScreenify = () => {
       // Upload to Cloudinary
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', 'ml_default'); // Replace with your upload preset
+      formData.append('upload_preset', 'ml_default');
 
       fetch('https://api.cloudinary.com/v1_1/fornotreel/image/upload', {
         method: 'POST',
