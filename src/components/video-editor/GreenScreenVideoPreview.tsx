@@ -45,9 +45,6 @@ export const GreenScreenVideoPreview = ({
     // Add quality and format optimization
     url += "/q_auto:good,f_auto";
 
-    // Add green screen effect
-    url += "/e_make_transparent:color_green:color_similarity_50";
-
     // Add image underlays at specific timestamps if available
     imageUploads.forEach((upload) => {
       if (upload.file) {
