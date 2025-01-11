@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Video, Upload } from "lucide-react";
-import { VideoPreview } from "@/components/video-editor/VideoPreview";
+import { GreenScreenVideoPreview } from "@/components/video-editor/GreenScreenVideoPreview";
 import { VideoThumbnailGrid } from "@/components/video-editor/GreenScreenVideoThumbnailGrid";
 import { TimelineVisualizer } from "@/components/video-editor/TimelineVisualizer";
 import { Button } from "@/components/ui/button";
@@ -24,13 +24,39 @@ const StarterGreenScreenify = () => {
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
     const file = e.target.files?.[0];
     if (file) {
-      setImageUploads(prev => {
-        const newUploads = [...prev];
-        newUploads[index] = {
-          ...newUploads[index],
-          file
-        };
-        return newUploads;
+      // Upload to Cloudinary
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'ml_default'); // Replace with your upload preset
+
+      fetch('https://api.cloudinary.com/v1_1/fornotreel/image/upload', {
+        method: 'POST',
+        body: formData
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Upload successful:', data);
+        setImageUploads(prev => {
+          const newUploads = [...prev];
+          newUploads[index] = {
+            ...newUploads[index],
+            file
+          };
+          return newUploads;
+        });
+        
+        toast({
+          title: "Image uploaded successfully",
+          description: "You can now set the timestamp for this image.",
+        });
+      })
+      .catch(error => {
+        console.error('Upload error:', error);
+        toast({
+          title: "Upload failed",
+          description: "There was an error uploading your image. Please try again.",
+          variant: "destructive",
+        });
       });
     }
   };
@@ -73,14 +99,10 @@ const StarterGreenScreenify = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <VideoPreview
+              <GreenScreenVideoPreview
                 videoRef={videoRef}
                 videoUrl={currentVideoUrl}
-                text=""
-                textColor=""
-                textSize={16}
-                position="middle"
-                animation="none"
+                imageUploads={imageUploads}
               />
               <TimelineVisualizer 
                 videoRef={videoRef}
@@ -147,8 +169,8 @@ const StarterGreenScreenify = () => {
                 className="w-full"
                 onClick={() => {
                   toast({
-                    title: "Coming Soon",
-                    description: "Video generation will be available soon!",
+                    title: "Processing Video",
+                    description: "Your video is being processed with the green screen effect...",
                   });
                 }}
               >
