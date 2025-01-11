@@ -11,7 +11,7 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     {
       id: 'green-screen-1',
       thumbnailUrl: '/thumbnail14.jpg',
-      videoUrl: ''  // Removed the video URL as requested
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1736580998/realgreen1_rnukxx.mp4'
     }
   ];
 
