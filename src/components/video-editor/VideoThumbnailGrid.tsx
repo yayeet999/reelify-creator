@@ -67,6 +67,16 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
       id: 'thumbnail-12',
       thumbnailUrl: '/thumbnail12.jpg',
       videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736240943/url12_xkwu9f.mp4'
+    },
+    {
+      id: 'thumbnail-13',
+      thumbnailUrl: '/thumbnail13.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736240946/url13_kgyxya.mp4'
+    },
+    {
+      id: 'thumbnail-15',
+      thumbnailUrl: '/thumbnail15.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736690481/url15_qdhzmr.mp4'
     }
   ];
 
