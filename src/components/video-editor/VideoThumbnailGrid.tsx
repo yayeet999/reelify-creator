@@ -165,10 +165,10 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
   return (
     <Tabs defaultValue="all" className="w-full">
       <TabsList className="w-full mb-4">
-        <TabsTrigger value="all" className="flex-1">All</TabsTrigger>
+        <TabsTrigger value="all" className="flex-1">1/3</TabsTrigger>
         {categories.map(category => (
           <TabsTrigger key={category} value={category} className="flex-1 capitalize">
-            {category}
+            {category === 'beauty' ? '2/3' : '3/3'}
           </TabsTrigger>
         ))}
       </TabsList>
