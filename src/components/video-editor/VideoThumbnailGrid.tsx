@@ -172,12 +172,14 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
         </div>
       </TabsContent>
 
-      {categories.map(category => (
-        <TabsContent key={category} value={category}>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {thumbnails
-              .filter(thumbnail => thumbnail.category === category)
-              .map((thumbnail) => (
+      {categories.map(category => {
+        // Get unique thumbnails for each category
+        const uniqueThumbnails = thumbnails.filter(thumbnail => thumbnail.category === category);
+        
+        return (
+          <TabsContent key={category} value={category}>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {uniqueThumbnails.map((thumbnail) => (
                 <Card 
                   key={thumbnail.id}
                   className={`relative w-full max-w-[80px] md:max-w-[100px] aspect-square cursor-pointer transition-all hover:ring-2 hover:ring-primary ${
@@ -193,9 +195,10 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
                   <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors rounded-lg" />
                 </Card>
               ))}
-          </div>
-        </TabsContent>
-      ))}
+            </div>
+          </TabsContent>
+        );
+      })}
     </Tabs>
   );
 };
