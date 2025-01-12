@@ -7,7 +7,6 @@ interface VideoThumbnailProps {
 }
 
 export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThumbnailProps) => {
-  // These are our video thumbnails - keeping them all in the "All" tab
   const thumbnails = [
     {
       id: 'elegant-salon',
@@ -131,7 +130,7 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     }
   ];
 
-  // New beauty thumbnails
+  // Beauty thumbnails
   const beautyThumbnails = [
     {
       id: 'thumbnail-22',
@@ -149,6 +148,24 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
       id: 'thumbnail-24',
       thumbnailUrl: '/thumbnail24.jpg',
       videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736691222/url24_ugk4br.mp4',
+      category: 'beauty'
+    },
+    {
+      id: 'thumbnail-25',
+      thumbnailUrl: '/thumbnail25.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736691227/url25_egevcq.mp4',
+      category: 'beauty'
+    },
+    {
+      id: 'thumbnail-26',
+      thumbnailUrl: '/thumbnail26.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736691222/url26_zzxrh5.mp4',
+      category: 'beauty'
+    },
+    {
+      id: 'thumbnail-27',
+      thumbnailUrl: '/thumbnail27.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736691223/url27_hcgntu.mp4',
       category: 'beauty'
     }
   ];
