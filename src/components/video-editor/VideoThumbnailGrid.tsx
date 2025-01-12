@@ -131,6 +131,28 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     }
   ];
 
+  // New beauty thumbnails
+  const beautyThumbnails = [
+    {
+      id: 'thumbnail-22',
+      thumbnailUrl: '/thumbnail22.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736691225/url22_mrgosa.mp4',
+      category: 'beauty'
+    },
+    {
+      id: 'thumbnail-23',
+      thumbnailUrl: '/thumbnail23.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736691224/url23_vyuifh.mp4',
+      category: 'beauty'
+    },
+    {
+      id: 'thumbnail-24',
+      thumbnailUrl: '/thumbnail24.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736691222/url24_ugk4br.mp4',
+      category: 'beauty'
+    }
+  ];
+
   const handleThumbnailClick = (videoUrl: string) => {
     if (videoUrl) {
       onVideoSelect(videoUrl);
@@ -172,13 +194,32 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
         </div>
       </TabsContent>
 
-      {categories.map(category => (
-        <TabsContent key={category} value={category}>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {/* Empty grid for now - ready for new thumbnails */}
-          </div>
-        </TabsContent>
-      ))}
+      <TabsContent value="beauty">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {beautyThumbnails.map((thumbnail) => (
+            <Card 
+              key={thumbnail.id}
+              className={`relative w-full max-w-[80px] md:max-w-[100px] aspect-square cursor-pointer transition-all hover:ring-2 hover:ring-primary ${
+                currentVideoUrl === thumbnail.videoUrl ? 'ring-2 ring-primary' : ''
+              } ${!thumbnail.videoUrl ? 'opacity-50' : ''}`}
+              onClick={() => handleThumbnailClick(thumbnail.videoUrl)}
+            >
+              <img
+                src={thumbnail.thumbnailUrl}
+                alt={`${thumbnail.id} Video`}
+                className="w-full h-full object-cover rounded-lg"
+              />
+              <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors rounded-lg" />
+            </Card>
+          ))}
+        </div>
+      </TabsContent>
+
+      <TabsContent value="lifestyle">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {/* Empty grid for now - ready for new thumbnails */}
+        </div>
+      </TabsContent>
     </Tabs>
   );
 };
