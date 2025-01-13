@@ -327,6 +327,24 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
       thumbnailUrl: '/thumbnail53.jpg',
       videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749977/url53_asbbvk.mp4',
       category: 'lifestyle'
+    },
+    {
+      id: 'thumbnail-54',
+      thumbnailUrl: '/thumbnail54.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749976/url54_boccpz.mp4',
+      category: 'lifestyle'
+    },
+    {
+      id: 'thumbnail-55',
+      thumbnailUrl: '/thumbnail55.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749975/url55_bq0wcs.mp4',
+      category: 'lifestyle'
+    },
+    {
+      id: 'thumbnail-56',
+      thumbnailUrl: '/thumbnail56.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749975/url56_viumbl.mp4',
+      category: 'lifestyle'
     }
   ];
 
