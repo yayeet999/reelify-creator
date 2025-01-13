@@ -254,6 +254,28 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     }
   ];
 
+  // Lifestyle thumbnails
+  const lifestyleThumbnails = [
+    {
+      id: 'thumbnail-42',
+      thumbnailUrl: '/thumbnail42.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749982/url42_dfwpz4.mp4',
+      category: 'lifestyle'
+    },
+    {
+      id: 'thumbnail-43',
+      thumbnailUrl: '/thumbnail43.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749981/url43_lxlnoz.mp4',
+      category: 'lifestyle'
+    },
+    {
+      id: 'thumbnail-44',
+      thumbnailUrl: '/thumbnail44.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749982/url44_akdgqi.mp4',
+      category: 'lifestyle'
+    }
+  ];
+
   const handleThumbnailClick = (videoUrl: string) => {
     if (videoUrl) {
       onVideoSelect(videoUrl);
@@ -317,7 +339,22 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
 
       <TabsContent value="lifestyle">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {/* Empty grid for now - ready for new thumbnails */}
+          {lifestyleThumbnails.map((thumbnail) => (
+            <Card 
+              key={thumbnail.id}
+              className={`relative w-full max-w-[80px] md:max-w-[100px] aspect-square cursor-pointer transition-all hover:ring-2 hover:ring-primary ${
+                currentVideoUrl === thumbnail.videoUrl ? 'ring-2 ring-primary' : ''
+              } ${!thumbnail.videoUrl ? 'opacity-50' : ''}`}
+              onClick={() => handleThumbnailClick(thumbnail.videoUrl)}
+            >
+              <img
+                src={thumbnail.thumbnailUrl}
+                alt={`${thumbnail.id} Video`}
+                className="w-full h-full object-cover rounded-lg"
+              />
+              <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors rounded-lg" />
+            </Card>
+          ))}
         </div>
       </TabsContent>
     </Tabs>
