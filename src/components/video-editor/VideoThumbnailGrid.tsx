@@ -44,60 +44,6 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
       thumbnailUrl: '/thumbnail32.jpg',
       videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749548/url32_dmtftn.mp4',
       category: 'beauty'
-    },
-    {
-      id: 'thumbnail-33',
-      thumbnailUrl: '/thumbnail33.jpg',
-      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749550/url33_ijqjfi.mp4',
-      category: 'beauty'
-    },
-    {
-      id: 'thumbnail-34',
-      thumbnailUrl: '/thumbnail34.jpg',
-      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749548/url34_gor3wq.mp4',
-      category: 'beauty'
-    },
-    {
-      id: 'thumbnail-35',
-      thumbnailUrl: '/thumbnail35.jpg',
-      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749550/url35_sexqnp.mp4',
-      category: 'beauty'
-    },
-    {
-      id: 'thumbnail-36',
-      thumbnailUrl: '/thumbnail36.jpg',
-      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749547/url36_aj3ydc.mp4',
-      category: 'beauty'
-    },
-    {
-      id: 'thumbnail-37',
-      thumbnailUrl: '/thumbnail37.jpg',
-      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749547/url37_nhqptu.mp4',
-      category: 'beauty'
-    },
-    {
-      id: 'thumbnail-38',
-      thumbnailUrl: '/thumbnail38.jpg',
-      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749547/url38_zfupom.mp4',
-      category: 'beauty'
-    },
-    {
-      id: 'thumbnail-39',
-      thumbnailUrl: '/thumbnail39.jpg',
-      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749546/url39_oja0o1.mp4',
-      category: 'beauty'
-    },
-    {
-      id: 'thumbnail-40',
-      thumbnailUrl: '/thumbnail40.jpg',
-      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749546/url40_uvnt3l.mp4',
-      category: 'beauty'
-    },
-    {
-      id: 'thumbnail-41',
-      thumbnailUrl: '/thumbnail41.jpg',
-      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749982/url41_u4l9hv.mp4',
-      category: 'beauty'
     }
   ];
 
