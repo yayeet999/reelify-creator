@@ -44,6 +44,24 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
       thumbnailUrl: '/thumbnail32.jpg',
       videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749548/url32_dmtftn.mp4',
       category: 'beauty'
+    },
+    {
+      id: 'thumbnail-33',
+      thumbnailUrl: '/thumbnail33.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749550/url33_ijqjfi.mp4',
+      category: 'beauty'
+    },
+    {
+      id: 'thumbnail-34',
+      thumbnailUrl: '/thumbnail34.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749548/url34_gor3wq.mp4',
+      category: 'beauty'
+    },
+    {
+      id: 'thumbnail-35',
+      thumbnailUrl: '/thumbnail35.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736749550/url35_sexqnp.mp4',
+      category: 'beauty'
     }
   ];
 
