@@ -376,7 +376,6 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     }
   ];
 
-  // Custom thumbnails
   const customThumbnails = [
     {
       id: 'thumbnail-62',
@@ -395,6 +394,24 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
       thumbnailUrl: '/thumbnail64.jpg',
       videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736819581/url64_m9c21j.mp4',
       category: 'custom'
+    },
+    {
+      id: 'thumbnail-65',
+      thumbnailUrl: '/thumbnail65.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736819638/url65_hbytjk.mp4',
+      category: 'custom'
+    },
+    {
+      id: 'thumbnail-66',
+      thumbnailUrl: '/thumbnail66.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736819652/url66_vxvosb.mp4',
+      category: 'custom'
+    },
+    {
+      id: 'thumbnail-67',
+      thumbnailUrl: '/thumbnail67.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736819652/url67_no78ce.mp4',
+      category: 'custom'
     }
   ];
 
@@ -404,7 +421,6 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     }
   };
 
-  // Update categories array to include the new category
   const categories = ['beauty', 'lifestyle', 'custom'];
 
   return (
