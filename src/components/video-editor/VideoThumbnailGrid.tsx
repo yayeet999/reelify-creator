@@ -130,7 +130,6 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     }
   ];
 
-  // Beauty thumbnails
   const beautyThumbnails = [
     {
       id: 'thumbnail-22',
@@ -254,7 +253,6 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     }
   ];
 
-  // Lifestyle thumbnails
   const lifestyleThumbnails = [
     {
       id: 'thumbnail-42',
@@ -378,6 +376,28 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     }
   ];
 
+  // Custom thumbnails
+  const customThumbnails = [
+    {
+      id: 'thumbnail-62',
+      thumbnailUrl: '/thumbnail62.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736818858/url62_vybnd8.mp4',
+      category: 'custom'
+    },
+    {
+      id: 'thumbnail-63',
+      thumbnailUrl: '/thumbnail63.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736819546/url63_i3xxkr.mp4',
+      category: 'custom'
+    },
+    {
+      id: 'thumbnail-64',
+      thumbnailUrl: '/thumbnail64.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736819581/url64_m9c21j.mp4',
+      category: 'custom'
+    }
+  ];
+
   const handleThumbnailClick = (videoUrl: string) => {
     if (videoUrl) {
       onVideoSelect(videoUrl);
@@ -463,7 +483,22 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
 
       <TabsContent value="custom">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {/* This tab is ready for new thumbnails */}
+          {customThumbnails.map((thumbnail) => (
+            <Card 
+              key={thumbnail.id}
+              className={`relative w-full max-w-[80px] md:max-w-[100px] aspect-square cursor-pointer transition-all hover:ring-2 hover:ring-primary ${
+                currentVideoUrl === thumbnail.videoUrl ? 'ring-2 ring-primary' : ''
+              } ${!thumbnail.videoUrl ? 'opacity-50' : ''}`}
+              onClick={() => handleThumbnailClick(thumbnail.videoUrl)}
+            >
+              <img
+                src={thumbnail.thumbnailUrl}
+                alt={`${thumbnail.id} Video`}
+                className="w-full h-full object-cover rounded-lg"
+              />
+              <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors rounded-lg" />
+            </Card>
+          ))}
         </div>
       </TabsContent>
     </Tabs>
