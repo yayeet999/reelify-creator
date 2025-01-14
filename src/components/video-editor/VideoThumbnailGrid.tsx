@@ -366,15 +366,16 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
     }
   };
 
-  const categories = ['beauty', 'lifestyle'];
+  // Update categories array to include the new category
+  const categories = ['beauty', 'lifestyle', 'custom'];
 
   return (
     <Tabs defaultValue="all" className="w-full">
       <TabsList className="w-full mb-4">
-        <TabsTrigger value="all" className="flex-1">1/3</TabsTrigger>
-        {categories.map(category => (
+        <TabsTrigger value="all" className="flex-1">1/4</TabsTrigger>
+        {categories.map((category, index) => (
           <TabsTrigger key={category} value={category} className="flex-1 capitalize">
-            {category === 'beauty' ? '2/3' : '3/3'}
+            {`${index + 2}/4`}
           </TabsTrigger>
         ))}
       </TabsList>
@@ -439,6 +440,12 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
               <div className="absolute inset-0 bg-black/20 hover:bg-black/10 transition-colors rounded-lg" />
             </Card>
           ))}
+        </div>
+      </TabsContent>
+
+      <TabsContent value="custom">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {/* This tab is ready for new thumbnails */}
         </div>
       </TabsContent>
     </Tabs>
