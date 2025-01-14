@@ -490,6 +490,12 @@ export const VideoThumbnailGrid = ({ currentVideoUrl, onVideoSelect }: VideoThum
       thumbnailUrl: '/thumbnail80.jpg',
       videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736818859/url80_zjfolm.mp4',
       category: 'custom'
+    },
+    {
+      id: 'thumbnail-81',
+      thumbnailUrl: '/thumbnail81.jpg',
+      videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/q_auto:good/v1736820758/url81_gaf92a.mp4',
+      category: 'custom'
     }
   ];
 
