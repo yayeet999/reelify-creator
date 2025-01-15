@@ -10,6 +10,7 @@ interface VideoUploadProps {
 
 export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
   const [error, setError] = useState<string | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const validateVideo = async (file: File) => {
@@ -46,6 +47,11 @@ export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
     const isValid = await validateVideo(file);
     if (isValid) {
       onVideoSelect(file);
+      // Create preview URL
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl(null);
     }
     
     // Reset input so the same file can be selected again if needed
@@ -56,18 +62,47 @@ export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <Label>Upload Video</Label>
-        <Input
-          ref={inputRef}
-          type="file"
-          accept=".mp4,.mov,.webm"
-          onChange={handleFileChange}
-          className="cursor-pointer"
-        />
-        <p className="text-sm text-muted-foreground">
-          MP4, MOV, or WEBM format • 30 seconds max
-        </p>
+      <Label>Upload Video</Label>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {/* Upload Container */}
+        <div className="aspect-square bg-accent-purple/10 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors p-4 flex flex-col items-center justify-center text-center">
+          <Input
+            ref={inputRef}
+            type="file"
+            accept=".mp4,.mov,.webm"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+          <div 
+            onClick={() => inputRef.current?.click()}
+            className="w-full h-full flex flex-col items-center justify-center cursor-pointer"
+          >
+            <Video className="w-8 h-8 mb-2 text-primary/60" />
+            <p className="text-sm font-medium text-primary">Choose Video</p>
+            <p className="text-xs text-muted-foreground mt-1">
+              MP4, MOV, or WEBM format
+            </p>
+            <p className="text-xs text-muted-foreground">
+              30 seconds max
+            </p>
+          </div>
+        </div>
+
+        {/* Preview Container */}
+        <div className="aspect-square bg-accent-purple/10 rounded-lg border border-primary/20 overflow-hidden">
+          {previewUrl ? (
+            <video
+              src={previewUrl}
+              className="w-full h-full object-cover"
+              controls
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+              <p className="text-sm">Video preview</p>
+            </div>
+          )}
+        </div>
       </div>
 
       {error && (
