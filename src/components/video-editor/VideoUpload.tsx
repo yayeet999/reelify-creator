@@ -65,8 +65,8 @@ export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
       <Label>Upload Video</Label>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {/* Upload Container */}
-        <div className="relative aspect-[9/16] bg-accent-purple/10 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
+        {/* Upload Container - Note the reduced height with aspect-[9/6] */}
+        <div className="relative aspect-[9/6] bg-accent-purple/10 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
           <Input
             ref={inputRef}
             type="file"
