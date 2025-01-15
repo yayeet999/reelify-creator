@@ -66,7 +66,7 @@ export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Upload Container */}
-        <div className="aspect-square bg-accent-purple/10 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors p-4 flex flex-col items-center justify-center text-center">
+        <div className="relative aspect-[9/16] bg-accent-purple/10 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
           <Input
             ref={inputRef}
             type="file"
@@ -76,7 +76,7 @@ export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
           />
           <div 
             onClick={() => inputRef.current?.click()}
-            className="w-full h-full flex flex-col items-center justify-center cursor-pointer"
+            className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer p-4"
           >
             <Video className="w-8 h-8 mb-2 text-primary/60" />
             <p className="text-sm font-medium text-primary">Choose Video</p>
@@ -90,15 +90,15 @@ export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
         </div>
 
         {/* Preview Container */}
-        <div className="aspect-square bg-accent-purple/10 rounded-lg border border-primary/20 overflow-hidden">
+        <div className="relative aspect-[9/16] bg-accent-purple/10 rounded-lg border border-primary/20 overflow-hidden">
           {previewUrl ? (
             <video
               src={previewUrl}
-              className="w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover"
               controls
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+            <div className="absolute inset-0 flex items-center justify-center text-muted-foreground">
               <p className="text-sm">Video preview</p>
             </div>
           )}
