@@ -2,7 +2,7 @@ import { useState, useRef } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Video } from "lucide-react";
 
 interface VideoUploadProps {
   onVideoSelect: (file: File) => void;
