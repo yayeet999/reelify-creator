@@ -33,12 +33,13 @@ export const DownloadButton = ({
     if (!backgroundMatches) return null;
     const backgroundId = backgroundMatches[1];
 
-    // Construct transformation URL
+    // Construct transformation URL with proper sizing parameters
     const transformationUrl = `https://res.cloudinary.com/fornotreel/video/upload/`
       + `q_auto:good/`
-      + `c_fill,ar_9:16/`
+      + `c_fill,ar_9:16,w_1080/` // Set aspect ratio and width
       + `so_0/`
       + `l_video:${templateId}/`
+      + `c_scale,w_1080/` // Scale template video to match background width
       + `fl_layer_apply,g_center/`
       + `${backgroundId}.mp4`;
 
