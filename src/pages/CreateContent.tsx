@@ -4,18 +4,17 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Video, Loader2, ArrowLeft } from "lucide-react";
+import { Video, Loader2 } from "lucide-react";
 import { TextPositionSelector } from "@/components/video-editor/TextPositionSelector";
 import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
-import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
+import { FreeVideoDownloader } from "@/components/video-editor/FreeVideoDownloader";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { VideoUploadSection } from "@/components/video-editor/VideoUploadSection";
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 
 interface SavedHook {
   id: string;
@@ -116,7 +115,7 @@ const CreateContent = () => {
           </CardHeader>
           <CardContent className="space-y-4">
             <VideoPreview
-              videoUrl={currentVideoUrl}
+              videoUrl={uploadedVideoUrl || currentVideoUrl}
               text={textOverlay}
               textColor={textColor}
               textSize={textSize[0]}
@@ -145,17 +144,12 @@ const CreateContent = () => {
                   <SelectValue placeholder="Choose a saved hook..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(savedHooks).map(([productName, hooks]) => (
-                    <SelectGroup key={productName}>
-                      <SelectLabel>{productName}</SelectLabel>
-                      {hooks.map((hook) => (
-                        <SelectItem key={hook.id} value={hook.id}>
-                          {hook.hook_text.length > 50 
-                            ? `${hook.hook_text.substring(0, 50)}...` 
-                            : hook.hook_text}
-                        </SelectItem>
-                      ))}
-                    </SelectGroup>
+                  {savedHooks.map((hook) => (
+                    <SelectItem key={hook.id} value={hook.id}>
+                      {hook.hook_text.length > 50 
+                        ? `${hook.hook_text.substring(0, 50)}...` 
+                        : hook.hook_text}
+                    </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -231,22 +225,10 @@ const CreateContent = () => {
             </div>
 
             {isTemplateSelected && (
-              <>
-                <div className="mt-6">
-                  <Button
-                    variant="outline"
-                    className="mb-4 w-full"
-                    onClick={handleGoBackToTemplates}
-                  >
-                    <ArrowLeft className="mr-2 h-4 w-4" />
-                    Go back to templates
-                  </Button>
-                  <VideoUploadSection onVideoSelect={handleVideoUpload} />
-                </div>
-              </>
+              <VideoUploadSection onVideoSelect={handleVideoUpload} />
             )}
 
-            <VideoDownloader 
+            <FreeVideoDownloader 
               textOverlay={textOverlay}
               textColor={textColor}
               textSize={textSize[0]}
