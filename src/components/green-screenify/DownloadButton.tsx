@@ -73,16 +73,33 @@ export const DownloadButton = ({
         throw new Error("Failed to generate video URL");
       }
 
+      toast({
+        title: "Processing",
+        description: "Preparing your video for download...",
+      });
+
+      // Fetch the video data first
+      const response = await fetch(transformedUrl);
+      if (!response.ok) {
+        throw new Error("Failed to download video");
+      }
+
+      // Convert response to blob
+      const blob = await response.blob();
+      
       // Record the download attempt
       const success = await recordDownload(transformedUrl);
       if (!success) {
         throw new Error("Failed to record download");
       }
 
-      // Create a temporary anchor element for downloading
+      // Create object URL from blob
+      const downloadUrl = window.URL.createObjectURL(blob);
+      
+      // Create and configure download link
       const link = document.createElement('a');
-      link.href = transformedUrl;
-      link.download = `combined-video-${Date.now()}.mp4`; // Force download with unique filename
+      link.href = downloadUrl;
+      link.download = `combined-video-${Date.now()}.mp4`;
       link.style.display = 'none';
       document.body.appendChild(link);
       
@@ -91,6 +108,7 @@ export const DownloadButton = ({
       
       // Clean up
       document.body.removeChild(link);
+      window.URL.revokeObjectURL(downloadUrl);
 
       toast({
         title: "Download Started",
