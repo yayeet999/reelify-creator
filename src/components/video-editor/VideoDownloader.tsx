@@ -59,22 +59,29 @@ export const VideoDownloader = ({
       const position = getCloudinaryPosition(textPosition);
       const animationEffect = getCloudinaryAnimation(animation);
 
+      // Text overlay transformation
       let textTransform = `c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},w_${textWidth}`;
-      if (animationEffect) textTransform += `,${animationEffect}`;
-      textTransform += `,fl_layer_apply,${position}`;
+      if (animationEffect) {
+        textTransform += `,${animationEffect}`;
+      }
       transformations.push(textTransform);
+      
+      // Layer apply transformation (separate)
+      transformations.push(`fl_layer_apply,${position}`);
     }
 
-    // Add video splice if uploaded video exists
+    // Add video splice if uploaded video exists (as a separate transformation)
     if (uploadedVideoUrl && uploadedVideoPublicId) {
       transformations.push(`fl_splice,l_video:${uploadedVideoPublicId}`);
     }
 
     // Add timing parameters
-    if (startTime > 0) transformations.push(`so_${startTime}`);
+    if (startTime > 0) {
+      transformations.push(`so_${startTime}`);
+    }
     transformations.push(`dl_${duration}`);
 
-    // Construct the final URL
+    // Construct the final URL with proper separation
     const url = `https://res.cloudinary.com/fornotreel/video/upload/${transformations.join('/')}/${publicId}.mp4`;
     console.log("Generated Cloudinary URL:", url);
     return url;
