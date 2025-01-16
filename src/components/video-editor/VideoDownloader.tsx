@@ -12,6 +12,8 @@ interface VideoDownloaderProps {
   startTime: number;
   duration: number;
   currentVideoUrl: string;
+  uploadedVideoUrl?: string | null;
+  uploadedVideoPublicId?: string | null;
 }
 
 export const VideoDownloader = ({
@@ -23,6 +25,8 @@ export const VideoDownloader = ({
   startTime,
   duration,
   currentVideoUrl,
+  uploadedVideoUrl,
+  uploadedVideoPublicId,
 }: VideoDownloaderProps) => {
   const { toast } = useToast();
   const { isLoading, canDownload, remainingDownloads, recordDownload } = useDownloadLimits();
@@ -30,7 +34,7 @@ export const VideoDownloader = ({
   const ACTUAL_VIDEO_WIDTH = 1080;
 
   const generateCloudinaryUrl = () => {
-    if (!textOverlay) return currentVideoUrl;
+    if (!textOverlay && !uploadedVideoUrl) return currentVideoUrl;
 
     // Extract the version and public ID from the currentVideoUrl
     const matches = currentVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
@@ -39,6 +43,11 @@ export const VideoDownloader = ({
     const publicId = matches[1];
     let url = "https://res.cloudinary.com/fornotreel/video/upload";
     url += "/q_auto:good";
+
+    if (uploadedVideoUrl && uploadedVideoPublicId) {
+      // Handle combined video case
+      url += `/fl_splice,l_video:${uploadedVideoPublicId}`;
+    }
 
     if (textOverlay) {
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
