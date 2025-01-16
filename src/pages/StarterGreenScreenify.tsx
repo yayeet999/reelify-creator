@@ -1,8 +1,12 @@
+import { useState } from "react";
 import { VideoGallery } from "@/components/green-screenify/VideoGallery";
 import { VideoUploader } from "@/components/green-screenify/VideoUploader";
 import { CombinedPreview } from "@/components/green-screenify/CombinedPreview";
 
 const StarterGreenScreenify = () => {
+  const [selectedTemplateUrl, setSelectedTemplateUrl] = useState<string>();
+  const [backgroundVideoUrl, setBackgroundVideoUrl] = useState<string>();
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl">
       <div className="space-y-8">
@@ -19,20 +23,25 @@ const StarterGreenScreenify = () => {
           {/* Template Video Selection */}
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold">Select Template Video</h2>
-            <VideoGallery />
+            <VideoGallery 
+              onSelectVideo={(video) => setSelectedTemplateUrl(video.videoUrl)} 
+            />
           </div>
 
           {/* Background Video Upload */}
           <div className="space-y-4">
             <h2 className="text-2xl font-semibold">Upload Background Video</h2>
-            <VideoUploader />
+            <VideoUploader onVideoSelect={setBackgroundVideoUrl} />
           </div>
         </div>
 
         {/* Preview Section */}
         <div className="space-y-4">
           <h2 className="text-2xl font-semibold">Preview</h2>
-          <CombinedPreview />
+          <CombinedPreview 
+            templateVideoUrl={selectedTemplateUrl}
+            backgroundVideoUrl={backgroundVideoUrl}
+          />
         </div>
       </div>
     </div>
