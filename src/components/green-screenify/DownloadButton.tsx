@@ -79,12 +79,17 @@ export const DownloadButton = ({
         throw new Error("Failed to record download");
       }
 
-      // Create download link
+      // Create a temporary anchor element for downloading
       const link = document.createElement('a');
       link.href = transformedUrl;
-      link.download = `combined-video-${Date.now()}.mp4`;
+      link.download = `combined-video-${Date.now()}.mp4`; // Force download with unique filename
+      link.style.display = 'none';
       document.body.appendChild(link);
+      
+      // Trigger download
       link.click();
+      
+      // Clean up
       document.body.removeChild(link);
 
       toast({
