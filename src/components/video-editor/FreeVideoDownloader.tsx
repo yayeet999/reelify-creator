@@ -50,16 +50,7 @@ export const FreeVideoDownloader = ({
   }
 
   if (!hasUploadedVideo) {
-    return (
-      <Button 
-        variant="outline"
-        className="w-full mt-4"
-        onClick={onGoBackToTemplates}
-      >
-        <ArrowLeft className="mr-2 h-4 w-4" />
-        Go back to templates
-      </Button>
-    );
+    return null; // Don't show any button here since we have the "Go back" button above
   }
 
   return (

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Video, Loader2 } from "lucide-react";
+import { Video, Loader2, ArrowLeft } from "lucide-react";
 import { TextPositionSelector } from "@/components/video-editor/TextPositionSelector";
 import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
@@ -15,6 +15,7 @@ import { VideoUploadSection } from "@/components/video-editor/VideoUploadSection
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 interface SavedHook {
   id: string;
@@ -122,7 +123,22 @@ const CreateContent = () => {
               position={textPosition}
               animation={animation}
             />
-            {!isTemplateSelected && (
+            
+            {/* Show selected template thumbnail when isTemplateSelected is true */}
+            {isTemplateSelected ? (
+              <div className="grid grid-cols-1 gap-4">
+                <Card 
+                  className={`relative w-full max-w-[80px] md:max-w-[100px] aspect-square cursor-pointer transition-all ring-2 ring-primary`}
+                >
+                  <img
+                    src={`/thumbnail${currentVideoUrl.match(/url(\d+)/)?.[1] || '1'}.jpg`}
+                    alt="Selected Template"
+                    className="w-full h-full object-cover rounded-lg"
+                  />
+                  <div className="absolute inset-0 bg-black/20 rounded-lg" />
+                </Card>
+              </div>
+            ) : (
               <VideoThumbnailGrid 
                 currentVideoUrl={currentVideoUrl}
                 onVideoSelect={setCurrentVideoUrl}
@@ -225,7 +241,17 @@ const CreateContent = () => {
             </div>
 
             {isTemplateSelected && (
-              <VideoUploadSection onVideoSelect={handleVideoUpload} />
+              <>
+                <Button
+                  variant="outline"
+                  className="w-full mb-4"
+                  onClick={handleGoBackToTemplates}
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  Go back to templates
+                </Button>
+                <VideoUploadSection onVideoSelect={handleVideoUpload} />
+              </>
             )}
 
             <FreeVideoDownloader 
