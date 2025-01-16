@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 
 interface VideoUploadSectionProps {
   onVideoSelect: (url: string, publicId: string) => void;
@@ -14,6 +15,7 @@ export const VideoUploadSection = ({ onVideoSelect }: VideoUploadSectionProps) =
   const [error, setError] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
   
   const validateVideo = async (file: File) => {
     // Check file format
@@ -43,9 +45,18 @@ export const VideoUploadSection = ({ onVideoSelect }: VideoUploadSectionProps) =
   };
 
   const trackUploadInDatabase = async (publicId: string, url: string) => {
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+    
+    if (sessionError || !session) {
+      console.error('Auth error:', sessionError);
+      navigate('/auth');
+      throw new Error('Authentication required');
+    }
+
     const { error: dbError } = await supabase
       .from('temp_video_uploads')
       .insert({
+        user_id: session.user.id,
         cloudinary_public_id: publicId,
         cloudinary_url: url,
       });
