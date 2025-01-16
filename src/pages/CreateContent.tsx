@@ -18,7 +18,7 @@ import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { SavedHook } from "@/integrations/supabase/types";
+import { SavedHook } from "@/integrations/supabase/types/saved-hooks";
 
 const CreateContent = () => {
   const { isLoading, isAuthorized } = useSubscriptionGuard("starter");
@@ -300,3 +300,4 @@ const CreateContent = () => {
 };
 
 export default CreateContent;
+
