@@ -9,6 +9,47 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      audio_uploads: {
+        Row: {
+          cloudinary_public_id: string
+          cloudinary_url: string
+          created_at: string
+          id: string
+          transcription_status: string | null
+          transcription_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cloudinary_public_id: string
+          cloudinary_url: string
+          created_at?: string
+          id?: string
+          transcription_status?: string | null
+          transcription_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cloudinary_public_id?: string
+          cloudinary_url?: string
+          created_at?: string
+          id?: string
+          transcription_status?: string | null
+          transcription_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "audio_uploads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string

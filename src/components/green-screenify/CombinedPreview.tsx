@@ -3,18 +3,25 @@ import { useEffect, useRef } from "react";
 interface CombinedPreviewProps {
   templateVideoUrl?: string;
   backgroundVideoUrl?: string;
+  audioUrl?: string;
 }
 
-export const CombinedPreview = ({ templateVideoUrl, backgroundVideoUrl }: CombinedPreviewProps) => {
+export const CombinedPreview = ({ 
+  templateVideoUrl, 
+  backgroundVideoUrl,
+  audioUrl 
+}: CombinedPreviewProps) => {
   const templateVideoRef = useRef<HTMLVideoElement>(null);
   const backgroundVideoRef = useRef<HTMLVideoElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
 
   useEffect(() => {
     const templateVideo = templateVideoRef.current;
     const backgroundVideo = backgroundVideoRef.current;
+    const audio = audioRef.current;
 
     if (templateVideo && backgroundVideo) {
-      const playVideos = async () => {
+      const playMedia = async () => {
         try {
           // Set initial volume to 0 and muted state to ensure autoplay works
           templateVideo.volume = 0;
@@ -24,25 +31,32 @@ export const CombinedPreview = ({ templateVideoUrl, backgroundVideoUrl }: Combin
           templateVideo.muted = true;
           backgroundVideo.muted = true;
 
-          // Play both videos
+          // Play both videos and audio if present
           const playPromises = [
             templateVideo.play().catch(error => {
               console.error('Template video play error:', error);
-              // Retry play as muted if initial play fails
               templateVideo.muted = true;
               return templateVideo.play();
             }),
             backgroundVideo.play().catch(error => {
               console.error('Background video play error:', error);
-              // Retry play as muted if initial play fails
               backgroundVideo.muted = true;
               return backgroundVideo.play();
             })
           ];
 
+          if (audio) {
+            playPromises.push(
+              audio.play().catch(error => {
+                console.error('Audio play error:', error);
+                return audio.play();
+              })
+            );
+          }
+
           await Promise.all(playPromises);
         } catch (error) {
-          console.error('Error playing videos:', error);
+          console.error('Error playing media:', error);
         }
       };
 
@@ -55,18 +69,27 @@ export const CombinedPreview = ({ templateVideoUrl, backgroundVideoUrl }: Combin
         console.error('Background video error:', e);
       });
 
+      if (audio) {
+        audio.addEventListener('error', (e) => {
+          console.error('Audio error:', e);
+        });
+      }
+
       // Play videos when metadata is loaded
-      templateVideo.addEventListener('loadedmetadata', playVideos);
-      backgroundVideo.addEventListener('loadedmetadata', playVideos);
+      templateVideo.addEventListener('loadedmetadata', playMedia);
+      backgroundVideo.addEventListener('loadedmetadata', playMedia);
 
       return () => {
-        templateVideo.removeEventListener('loadedmetadata', playVideos);
-        backgroundVideo.removeEventListener('loadedmetadata', playVideos);
+        templateVideo.removeEventListener('loadedmetadata', playMedia);
+        backgroundVideo.removeEventListener('loadedmetadata', playMedia);
         templateVideo.removeEventListener('error', () => {});
         backgroundVideo.removeEventListener('error', () => {});
+        if (audio) {
+          audio.removeEventListener('error', () => {});
+        }
       };
     }
-  }, [templateVideoUrl, backgroundVideoUrl]);
+  }, [templateVideoUrl, backgroundVideoUrl, audioUrl]);
 
   if (!templateVideoUrl && !backgroundVideoUrl) {
     return (
@@ -104,6 +127,16 @@ export const CombinedPreview = ({ templateVideoUrl, backgroundVideoUrl }: Combin
           loop
           muted
           playsInline
+          preload="auto"
+        />
+      )}
+
+      {/* Audio Layer */}
+      {audioUrl && (
+        <audio
+          ref={audioRef}
+          src={audioUrl}
+          loop
           preload="auto"
         />
       )}

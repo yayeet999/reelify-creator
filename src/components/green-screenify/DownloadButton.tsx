@@ -9,12 +9,14 @@ interface DownloadButtonProps {
   disabled?: boolean;
   templateVideoUrl?: string;
   backgroundVideoUrl?: string;
+  audioUrl?: string;
 }
 
 export const DownloadButton = ({ 
   disabled, 
   templateVideoUrl,
-  backgroundVideoUrl 
+  backgroundVideoUrl,
+  audioUrl
 }: DownloadButtonProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
@@ -33,15 +35,31 @@ export const DownloadButton = ({
     if (!backgroundMatches) return null;
     const backgroundId = backgroundMatches[1];
 
+    // Extract audio ID from URL if present
+    let audioId = null;
+    if (audioUrl) {
+      const audioMatches = audioUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp3|wav))?$/);
+      if (audioMatches) {
+        audioId = audioMatches[1];
+      }
+    }
+
     // Construct transformation URL with proper sizing parameters
-    const transformationUrl = `https://res.cloudinary.com/fornotreel/video/upload/`
+    let transformationUrl = `https://res.cloudinary.com/fornotreel/video/upload/`
       + `q_auto:good/`
       + `c_fill,ar_9:16,w_1080/` // Set aspect ratio and width
       + `so_0/`
       + `l_video:${templateId}/`
       + `c_scale,w_1080/` // Scale template video to match background width
-      + `fl_layer_apply,g_center/`
-      + `${backgroundId}.mp4`;
+      + `fl_layer_apply,g_center`;
+
+    // Add audio if provided
+    if (audioId) {
+      transformationUrl += `/l_audio:${audioId}/fl_layer_apply`;
+    }
+
+    // Add final video
+    transformationUrl += `/${backgroundId}.mp4`;
 
     console.log("Generated URL:", transformationUrl);
     return transformationUrl;
