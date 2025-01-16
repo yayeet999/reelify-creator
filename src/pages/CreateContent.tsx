@@ -11,7 +11,6 @@ import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
-import { VideoUpload } from "@/components/video-editor/VideoUpload";
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -33,7 +32,6 @@ const CreateContent = () => {
   const [duration, setDuration] = useState(5);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4");
   const [savedHooks, setSavedHooks] = useState<SavedHook[]>([]);
-  const [uploadedVideo, setUploadedVideo] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchSavedHooks = async () => {
@@ -86,10 +84,6 @@ const CreateContent = () => {
     acc[hook.product_name].push(hook);
     return acc;
   }, {} as Record<string, SavedHook[]>);
-
-  const handleVideoUpload = (file: File) => {
-    setUploadedVideo(file);
-  };
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
@@ -222,9 +216,6 @@ const CreateContent = () => {
                 />
               </div>
             </div>
-
-            {/* Video Upload Section */}
-            <VideoUpload onVideoSelect={handleVideoUpload} />
 
             <VideoDownloader 
               textOverlay={textOverlay}
