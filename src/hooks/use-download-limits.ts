@@ -9,6 +9,14 @@ interface DownloadLimits {
   remainingDownloads: number | null;
 }
 
+// Align with useSubscriptionGuard tier hierarchy
+const TIER_LEVELS = {
+  free: 0,
+  starter: 1,
+  pro: 2,
+  enterprise: 3,
+};
+
 export function useDownloadLimits() {
   const [limits, setLimits] = useState<DownloadLimits>({
     isLoading: true,
@@ -27,7 +35,7 @@ export function useDownloadLimits() {
           return;
         }
 
-        // First, get user's subscription tier from profiles
+        // Get user's subscription tier from profiles
         const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('subscription_tier')
@@ -43,8 +51,8 @@ export function useDownloadLimits() {
         const tier = profile.subscription_tier as SubscriptionTier;
         console.log('User tier:', tier);
 
-        // If user is on free tier, they can't download
-        if (tier === 'free') {
+        // Check if user's tier level is above free
+        if (TIER_LEVELS[tier] <= TIER_LEVELS.free) {
           console.log('Free tier - no downloads allowed');
           setLimits(prev => ({ ...prev, isLoading: false, canDownload: false }));
           return;
