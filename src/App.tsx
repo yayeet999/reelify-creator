@@ -23,6 +23,7 @@ import StarterGenerateHooks from "./pages/StarterGenerateHooks";
 import StarterSavedHooks from "./pages/StarterSavedHooks";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { StarterDashboardLayout } from "@/components/layouts/StarterDashboardLayout";
+import ProCreateContent from "./pages/ProCreateContent";
 
 const queryClient = new QueryClient();
 
@@ -166,7 +167,19 @@ const App = () => (
             path="/pro/dashboard"
             element={
               <ProtectedRoute>
-                <ProDashboard />
+                <DashboardLayout>
+                  <ProDashboard />
+                </DashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pro/create"
+            element={
+              <ProtectedRoute>
+                <DashboardLayout>
+                  <ProCreateContent />
+                </DashboardLayout>
               </ProtectedRoute>
             }
           />
