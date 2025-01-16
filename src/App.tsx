@@ -27,6 +27,7 @@ import ProCreateContent from "./pages/ProCreateContent";
 import ProGenerateHooks from "./pages/ProGenerateHooks";
 import ProSavedHooks from "./pages/ProSavedHooks";
 import { ProDashboardLayout } from "@/components/layouts/ProDashboardLayout";
+import ProCreateHooks from "./pages/ProCreateHooks";
 
 const queryClient = new QueryClient();
 
@@ -191,6 +192,16 @@ const App = () => (
               <ProtectedRoute>
                 <ProDashboardLayout>
                   <ProGenerateHooks />
+                </ProDashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pro/hooks/create"
+            element={
+              <ProtectedRoute>
+                <ProDashboardLayout>
+                  <ProCreateHooks />
                 </ProDashboardLayout>
               </ProtectedRoute>
             }
