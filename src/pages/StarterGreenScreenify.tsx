@@ -10,11 +10,6 @@ const StarterGreenScreenify = () => {
   const [selectedTemplateUrl, setSelectedTemplateUrl] = useState<string>();
   const [backgroundVideoUrl, setBackgroundVideoUrl] = useState<string>();
 
-  const handleDownload = () => {
-    // This will be implemented later with Cloudinary logic
-    console.log("Download initiated");
-  };
-
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
       <div className="space-y-8">
@@ -66,7 +61,8 @@ const StarterGreenScreenify = () => {
                 />
                 <DownloadButton 
                   disabled={!selectedTemplateUrl || !backgroundVideoUrl}
-                  onClick={handleDownload}
+                  templateVideoUrl={selectedTemplateUrl}
+                  backgroundVideoUrl={backgroundVideoUrl}
                 />
               </div>
             </Card>

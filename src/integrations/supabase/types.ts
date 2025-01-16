@@ -210,6 +210,9 @@ export type Database = {
           billing_period_start: string
           downloaded_at: string
           id: string
+          template_video_id: string | null
+          transformation_params: Json | null
+          transformation_status: string | null
           user_id: string
           video_url: string
         }
@@ -218,6 +221,9 @@ export type Database = {
           billing_period_start: string
           downloaded_at?: string
           id?: string
+          template_video_id?: string | null
+          transformation_params?: Json | null
+          transformation_status?: string | null
           user_id: string
           video_url: string
         }
@@ -226,6 +232,9 @@ export type Database = {
           billing_period_start?: string
           downloaded_at?: string
           id?: string
+          template_video_id?: string | null
+          transformation_params?: Json | null
+          transformation_status?: string | null
           user_id?: string
           video_url?: string
         }
