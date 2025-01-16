@@ -37,14 +37,20 @@ export const VideoDownloader = ({
   const ACTUAL_VIDEO_WIDTH = 1080;
 
   const generateCloudinaryUrl = () => {
+    // Extract the public ID from the current video URL
     const matches = currentVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
-    if (!matches) return currentVideoUrl;
+    if (!matches) {
+      console.error("Could not extract public ID from URL:", currentVideoUrl);
+      return currentVideoUrl;
+    }
     
     const publicId = matches[1];
-    let url = "https://res.cloudinary.com/fornotreel/video/upload";
-    url += "/q_auto:good";
+    console.log("Extracted public ID:", publicId);
 
-    // First, apply text overlay to the template video
+    // Start building the URL with base and quality
+    let transformations = ["q_auto:good"];
+
+    // Add text overlay transformations if text exists
     if (textOverlay) {
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
       const encodedText = encodeURIComponent(textOverlay);
@@ -53,24 +59,24 @@ export const VideoDownloader = ({
       const position = getCloudinaryPosition(textPosition);
       const animationEffect = getCloudinaryAnimation(animation);
 
-      // Apply text overlay transformation
-      url += `/${publicId}`;  // Add template video ID here
-      url += `/c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},w_${textWidth}`;
-      if (animationEffect) url += `,${animationEffect}`;
-      url += `/fl_layer_apply,${position}`;
-
-      // Then add the uploaded video splice if it exists
-      if (uploadedVideoUrl && uploadedVideoPublicId) {
-        url += `/fl_splice,l_video:${uploadedVideoPublicId}`;
-      }
-
-      // Finally, add timing parameters
-      if (startTime > 0) url += `,so_${startTime}`;
-      url += `,dl_${duration}`;
+      let textTransform = `c_fit,l_text:Roboto_${cloudinaryFontSize}_center:${encodedText},co_rgb:${colorHex},w_${textWidth}`;
+      if (animationEffect) textTransform += `,${animationEffect}`;
+      textTransform += `,fl_layer_apply,${position}`;
+      transformations.push(textTransform);
     }
 
-    url += `.mp4`;
-    console.log("Generated URL:", url);
+    // Add video splice if uploaded video exists
+    if (uploadedVideoUrl && uploadedVideoPublicId) {
+      transformations.push(`fl_splice,l_video:${uploadedVideoPublicId}`);
+    }
+
+    // Add timing parameters
+    if (startTime > 0) transformations.push(`so_${startTime}`);
+    transformations.push(`dl_${duration}`);
+
+    // Construct the final URL
+    const url = `https://res.cloudinary.com/fornotreel/video/upload/${transformations.join('/')}/${publicId}.mp4`;
+    console.log("Generated Cloudinary URL:", url);
     return url;
   };
 
@@ -87,6 +93,7 @@ export const VideoDownloader = ({
 
       setIsDownloading(true);
       const transformedUrl = generateCloudinaryUrl();
+      console.log("Initiating download with URL:", transformedUrl);
       
       toast({
         title: "Downloading...",
@@ -94,7 +101,10 @@ export const VideoDownloader = ({
       });
 
       const response = await fetch(transformedUrl);
-      if (!response.ok) throw new Error('Download failed');
+      if (!response.ok) {
+        console.error("Download failed with status:", response.status);
+        throw new Error(`Download failed with status: ${response.status}`);
+      }
       
       const success = await recordDownload(transformedUrl);
       if (!success) {
