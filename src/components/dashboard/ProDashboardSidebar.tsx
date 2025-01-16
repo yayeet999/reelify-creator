@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { FilePlus, Home, ChevronLeft } from "lucide-react";
+import { FilePlus, Home, ChevronLeft, FileText, Save } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -29,6 +29,18 @@ const menuItems = [
     icon: Home,
     path: "/pro/dashboard",
     description: "Pro dashboard overview",
+  },
+  {
+    title: "Generate Hooks",
+    icon: FileText,
+    path: "/pro/hooks",
+    description: "Generate pro hooks",
+  },
+  {
+    title: "Saved Hooks",
+    icon: Save,
+    path: "/pro/saved-hooks",
+    description: "View your saved pro hooks",
   },
 ];
 

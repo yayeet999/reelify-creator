@@ -24,11 +24,12 @@ import StarterSavedHooks from "./pages/StarterSavedHooks";
 import { DashboardLayout } from "@/components/layouts/DashboardLayout";
 import { StarterDashboardLayout } from "@/components/layouts/StarterDashboardLayout";
 import ProCreateContent from "./pages/ProCreateContent";
+import ProGenerateHooks from "./pages/ProGenerateHooks";
+import ProSavedHooks from "./pages/ProSavedHooks";
 import { ProDashboardLayout } from "@/components/layouts/ProDashboardLayout";
 
 const queryClient = new QueryClient();
 
-// Landing page component
 const LandingPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -164,8 +165,6 @@ const App = () => (
           />
 
           {/* Pro Plan Routes */}
-
-          {/* Pro Plan Routes */}
           <Route
             path="/pro/dashboard"
             element={
@@ -186,6 +185,26 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/pro/hooks"
+            element={
+              <ProtectedRoute>
+                <ProDashboardLayout>
+                  <ProGenerateHooks />
+                </ProDashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pro/saved-hooks"
+            element={
+              <ProtectedRoute>
+                <ProDashboardLayout>
+                  <ProSavedHooks />
+                </ProDashboardLayout>
+              </ProtectedRoute>
+            }
+          />
 
           {/* Enterprise Plan Routes */}
           <Route
@@ -197,7 +216,7 @@ const App = () => (
             }
           />
 
-          {/* Common Routes - Each will need their own layout handling */}
+          {/* Common Routes */}
           <Route
             path="/settings"
             element={
@@ -221,4 +240,3 @@ const App = () => (
 );
 
 export default App;
-
