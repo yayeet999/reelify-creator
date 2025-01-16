@@ -166,6 +166,41 @@ export type Database = {
         }
         Relationships: []
       }
+      video_downloads: {
+        Row: {
+          billing_period_end: string
+          billing_period_start: string
+          downloaded_at: string
+          id: string
+          user_id: string
+          video_url: string
+        }
+        Insert: {
+          billing_period_end: string
+          billing_period_start: string
+          downloaded_at?: string
+          id?: string
+          user_id: string
+          video_url: string
+        }
+        Update: {
+          billing_period_end?: string
+          billing_period_start?: string
+          downloaded_at?: string
+          id?: string
+          user_id?: string
+          video_url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "video_downloads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
