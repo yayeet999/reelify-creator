@@ -14,6 +14,8 @@ import { ProVideoThumbnailGrid } from "@/components/video-editor/pro/ProVideoThu
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
 
 interface SavedHook {
   id: string;
@@ -23,6 +25,8 @@ interface SavedHook {
 
 const ProCreateContent = () => {
   const { isLoading, isAuthorized } = useSubscriptionGuard("pro");
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [textOverlay, setTextOverlay] = useState("");
   const [textSize, setTextSize] = useState([16]);
   const [textColor, setTextColor] = useState("#FFFFFF");
@@ -32,6 +36,18 @@ const ProCreateContent = () => {
   const [duration, setDuration] = useState(5);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4");
   const [savedHooks, setSavedHooks] = useState<SavedHook[]>([]);
+
+  useEffect(() => {
+    if (!isAuthorized && !isLoading) {
+      toast({
+        title: "Pro Subscription Required",
+        description: "This feature requires a Pro subscription. Please upgrade your plan.",
+        variant: "destructive",
+      });
+      navigate("/dashboard");
+      return;
+    }
+  }, [isAuthorized, isLoading, navigate, toast]);
 
   useEffect(() => {
     const fetchSavedHooks = async () => {
@@ -88,9 +104,9 @@ const ProCreateContent = () => {
   return (
     <div className="container mx-auto p-6 animate-fade-up">
       <div className="mb-6">
-        <h1 className="text-3xl font-bold text-primary">Create Content</h1>
+        <h1 className="text-3xl font-bold text-primary">Pro Content Creation</h1>
         <p className="text-muted-foreground mt-1">
-          Create and customize your short-form video content
+          Create and customize your professional short-form video content
         </p>
       </div>
 
@@ -100,7 +116,7 @@ const ProCreateContent = () => {
           <CardHeader className="pb-4">
             <CardTitle className="flex items-center gap-2">
               <Video className="w-5 h-5" />
-              <span>Video Preview</span>
+              <span>Pro Video Preview</span>
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -122,7 +138,7 @@ const ProCreateContent = () => {
         {/* Content Configuration */}
         <Card className="xl:col-span-2">
           <CardHeader className="pb-4">
-            <CardTitle>Text Overlay Settings</CardTitle>
+            <CardTitle>Pro Text Overlay Settings</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-1.5">
