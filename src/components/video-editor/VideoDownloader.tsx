@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { useDownloadLimits } from "@/hooks/use-download-limits";
 import { calculateCloudinaryScale, getCloudinaryPosition, getCloudinaryAnimation } from "@/utils/cloudinaryUtils";
+import { supabase } from "@/integrations/supabase/client";
+import { useState } from "react";
 
 interface VideoDownloaderProps {
   textOverlay: string;
@@ -30,6 +32,7 @@ export const VideoDownloader = ({
 }: VideoDownloaderProps) => {
   const { toast } = useToast();
   const { isLoading, canDownload, remainingDownloads, recordDownload } = useDownloadLimits();
+  const [isDownloading, setIsDownloading] = useState(false);
   const PREVIEW_WIDTH = 240;
   const ACTUAL_VIDEO_WIDTH = 1080;
 
@@ -44,11 +47,12 @@ export const VideoDownloader = ({
     let url = "https://res.cloudinary.com/fornotreel/video/upload";
     url += "/q_auto:good";
 
+    // Handle video combination if there's an uploaded video
     if (uploadedVideoUrl && uploadedVideoPublicId) {
-      // Handle combined video case
       url += `/fl_splice,l_video:${uploadedVideoPublicId}`;
     }
 
+    // Add text overlay if provided
     if (textOverlay) {
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
       const encodedText = encodeURIComponent(textOverlay);
@@ -62,10 +66,11 @@ export const VideoDownloader = ({
       if (animationEffect) url += `,${animationEffect}`;
       
       url += `/fl_layer_apply,${position}`;
-
-      if (startTime > 0) url += `,so_${startTime}`;
-      url += `,dl_${duration}`;
     }
+
+    // Add timing parameters
+    if (startTime > 0) url += `,so_${startTime}`;
+    url += `,dl_${duration}`;
 
     url += `/${publicId}.mp4`;
     console.log("Generated URL:", url);
@@ -83,6 +88,7 @@ export const VideoDownloader = ({
         return;
       }
 
+      setIsDownloading(true);
       const transformedUrl = generateCloudinaryUrl();
       
       toast({
@@ -96,6 +102,18 @@ export const VideoDownloader = ({
       const success = await recordDownload(transformedUrl);
       if (!success) {
         throw new Error('Failed to record download');
+      }
+
+      // If we have an uploaded video, mark it as used
+      if (uploadedVideoPublicId) {
+        const { error: updateError } = await supabase
+          .from('temp_video_uploads')
+          .update({ is_used: true })
+          .eq('cloudinary_public_id', uploadedVideoPublicId);
+
+        if (updateError) {
+          console.error('Error marking video as used:', updateError);
+        }
       }
 
       const blob = await response.blob();
@@ -123,6 +141,8 @@ export const VideoDownloader = ({
         description: "There was an error downloading your video. Please try again.",
         variant: "destructive",
       });
+    } finally {
+      setIsDownloading(false);
     }
   };
 
@@ -130,11 +150,12 @@ export const VideoDownloader = ({
     <Button 
       className="w-full mt-4"
       onClick={handleDownload}
-      disabled={isLoading || !canDownload}
+      disabled={isLoading || isDownloading || !canDownload}
     >
       {isLoading ? "Checking limits..." : 
+       isDownloading ? "Downloading..." :
        !canDownload ? "Download limit reached" :
-       `Download with Text Overlay (${remainingDownloads} remaining)`}
+       `Download Video (${remainingDownloads} remaining)`}
     </Button>
   );
 };
