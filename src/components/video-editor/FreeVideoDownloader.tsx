@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Crown } from "lucide-react";
+import { Crown, ArrowRight, ArrowLeft } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface VideoDownloaderProps {
@@ -11,6 +11,10 @@ interface VideoDownloaderProps {
   startTime: number;
   duration: number;
   currentVideoUrl: string;
+  isTemplateSelected: boolean;
+  onProceedWithTemplate: () => void;
+  onGoBackToTemplates: () => void;
+  hasUploadedVideo: boolean;
 }
 
 export const FreeVideoDownloader = ({
@@ -22,12 +26,41 @@ export const FreeVideoDownloader = ({
   startTime,
   duration,
   currentVideoUrl,
+  isTemplateSelected,
+  onProceedWithTemplate,
+  onGoBackToTemplates,
+  hasUploadedVideo,
 }: VideoDownloaderProps) => {
   const navigate = useNavigate();
 
   const handleUpgrade = () => {
     navigate("/#pricing");
   };
+
+  if (!isTemplateSelected) {
+    return (
+      <Button 
+        className="w-full mt-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+        onClick={onProceedWithTemplate}
+      >
+        Proceed with this template
+        <ArrowRight className="ml-2 h-4 w-4" />
+      </Button>
+    );
+  }
+
+  if (!hasUploadedVideo) {
+    return (
+      <Button 
+        variant="outline"
+        className="w-full mt-4"
+        onClick={onGoBackToTemplates}
+      >
+        <ArrowLeft className="mr-2 h-4 w-4" />
+        Go back to templates
+      </Button>
+    );
+  }
 
   return (
     <Button 

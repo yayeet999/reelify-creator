@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { Video, Loader2 } from "lucide-react";
+import { Video, Loader2, ArrowLeft } from "lucide-react";
 import { TextPositionSelector } from "@/components/video-editor/TextPositionSelector";
 import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
@@ -15,6 +15,7 @@ import { VideoUploadSection } from "@/components/video-editor/VideoUploadSection
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 
 interface SavedHook {
   id: string;
@@ -33,8 +34,7 @@ const CreateContent = () => {
   const [duration, setDuration] = useState(5);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4");
   const [savedHooks, setSavedHooks] = useState<SavedHook[]>([]);
-  
-  // Add new state for uploaded video
+  const [isTemplateSelected, setIsTemplateSelected] = useState(false);
   const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string | null>(null);
   const [uploadedVideoPublicId, setUploadedVideoPublicId] = useState<string | null>(null);
 
@@ -86,14 +86,15 @@ const CreateContent = () => {
     setUploadedVideoPublicId(publicId);
   };
 
-  // Group hooks by product name
-  const groupedHooks = savedHooks.reduce((acc, hook) => {
-    if (!acc[hook.product_name]) {
-      acc[hook.product_name] = [];
-    }
-    acc[hook.product_name].push(hook);
-    return acc;
-  }, {} as Record<string, SavedHook[]>);
+  const handleProceedWithTemplate = () => {
+    setIsTemplateSelected(true);
+  };
+
+  const handleGoBackToTemplates = () => {
+    setIsTemplateSelected(false);
+    setUploadedVideoUrl(null);
+    setUploadedVideoPublicId(null);
+  };
 
   return (
     <div className="container mx-auto p-6 animate-fade-up">
@@ -122,10 +123,12 @@ const CreateContent = () => {
               position={textPosition}
               animation={animation}
             />
-            <VideoThumbnailGrid 
-              currentVideoUrl={currentVideoUrl}
-              onVideoSelect={setCurrentVideoUrl}
-            />
+            {!isTemplateSelected && (
+              <VideoThumbnailGrid 
+                currentVideoUrl={currentVideoUrl}
+                onVideoSelect={setCurrentVideoUrl}
+              />
+            )}
           </CardContent>
         </Card>
 
@@ -142,7 +145,7 @@ const CreateContent = () => {
                   <SelectValue placeholder="Choose a saved hook..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {Object.entries(groupedHooks).map(([productName, hooks]) => (
+                  {Object.entries(savedHooks).map(([productName, hooks]) => (
                     <SelectGroup key={productName}>
                       <SelectLabel>{productName}</SelectLabel>
                       {hooks.map((hook) => (
@@ -227,8 +230,21 @@ const CreateContent = () => {
               </div>
             </div>
 
-            {/* Add Video Upload Section */}
-            <VideoUploadSection onVideoSelect={handleVideoUpload} />
+            {isTemplateSelected && (
+              <>
+                <div className="mt-6">
+                  <Button
+                    variant="outline"
+                    className="mb-4 w-full"
+                    onClick={handleGoBackToTemplates}
+                  >
+                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    Go back to templates
+                  </Button>
+                  <VideoUploadSection onVideoSelect={handleVideoUpload} />
+                </div>
+              </>
+            )}
 
             <VideoDownloader 
               textOverlay={textOverlay}
@@ -239,8 +255,10 @@ const CreateContent = () => {
               startTime={startTime}
               duration={duration}
               currentVideoUrl={currentVideoUrl}
-              uploadedVideoUrl={uploadedVideoUrl}
-              uploadedVideoPublicId={uploadedVideoPublicId}
+              isTemplateSelected={isTemplateSelected}
+              onProceedWithTemplate={handleProceedWithTemplate}
+              onGoBackToTemplates={handleGoBackToTemplates}
+              hasUploadedVideo={!!uploadedVideoUrl}
             />
           </CardContent>
         </Card>
