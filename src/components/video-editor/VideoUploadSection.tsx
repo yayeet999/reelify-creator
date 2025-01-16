@@ -32,8 +32,8 @@ export const VideoUploadSection = ({ onVideoSelect }: VideoUploadSectionProps) =
     return new Promise((resolve) => {
       video.onloadedmetadata = () => {
         window.URL.revokeObjectURL(video.src);
-        if (video.duration > 30) {
-          setError('Video must be 30 seconds or less.');
+        if (video.duration > 40) {
+          setError('Video must be 40 seconds or less.');
           resolve(false);
         } else {
           setError(null);
@@ -141,7 +141,7 @@ export const VideoUploadSection = ({ onVideoSelect }: VideoUploadSectionProps) =
             MP4, MOV, or WEBM format
           </p>
           <p className="text-xs text-muted-foreground">
-            30 seconds max
+            40 seconds max
           </p>
         </div>
       </div>
