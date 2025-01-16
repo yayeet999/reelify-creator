@@ -37,8 +37,6 @@ export const VideoDownloader = ({
   const ACTUAL_VIDEO_WIDTH = 1080;
 
   const generateCloudinaryUrl = () => {
-    if (!textOverlay && !uploadedVideoUrl) return currentVideoUrl;
-
     // Extract the version and public ID from the currentVideoUrl
     const matches = currentVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
     if (!matches) return currentVideoUrl;
@@ -47,12 +45,7 @@ export const VideoDownloader = ({
     let url = "https://res.cloudinary.com/fornotreel/video/upload";
     url += "/q_auto:good";
 
-    // Handle video combination if there's an uploaded video
-    if (uploadedVideoUrl && uploadedVideoPublicId) {
-      url += `/fl_splice,l_video:${uploadedVideoPublicId}`;
-    }
-
-    // Add text overlay if provided
+    // First, apply text overlay to the template video if provided
     if (textOverlay) {
       const textWidth = Math.round(ACTUAL_VIDEO_WIDTH * 0.8);
       const encodedText = encodeURIComponent(textOverlay);
@@ -68,7 +61,12 @@ export const VideoDownloader = ({
       url += `/fl_layer_apply,${position}`;
     }
 
-    // Add timing parameters
+    // Then, add the uploaded video splice if it exists
+    if (uploadedVideoUrl && uploadedVideoPublicId) {
+      url += `/fl_splice,l_video:${uploadedVideoPublicId}`;
+    }
+
+    // Finally, add timing parameters
     if (startTime > 0) url += `,so_${startTime}`;
     url += `,dl_${duration}`;
 
