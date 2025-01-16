@@ -1,135 +1,187 @@
-import { useNavigate } from "react-router-dom";
-import { Code, FileCode, GitBranch } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
 
 const ProCreateHooks = () => {
-  const navigate = useNavigate();
-  const { toast } = useToast();
-  const [hookText, setHookText] = useState("");
+  const [inputText, setInputText] = useState("");
   const [productName, setProductName] = useState("");
-  const { isLoading } = useSubscriptionGuard("pro");
+  const [isLoading, setIsLoading] = useState(false);
+  const [generatedHooks, setGeneratedHooks] = useState<string[]>([]);
+  const { toast } = useToast();
+  const { isLoading: isLoadingSubscription } = useSubscriptionGuard("pro");
 
-  const handleSaveHook = async () => {
+  const handleGenerateHooks = async () => {
+    if (inputText.length < 50) {
+      toast({
+        title: "Description too short",
+        description: "Please enter at least 50 characters for the product description.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!productName) {
+      toast({
+        title: "Product name required",
+        description: "Please enter a product name.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsLoading(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      // Get the current user
+      const { data: { user } } = await supabase.auth.getUser();
       
-      if (!session) {
-        toast({
-          title: "Authentication required",
-          description: "Please sign in to save hooks",
-          variant: "destructive",
-        });
-        return;
+      if (!user) {
+        throw new Error('User not authenticated');
       }
 
-      if (!hookText.trim() || !productName.trim()) {
-        toast({
-          title: "Required fields missing",
-          description: "Please enter both hook code and product name",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { error } = await supabase
-        .from('saved_hooks')
-        .insert([
-          {
-            user_id: session.user.id,
-            hook_text: hookText,
-            product_name: productName,
-          }
-        ]);
+      const { data, error } = await supabase.functions.invoke('generate-hooks', {
+        body: {
+          productName,
+          productDescription: inputText,
+        },
+      });
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Hook saved successfully",
-      });
+      setGeneratedHooks(data.hooks);
+      
+      // Automatically save generated hooks
+      for (const hookText of data.hooks) {
+        const { error: saveError } = await supabase
+          .from('saved_hooks')
+          .insert({
+            hook_text: hookText,
+            product_name: productName,
+            user_id: user.id
+          });
 
-      navigate("/pro/saved-hooks");
-    } catch (error) {
-      console.error("Error saving hook:", error);
+        if (saveError) {
+          console.error('Error saving hook:', saveError);
+          throw saveError;
+        }
+      }
+
       toast({
-        title: "Error",
-        description: "Failed to save hook. Please try again.",
+        title: "Hooks generated and saved!",
+        description: "Your hooks have been generated and automatically saved.",
+      });
+    } catch (error) {
+      console.error('Error generating hooks:', error);
+      toast({
+        title: "Error generating hooks",
+        description: "Please try again later.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  if (isLoading) {
+  if (isLoadingSubscription) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
       <div className="space-y-8">
-        {/* Header Section */}
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
-          <div className="max-w-3xl">
-            <div className="flex items-center gap-3">
-              <Code className="h-8 w-8 text-primary" />
-              <h1 className="text-4xl font-bold tracking-tight text-primary">
-                Create Pro Custom Hook
-              </h1>
-            </div>
+          <div className="max-w-3xl mb-6">
+            <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary-light bg-clip-text text-transparent">
+              Generate Pro Hooks
+            </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Generate and save professional-grade React hooks with advanced features
+              Create professional-grade hooks for your applications
             </p>
           </div>
-        </div>
 
-        {/* Hook Creation Form */}
-        <div className="grid gap-6">
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="productName" className="block text-sm font-medium text-gray-700 mb-1">
-                Product Name
-              </label>
-              <input
-                id="productName"
-                type="text"
-                value={productName}
-                onChange={(e) => setProductName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-                placeholder="Enter product name"
-              />
-            </div>
-            <div>
-              <label htmlFor="hookCode" className="block text-sm font-medium text-gray-700 mb-1">
-                Hook Code
-              </label>
-              <Textarea
-                id="hookCode"
-                value={hookText}
-                onChange={(e) => setHookText(e.target.value)}
-                className="min-h-[300px] font-mono"
-                placeholder="Enter your custom hook code here..."
-              />
-            </div>
-            <div className="flex gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  What's your product?
+                </label>
+                <Input
+                  placeholder="Enter your product name..."
+                  value={productName}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 25) {
+                      setProductName(e.target.value);
+                    }
+                  }}
+                  maxLength={25}
+                />
+                <p className="text-xs text-muted-foreground">
+                  {productName.length}/25 characters
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium">
+                  Product Description:
+                </label>
+                <Textarea
+                  placeholder="Describe your product, service, or topic..."
+                  className="min-h-[150px] resize-none"
+                  value={inputText}
+                  onChange={(e) => {
+                    if (e.target.value.length <= 150) {
+                      setInputText(e.target.value);
+                    }
+                  }}
+                  maxLength={150}
+                  required
+                />
+                <p className="text-xs text-muted-foreground">
+                  {inputText.length}/150 characters (minimum 50)
+                </p>
+              </div>
+
               <Button
-                onClick={handleSaveHook}
-                className="flex items-center gap-2"
+                className="w-full"
+                size="lg"
+                onClick={handleGenerateHooks}
+                disabled={isLoading || inputText.length < 50 || !productName}
               >
-                <FileCode className="h-4 w-4" />
-                Save Hook
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Generating...
+                  </>
+                ) : (
+                  "Generate Pro Hooks"
+                )}
               </Button>
-              <Button
-                variant="outline"
-                onClick={() => navigate("/pro/hooks")}
-                className="flex items-center gap-2"
-              >
-                <GitBranch className="h-4 w-4" />
-                Back to Hooks
-              </Button>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-4">
+              <ScrollArea className="h-[500px] w-full rounded-md border">
+                <div className="p-4 space-y-4">
+                  {generatedHooks.length > 0 ? (
+                    generatedHooks.map((hook, index) => (
+                      <div
+                        key={index}
+                        className="p-3 bg-white rounded-lg shadow-sm border border-gray-100"
+                      >
+                        <p className="text-sm">{hook}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground text-center">
+                      Your generated hooks will appear here...
+                    </p>
+                  )}
+                </div>
+              </ScrollArea>
             </div>
           </div>
         </div>
