@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Crown, ArrowRight, ArrowLeft } from "lucide-react";
+import { Crown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface VideoDownloaderProps {
@@ -44,7 +44,6 @@ export const FreeVideoDownloader = ({
         onClick={onProceedWithTemplate}
       >
         Proceed with this template
-        <ArrowRight className="ml-2 h-4 w-4" />
       </Button>
     );
   }
