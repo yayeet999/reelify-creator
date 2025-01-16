@@ -93,7 +93,7 @@ export const CombinedVideoPreview = ({
         preload="auto"
       />
       
-      {/* Watermark overlay */}
+      {/* Watermark overlay - Always visible */}
       <div className="absolute inset-0 z-[20] pointer-events-none">
         <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-[0.15]">
           {[...Array(9)].map((_, i) => (
@@ -106,8 +106,8 @@ export const CombinedVideoPreview = ({
         </div>
       </div>
 
-      {/* Text overlay */}
-      {text && (
+      {/* Text overlay - Only visible during template video */}
+      {text && currentVideo === "template" && (
         <div 
           key={`${text}-${animation}-${position}-${currentVideo}`}
           className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-[25px] py-2 z-[30] ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
