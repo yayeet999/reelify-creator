@@ -11,18 +11,13 @@ import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { CombinedVideoPreview } from "@/components/video-editor/CombinedVideoPreview";
 import { FreeVideoDownloader } from "@/components/video-editor/FreeVideoDownloader";
+import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { VideoUploadSection } from "@/components/video-editor/VideoUploadSection";
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-
-interface SavedHook {
-  id: string;
-  hook_text: string;
-  product_name: string;
-}
 
 const CreateContent = () => {
   const { isLoading, isAuthorized } = useSubscriptionGuard("starter");
@@ -267,20 +262,35 @@ const CreateContent = () => {
               </>
             )}
 
-            <FreeVideoDownloader 
-              textOverlay={textOverlay}
-              textColor={textColor}
-              textSize={textSize[0]}
-              textPosition={textPosition}
-              animation={animation}
-              startTime={startTime}
-              duration={duration}
-              currentVideoUrl={currentVideoUrl}
-              isTemplateSelected={isTemplateSelected}
-              onProceedWithTemplate={handleProceedWithTemplate}
-              onGoBackToTemplates={handleGoBackToTemplates}
-              hasUploadedVideo={!!uploadedVideoUrl}
-            />
+            {!isTemplateSelected ? (
+              <FreeVideoDownloader 
+                textOverlay={textOverlay}
+                textColor={textColor}
+                textSize={textSize[0]}
+                textPosition={textPosition}
+                animation={animation}
+                startTime={startTime}
+                duration={duration}
+                currentVideoUrl={currentVideoUrl}
+                isTemplateSelected={isTemplateSelected}
+                onProceedWithTemplate={handleProceedWithTemplate}
+                onGoBackToTemplates={handleGoBackToTemplates}
+                hasUploadedVideo={!!uploadedVideoUrl}
+              />
+            ) : (
+              <VideoDownloader
+                textOverlay={textOverlay}
+                textColor={textColor}
+                textSize={textSize[0]}
+                textPosition={textPosition}
+                animation={animation}
+                startTime={startTime}
+                duration={duration}
+                currentVideoUrl={currentVideoUrl}
+                uploadedVideoUrl={uploadedVideoUrl}
+                uploadedVideoPublicId={uploadedVideoPublicId}
+              />
+            )}
           </CardContent>
         </Card>
       </div>
