@@ -9,6 +9,7 @@ import { TextPositionSelector } from "@/components/video-editor/TextPositionSele
 import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
+import { CombinedVideoPreview } from "@/components/video-editor/CombinedVideoPreview";
 import { FreeVideoDownloader } from "@/components/video-editor/FreeVideoDownloader";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { VideoUploadSection } from "@/components/video-editor/VideoUploadSection";
@@ -115,14 +116,26 @@ const CreateContent = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <VideoPreview
-              videoUrl={uploadedVideoUrl || currentVideoUrl}
-              text={textOverlay}
-              textColor={textColor}
-              textSize={textSize[0]}
-              position={textPosition}
-              animation={animation}
-            />
+            {uploadedVideoUrl ? (
+              <CombinedVideoPreview
+                templateVideoUrl={currentVideoUrl}
+                uploadedVideoUrl={uploadedVideoUrl}
+                text={textOverlay}
+                textColor={textColor}
+                textSize={textSize[0]}
+                position={textPosition}
+                animation={animation}
+              />
+            ) : (
+              <VideoPreview
+                videoUrl={currentVideoUrl}
+                text={textOverlay}
+                textColor={textColor}
+                textSize={textSize[0]}
+                position={textPosition}
+                animation={animation}
+              />
+            )}
             
             {/* Show selected template thumbnail when isTemplateSelected is true */}
             {isTemplateSelected ? (
