@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { FilePlus, Home, ChevronLeft, Code, Bookmark } from "lucide-react";
+import { FilePlus, Home, ChevronLeft, Code, Bookmark, Video } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -40,6 +40,12 @@ const menuItems = [
     icon: Bookmark,
     path: "/starter/saved-hooks",
     description: "View your saved hooks",
+  },
+  {
+    title: "Green Screenify",
+    icon: Video,
+    path: "/starter/green-screenify",
+    description: "Create videos with custom backgrounds",
   },
 ];
 

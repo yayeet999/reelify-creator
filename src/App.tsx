@@ -28,6 +28,7 @@ import ProGenerateHooks from "./pages/ProGenerateHooks";
 import ProSavedHooks from "./pages/ProSavedHooks";
 import { ProDashboardLayout } from "@/components/layouts/ProDashboardLayout";
 import ProCreateHooks from "./pages/ProCreateHooks";
+import StarterGreenScreenify from "./pages/StarterGreenScreenify";
 
 const queryClient = new QueryClient();
 
@@ -138,6 +139,16 @@ const App = () => (
               <ProtectedRoute>
                 <StarterDashboardLayout>
                   <StarterSavedHooks />
+                </StarterDashboardLayout>
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/starter/green-screenify"
+            element={
+              <ProtectedRoute>
+                <StarterDashboardLayout>
+                  <StarterGreenScreenify />
                 </StarterDashboardLayout>
               </ProtectedRoute>
             }
