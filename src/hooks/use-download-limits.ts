@@ -30,7 +30,7 @@ export function useDownloadLimits() {
           .from('profiles')
           .select('subscription_tier')
           .eq('id', session.user.id)
-          .single();
+          .maybeSingle();
 
         if (!profile) {
           setLimits(prev => ({ ...prev, isLoading: false, canDownload: false }));
@@ -43,9 +43,10 @@ export function useDownloadLimits() {
           .select('current_period_start, current_period_end')
           .eq('user_id', session.user.id)
           .eq('status', 'active')
-          .single();
+          .maybeSingle();
 
         if (!subscription) {
+          console.log('No active subscription found for user');
           setLimits(prev => ({ ...prev, isLoading: false, canDownload: false }));
           return;
         }
@@ -56,9 +57,10 @@ export function useDownloadLimits() {
           .select('feature_limit')
           .eq('tier', profile.subscription_tier)
           .eq('feature_name', 'video_downloads')
-          .single();
+          .maybeSingle();
 
         if (!tierFeature) {
+          console.log('No tier feature found for subscription tier:', profile.subscription_tier);
           setLimits(prev => ({ ...prev, isLoading: false, canDownload: false }));
           return;
         }
@@ -105,9 +107,12 @@ export function useDownloadLimits() {
         .select('current_period_start, current_period_end')
         .eq('user_id', session.user.id)
         .eq('status', 'active')
-        .single();
+        .maybeSingle();
 
-      if (!subscription) return false;
+      if (!subscription) {
+        console.log('No active subscription found when recording download');
+        return false;
+      }
 
       const { error } = await supabase
         .from('video_downloads')
