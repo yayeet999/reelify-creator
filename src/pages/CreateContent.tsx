@@ -12,7 +12,6 @@ import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { VideoDownloader } from "@/components/video-editor/VideoDownloader";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { VideoUploadSection } from "@/components/video-editor/VideoUploadSection";
-import { CombinedVideoPreview } from "@/components/video-editor/CombinedVideoPreview";
 import { useSubscriptionGuard } from "@/hooks/use-subscription-guard";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +33,8 @@ const CreateContent = () => {
   const [duration, setDuration] = useState(5);
   const [currentVideoUrl, setCurrentVideoUrl] = useState("https://res.cloudinary.com/fornotreel/video/upload/v1736199309/20250105_1242_Elegant_Salon_Serenity_storyboard_01jgvwd77yea4aj4c691mqbypv_ier4c2.mp4");
   const [savedHooks, setSavedHooks] = useState<SavedHook[]>([]);
+  
+  // Add new state for uploaded video
   const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string | null>(null);
   const [uploadedVideoPublicId, setUploadedVideoPublicId] = useState<string | null>(null);
 
@@ -113,26 +114,14 @@ const CreateContent = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {uploadedVideoUrl ? (
-              <CombinedVideoPreview
-                templateVideoUrl={currentVideoUrl}
-                uploadedVideoUrl={uploadedVideoUrl}
-                text={textOverlay}
-                textColor={textColor}
-                textSize={textSize[0]}
-                position={textPosition}
-                animation={animation}
-              />
-            ) : (
-              <VideoPreview
-                videoUrl={currentVideoUrl}
-                text={textOverlay}
-                textColor={textColor}
-                textSize={textSize[0]}
-                position={textPosition}
-                animation={animation}
-              />
-            )}
+            <VideoPreview
+              videoUrl={currentVideoUrl}
+              text={textOverlay}
+              textColor={textColor}
+              textSize={textSize[0]}
+              position={textPosition}
+              animation={animation}
+            />
             <VideoThumbnailGrid 
               currentVideoUrl={currentVideoUrl}
               onVideoSelect={setCurrentVideoUrl}
@@ -238,6 +227,7 @@ const CreateContent = () => {
               </div>
             </div>
 
+            {/* Add Video Upload Section */}
             <VideoUploadSection onVideoSelect={handleVideoUpload} />
 
             <VideoDownloader 
