@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 interface VideoUploadSectionProps {
   onVideoSelect: (url: string, publicId: string) => void;
@@ -41,6 +42,20 @@ export const VideoUploadSection = ({ onVideoSelect }: VideoUploadSectionProps) =
     });
   };
 
+  const trackUploadInDatabase = async (publicId: string, url: string) => {
+    const { error: dbError } = await supabase
+      .from('temp_video_uploads')
+      .insert({
+        cloudinary_public_id: publicId,
+        cloudinary_url: url,
+      });
+
+    if (dbError) {
+      console.error('Error tracking upload:', dbError);
+      throw new Error('Failed to track upload');
+    }
+  };
+
   const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -67,6 +82,11 @@ export const VideoUploadSection = ({ onVideoSelect }: VideoUploadSectionProps) =
       if (!response.ok) throw new Error('Upload failed');
 
       const data = await response.json();
+      
+      // Track the upload in our database
+      await trackUploadInDatabase(data.public_id, data.secure_url);
+      
+      // Update the parent component
       onVideoSelect(data.secure_url, data.public_id);
       
       toast({

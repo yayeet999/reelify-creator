@@ -139,6 +139,44 @@ export type Database = {
           },
         ]
       }
+      temp_video_uploads: {
+        Row: {
+          cloudinary_public_id: string
+          cloudinary_url: string
+          created_at: string
+          id: string
+          is_used: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cloudinary_public_id: string
+          cloudinary_url: string
+          created_at?: string
+          id?: string
+          is_used?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cloudinary_public_id?: string
+          cloudinary_url?: string
+          created_at?: string
+          id?: string
+          is_used?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "temp_video_uploads_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tier_features: {
         Row: {
           created_at: string
