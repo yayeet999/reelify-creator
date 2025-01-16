@@ -38,7 +38,7 @@ export const CombinedPreview = ({ templateVideoUrl, backgroundVideoUrl }: Combin
   if (!templateVideoUrl && !backgroundVideoUrl) {
     return (
       <div className="bg-accent/10 rounded-lg p-4 border-2 border-dashed border-primary/20">
-        <div className="aspect-video flex items-center justify-center">
+        <div className="aspect-[9/16] flex items-center justify-center">
           <p className="text-muted-foreground">
             Select a template and upload a background video to see the preview
           </p>
@@ -48,7 +48,7 @@ export const CombinedPreview = ({ templateVideoUrl, backgroundVideoUrl }: Combin
   }
 
   return (
-    <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
+    <div className="relative aspect-[9/16] bg-black rounded-lg overflow-hidden max-w-[240px] mx-auto">
       {/* Background Video Layer */}
       {backgroundVideoUrl && (
         <video
