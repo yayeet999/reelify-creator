@@ -19,6 +19,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { SavedHook } from "@/integrations/supabase/types/saved-hooks";
+import { useToast } from "@/hooks/use-toast";
 
 const CreateContent = () => {
   const { isLoading, isAuthorized } = useSubscriptionGuard("starter");
@@ -34,23 +35,38 @@ const CreateContent = () => {
   const [isTemplateSelected, setIsTemplateSelected] = useState(false);
   const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string | null>(null);
   const [uploadedVideoPublicId, setUploadedVideoPublicId] = useState<string | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchSavedHooks = async () => {
-      const { data, error } = await supabase
-        .from('saved_hooks')
-        .select('id, hook_text, product_name');
-      
-      if (error) {
-        console.error('Error fetching saved hooks:', error);
-        return;
-      }
+      try {
+        const { data, error } = await supabase
+          .from('saved_hooks')
+          .select('*');
+        
+        if (error) {
+          console.error('Error fetching saved hooks:', error);
+          toast({
+            title: "Error fetching saved hooks",
+            description: "Please try again later",
+            variant: "destructive"
+          });
+          return;
+        }
 
-      setSavedHooks(data || []);
+        setSavedHooks(data || []);
+      } catch (error) {
+        console.error('Error in fetchSavedHooks:', error);
+        toast({
+          title: "Unexpected error",
+          description: "Please try again later",
+          variant: "destructive"
+        });
+      }
     };
 
     fetchSavedHooks();
-  }, []);
+  }, [toast]);
 
   if (isLoading) {
     return (
@@ -300,4 +316,3 @@ const CreateContent = () => {
 };
 
 export default CreateContent;
-
