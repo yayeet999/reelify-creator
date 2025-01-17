@@ -131,7 +131,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Leia</label>
+        <label className="text-sm font-medium">Choose Voice</label>
         <div className="flex items-center gap-2">
           <Select 
             value={selectedVoice} 
