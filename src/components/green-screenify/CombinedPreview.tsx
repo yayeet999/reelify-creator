@@ -19,6 +19,7 @@ export const CombinedPreview = ({
   const audioRef = useRef<HTMLAudioElement>(null);
   const [isAudioMuted, setIsAudioMuted] = useState(false);
   const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [isAudioLoaded, setIsAudioLoaded] = useState(false);
   const { toast } = useToast();
 
   // Handle video playback and synchronization
@@ -40,34 +41,30 @@ export const CombinedPreview = ({
 
           // Play both videos
           await Promise.all([
-            templateVideo.play().catch(error => {
-              console.error('Template video play error:', error);
-              return templateVideo.play();
-            }),
-            backgroundVideo.play().catch(error => {
-              console.error('Background video play error:', error);
-              return backgroundVideo.play();
-            })
+            templateVideo.play(),
+            backgroundVideo.play()
           ]);
 
-          // If audio exists, sync it with videos
-          if (audio) {
+          // If audio exists and is loaded, sync it with videos
+          if (audio && isAudioLoaded) {
             audio.currentTime = 0;
             audio.muted = isAudioMuted;
-            await audio.play().catch(error => {
+            try {
+              await audio.play();
+            } catch (error) {
               console.error('Audio play error:', error);
               toast({
                 title: "Audio Playback Error",
-                description: "There was an error playing the audio",
+                description: "There was an error playing the audio. Please try unmuting or refreshing.",
                 variant: "destructive",
               });
-            });
+            }
           }
         } catch (error) {
           console.error('Error playing media:', error);
           toast({
             title: "Playback Error",
-            description: "There was an error playing the preview",
+            description: "There was an error playing the preview. Please refresh and try again.",
             variant: "destructive",
           });
         }
@@ -75,48 +72,60 @@ export const CombinedPreview = ({
 
       // Add video event listeners for better synchronization
       templateVideo.addEventListener('play', playMedia);
-      templateVideo.addEventListener('pause', () => audio?.pause());
-      backgroundVideo.addEventListener('play', playMedia);
-      backgroundVideo.addEventListener('pause', () => audio?.pause());
-
-      // Add error event listeners
-      templateVideo.addEventListener('error', (e) => {
-        console.error('Template video error:', e);
+      templateVideo.addEventListener('pause', () => {
+        if (audio && isAudioLoaded) {
+          audio.pause();
+        }
       });
-      backgroundVideo.addEventListener('error', (e) => {
-        console.error('Background video error:', e);
+      backgroundVideo.addEventListener('play', playMedia);
+      backgroundVideo.addEventListener('pause', () => {
+        if (audio && isAudioLoaded) {
+          audio.pause();
+        }
       });
 
       // Initial play when metadata is loaded
-      templateVideo.addEventListener('loadedmetadata', playMedia);
-      backgroundVideo.addEventListener('loadedmetadata', playMedia);
+      const handleMetadata = () => {
+        if (templateVideo.readyState >= 2 && backgroundVideo.readyState >= 2) {
+          playMedia();
+        }
+      };
+
+      templateVideo.addEventListener('loadedmetadata', handleMetadata);
+      backgroundVideo.addEventListener('loadedmetadata', handleMetadata);
 
       return () => {
-        templateVideo.removeEventListener('loadedmetadata', playMedia);
-        backgroundVideo.removeEventListener('loadedmetadata', playMedia);
+        templateVideo.removeEventListener('loadedmetadata', handleMetadata);
+        backgroundVideo.removeEventListener('loadedmetadata', handleMetadata);
         templateVideo.removeEventListener('play', playMedia);
-        templateVideo.removeEventListener('pause', () => audio?.pause());
+        templateVideo.removeEventListener('pause', () => {});
         backgroundVideo.removeEventListener('play', playMedia);
-        backgroundVideo.removeEventListener('pause', () => audio?.pause());
-        templateVideo.removeEventListener('error', () => {});
-        backgroundVideo.removeEventListener('error', () => {});
+        backgroundVideo.removeEventListener('pause', () => {});
       };
     }
-  }, [templateVideoUrl, backgroundVideoUrl, isAudioMuted, toast]);
+  }, [templateVideoUrl, backgroundVideoUrl, isAudioMuted, isAudioLoaded, toast]);
 
-  // Handle audio state changes
+  // Handle audio state changes and loading
   useEffect(() => {
     const audio = audioRef.current;
     if (audio) {
+      setIsAudioLoaded(false);
+      
+      // Configure audio element
+      audio.crossOrigin = "anonymous";
+      audio.preload = "auto";
+
       // Add audio event listeners
       const handlePlay = () => setIsAudioPlaying(true);
       const handlePause = () => setIsAudioPlaying(false);
       const handleEnded = () => setIsAudioPlaying(false);
+      const handleLoaded = () => setIsAudioLoaded(true);
       const handleError = (e: Event) => {
         console.error('Audio error:', e);
+        setIsAudioLoaded(false);
         toast({
           title: "Audio Error",
-          description: "There was an error playing the audio",
+          description: "There was an error loading the audio. Please try again.",
           variant: "destructive",
         });
       };
@@ -124,6 +133,7 @@ export const CombinedPreview = ({
       audio.addEventListener('play', handlePlay);
       audio.addEventListener('pause', handlePause);
       audio.addEventListener('ended', handleEnded);
+      audio.addEventListener('loadeddata', handleLoaded);
       audio.addEventListener('error', handleError);
 
       // Set initial audio state
@@ -133,6 +143,7 @@ export const CombinedPreview = ({
         audio.removeEventListener('play', handlePlay);
         audio.removeEventListener('pause', handlePause);
         audio.removeEventListener('ended', handleEnded);
+        audio.removeEventListener('loadeddata', handleLoaded);
         audio.removeEventListener('error', handleError);
       };
     }
@@ -140,7 +151,7 @@ export const CombinedPreview = ({
 
   const toggleAudioMute = () => {
     const audio = audioRef.current;
-    if (audio) {
+    if (audio && isAudioLoaded) {
       const newMutedState = !isAudioMuted;
       audio.muted = newMutedState;
       setIsAudioMuted(newMutedState);
@@ -176,6 +187,7 @@ export const CombinedPreview = ({
           muted
           playsInline
           preload="auto"
+          crossOrigin="anonymous"
         />
       )}
       
@@ -189,6 +201,7 @@ export const CombinedPreview = ({
           muted
           playsInline
           preload="auto"
+          crossOrigin="anonymous"
         />
       )}
 
@@ -200,6 +213,7 @@ export const CombinedPreview = ({
             src={audioUrl}
             loop
             preload="auto"
+            crossOrigin="anonymous"
           />
           <div className="absolute bottom-2 right-2 z-20">
             <Button
@@ -207,6 +221,7 @@ export const CombinedPreview = ({
               size="icon"
               className="h-8 w-8 bg-black/50 hover:bg-black/70"
               onClick={toggleAudioMute}
+              disabled={!isAudioLoaded}
             >
               {isAudioMuted ? (
                 <VolumeX className="h-4 w-4 text-white" />
