@@ -41,6 +41,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
   const [text, setText] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
+  const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string>("");
   const { toast } = useToast();
 
   const handlePreview = async () => {
@@ -108,6 +109,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
       if (error) throw error;
 
       if (data?.audioUrl) {
+        setGeneratedAudioUrl(data.audioUrl);
         onAudioGenerated(data.audioUrl);
         toast({
           title: "Success",
@@ -199,6 +201,17 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
         )}
         {isGenerating ? "Generating..." : "Generate Voice"}
       </Button>
+
+      {generatedAudioUrl && (
+        <div className="pt-4">
+          <label className="text-sm font-medium block mb-2">Generated Audio Preview</label>
+          <audio 
+            controls 
+            className="w-full"
+            src={generatedAudioUrl}
+          />
+        </div>
+      )}
     </div>
   );
 };
