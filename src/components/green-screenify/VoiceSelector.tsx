@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mic, Play, Loader2 } from "lucide-react";
+import { Mic, Play, Loader2, Volume2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -41,6 +41,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
   const [text, setText] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
+  const [generatedAudioUrl, setGeneratedAudioUrl] = useState<string>("");
   const { toast } = useToast();
 
   const handlePreview = async () => {
@@ -108,6 +109,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
       if (error) throw error;
 
       if (data?.audioUrl) {
+        setGeneratedAudioUrl(data.audioUrl);
         onAudioGenerated(data.audioUrl);
         toast({
           title: "Success",
@@ -125,6 +127,26 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
       });
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const playGeneratedAudio = async () => {
+    if (!generatedAudioUrl) return;
+    
+    try {
+      const audio = new Audio(generatedAudioUrl);
+      await audio.play();
+      toast({
+        title: "Playing",
+        description: "Playing generated audio...",
+      });
+    } catch (error) {
+      console.error('Error playing generated audio:', error);
+      toast({
+        title: "Error",
+        description: "Failed to play generated audio. Please try again.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -187,18 +209,31 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
         />
       </div>
 
-      <Button
-        className="w-full"
-        onClick={handleGenerate}
-        disabled={isGenerating || !selectedVoice || !text.trim()}
-      >
-        {isGenerating ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Mic className="mr-2 h-4 w-4" />
+      <div className="space-y-2">
+        <Button
+          className="w-full"
+          onClick={handleGenerate}
+          disabled={isGenerating || !selectedVoice || !text.trim()}
+        >
+          {isGenerating ? (
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          ) : (
+            <Mic className="mr-2 h-4 w-4" />
+          )}
+          {isGenerating ? "Generating..." : "Generate Voice"}
+        </Button>
+
+        {generatedAudioUrl && (
+          <Button
+            variant="outline"
+            className="w-full mt-2"
+            onClick={playGeneratedAudio}
+          >
+            <Volume2 className="mr-2 h-4 w-4" />
+            Play Generated Audio
+          </Button>
         )}
-        {isGenerating ? "Generating..." : "Generate Voice"}
-      </Button>
+      </div>
     </div>
   );
 };
