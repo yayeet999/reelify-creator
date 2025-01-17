@@ -25,10 +25,12 @@ export const DownloadButton = ({
   const generateCloudinaryUrl = () => {
     if (!templateVideoUrl || !backgroundVideoUrl) return null;
 
-    // Extract template video ID from URL
-    const templateMatches = templateVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
+    // Extract template video ID from URL, including file extension
+    const templateMatches = templateVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(webm|mp4))?$/);
     if (!templateMatches) return null;
     const templateId = templateMatches[1];
+    const templateExt = templateMatches[2] || 'mp4';
+    const fullTemplateId = `${templateId}.${templateExt}`;
 
     // Extract background video ID from URL
     const backgroundMatches = backgroundVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
@@ -50,11 +52,11 @@ export const DownloadButton = ({
       + `q_auto:good/`
       + `c_fill,ar_9:16,w_1080/` // Set aspect ratio and width
       + `so_0/`
-      + `l_video:${templateId}/`
+      + `l_video:${fullTemplateId}/`
       + `c_scale,w_1080/` // Scale template video to match background width
       + `fl_layer_apply,g_center`;
 
-    // Add audio if provided - FIXED: Using correct l_audio syntax
+    // Add audio if provided
     if (audioId) {
       transformationUrl += `/l_audio:${audioId}/fl_layer_apply`;
     }
@@ -98,10 +100,13 @@ export const DownloadButton = ({
         description: "Preparing your video for download...",
       });
 
-      // Fetch the video data first
+      // Fetch the video data
       const response = await fetch(transformedUrl);
+      
       if (!response.ok) {
-        const errorText = await response.text();
+        // Clone the response before reading it as text
+        const errorResponse = response.clone();
+        const errorText = await errorResponse.text();
         console.error("Cloudinary error response:", errorText);
         throw new Error(`Failed to download video: ${errorText}`);
       }
