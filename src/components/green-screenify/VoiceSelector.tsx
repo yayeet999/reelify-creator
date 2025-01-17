@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mic, Play } from "lucide-react";
+import { Mic, Play, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -11,6 +11,12 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Voice {
   id: string;
@@ -18,7 +24,7 @@ interface Voice {
 }
 
 const AVAILABLE_VOICES: Voice[] = [
-  { id: "RdQZQavFUKlavTXr5v3q", name: "Custom Voice" },
+  { id: "RdQZQavFUKlavTXr5v3q", name: "Leia" },
   { id: "9BWtsMINqrJLrRacOk9x", name: "Aria" },
   { id: "CwhRBWXzGAHq8TQ4Fs17", name: "Roger" },
   { id: "EXAVITQu4vr4xnSDxMaL", name: "Sarah" },
@@ -131,28 +137,43 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
             value={selectedVoice} 
             onValueChange={setSelectedVoice}
           >
-            <SelectTrigger className="w-[200px]">
+            <SelectTrigger className="w-[200px] bg-white border-primary/20 hover:border-primary transition-colors">
               <SelectValue placeholder="Choose a voice" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className="bg-white border-primary/20">
               {AVAILABLE_VOICES.map((voice) => (
                 <SelectItem 
                   key={voice.id} 
                   value={voice.id}
+                  className="hover:bg-primary/5 cursor-pointer transition-colors"
                 >
                   {voice.name}
                 </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handlePreview}
-            disabled={isPreviewPlaying || !selectedVoice}
-          >
-            <Play className={`h-4 w-4 ${isPreviewPlaying ? 'animate-pulse' : ''}`} />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={handlePreview}
+                  disabled={isPreviewPlaying || !selectedVoice}
+                  className="border-primary/20 hover:border-primary transition-colors"
+                >
+                  {isPreviewPlaying ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Play className="h-4 w-4" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Preview voice</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
 
@@ -162,7 +183,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
           placeholder="Enter the text you want to convert to speech..."
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="min-h-[100px]"
+          className="min-h-[100px] border-primary/20 hover:border-primary transition-colors"
         />
       </div>
 
