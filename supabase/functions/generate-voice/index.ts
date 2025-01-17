@@ -34,7 +34,6 @@ serve(async (req) => {
         body: JSON.stringify({
           text,
           model_id: "eleven_multilingual_v2",
-          output_format: "mp3_44100_192",
           voice_settings: {
             stability: 0.5,
             similarity_boost: 0.75,
@@ -51,16 +50,12 @@ serve(async (req) => {
 
     // Get the audio data
     const audioBuffer = await response.arrayBuffer()
-    console.log('Received audio buffer size:', audioBuffer.byteLength)
 
-    // Upload to Cloudinary with the correct audio format
+    // Upload to Cloudinary
     const formData = new FormData()
-    formData.append('file', new Blob([audioBuffer], { 
-      type: 'audio/mpeg; rate=44100; bitrate=192000'
-    }))
-    formData.append('upload_preset', 'temp_audio_upload')
+    formData.append('file', new Blob([audioBuffer], { type: 'audio/mpeg' }))
+    formData.append('upload_preset', 'for_temp_videos_forSTARTERgreen')
     
-    console.log('Uploading to Cloudinary...')
     const cloudinaryResponse = await fetch(
       'https://api.cloudinary.com/v1_1/fornotreel/upload',
       {
@@ -70,9 +65,7 @@ serve(async (req) => {
     )
 
     if (!cloudinaryResponse.ok) {
-      const cloudinaryError = await cloudinaryResponse.text()
-      console.error('Cloudinary upload error:', cloudinaryError)
-      throw new Error(`Failed to upload audio to Cloudinary: ${cloudinaryError}`)
+      throw new Error('Failed to upload audio to Cloudinary')
     }
 
     const cloudinaryData = await cloudinaryResponse.json()

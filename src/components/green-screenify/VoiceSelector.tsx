@@ -131,13 +131,13 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
   return (
     <div className="space-y-4">
       <div className="space-y-2">
-        <label className="text-sm font-medium">Leia</label>
+        <label className="text-sm font-medium">Select Voice</label>
         <div className="flex items-center gap-2">
           <Select 
             value={selectedVoice} 
             onValueChange={setSelectedVoice}
           >
-            <SelectTrigger className="w-[160px] bg-white border-primary/20 hover:border-primary transition-colors">
+            <SelectTrigger className="w-[200px] bg-white border-primary/20 hover:border-primary transition-colors">
               <SelectValue placeholder="Choose a voice" />
             </SelectTrigger>
             <SelectContent className="bg-white border-primary/20">
@@ -192,11 +192,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
         onClick={handleGenerate}
         disabled={isGenerating || !selectedVoice || !text.trim()}
       >
-        {isGenerating ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-        ) : (
-          <Mic className="mr-2 h-4 w-4" />
-        )}
+        <Mic className="mr-2 h-4 w-4" />
         {isGenerating ? "Generating..." : "Generate Voice"}
       </Button>
     </div>
