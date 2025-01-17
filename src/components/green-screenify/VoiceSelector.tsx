@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Mic } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Select,
   SelectContent,
@@ -46,8 +47,35 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
     }
 
     setIsGenerating(true);
-    // TODO: Will implement the actual generation in the next step
-    setIsGenerating(false);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-voice', {
+        body: {
+          voiceId: selectedVoice,
+          text: text.trim(),
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.audioUrl) {
+        onAudioGenerated(data.audioUrl);
+        toast({
+          title: "Success",
+          description: "Voice generated successfully!",
+        });
+      } else {
+        throw new Error('No audio URL received');
+      }
+    } catch (error) {
+      console.error('Error generating voice:', error);
+      toast({
+        title: "Error",
+        description: "Failed to generate voice. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   return (
