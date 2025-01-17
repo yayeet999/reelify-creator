@@ -22,7 +22,7 @@ export const DownloadButton = ({
   const { toast } = useToast();
   const { isLoading, canDownload, remainingDownloads, recordDownload } = useDownloadLimits();
 
-  const generateCloudinaryUrl = () => {
+  const generateCloudinaryUrl = async () => {
     if (!templateVideoUrl || !backgroundVideoUrl) return null;
 
     // Extract template video ID from URL
@@ -46,37 +46,42 @@ export const DownloadButton = ({
 
     // Handle audio if provided
     if (audioUrl) {
-      // First, try to handle ElevenLabs audio URL
-      const audioResponse = await fetch(audioUrl);
-      if (!audioResponse.ok) {
-        throw new Error('Failed to fetch audio from ElevenLabs');
-      }
-
-      // Get the audio data as blob
-      const audioBlob = await audioResponse.blob();
-
-      // Upload to Cloudinary
-      const formData = new FormData();
-      formData.append('file', audioBlob);
-      formData.append('upload_preset', 'ml_default');
-
-      const uploadResponse = await fetch(
-        'https://api.cloudinary.com/v1_1/fornotreel/upload',
-        {
-          method: 'POST',
-          body: formData,
+      try {
+        // First, try to handle ElevenLabs audio URL
+        const audioResponse = await fetch(audioUrl);
+        if (!audioResponse.ok) {
+          throw new Error('Failed to fetch audio from ElevenLabs');
         }
-      );
 
-      if (!uploadResponse.ok) {
-        throw new Error('Failed to upload audio to Cloudinary');
+        // Get the audio data as blob
+        const audioBlob = await audioResponse.blob();
+
+        // Upload to Cloudinary
+        const formData = new FormData();
+        formData.append('file', audioBlob);
+        formData.append('upload_preset', 'ml_default');
+
+        const uploadResponse = await fetch(
+          'https://api.cloudinary.com/v1_1/fornotreel/upload',
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+
+        if (!uploadResponse.ok) {
+          throw new Error('Failed to upload audio to Cloudinary');
+        }
+
+        const uploadResult = await uploadResponse.json();
+        const audioPublicId = uploadResult.public_id;
+
+        // Add audio layer to transformation
+        transformationUrl += `/l_audio:${audioPublicId}/fl_layer_apply`;
+      } catch (error) {
+        console.error('Audio processing error:', error);
+        throw new Error('Failed to process audio');
       }
-
-      const uploadResult = await uploadResponse.json();
-      const audioPublicId = uploadResult.public_id;
-
-      // Add audio layer to transformation
-      transformationUrl += `/l_audio:${audioPublicId}/fl_layer_apply`;
     }
 
     // Add final video
