@@ -35,13 +35,14 @@ export const DownloadButton = ({
     if (!backgroundMatches) return null;
     const backgroundId = backgroundMatches[1];
 
-    // Extract audio ID from URL if present
+    // Extract audio ID from URL if present, including folder path
     let audioId = null;
     if (audioUrl) {
-      const audioMatches = audioUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp3|wav))?$/);
+      const audioMatches = audioUrl.match(/\/v\d+\/temp_audio_upload\/([^/]+?)(?:\.(?:mp3|wav))?$/);
       if (audioMatches) {
         audioId = audioMatches[1];
       }
+      console.log("Extracted audio ID:", audioId); // Debug log
     }
 
     // Construct transformation URL with proper sizing parameters
@@ -61,7 +62,7 @@ export const DownloadButton = ({
     // Add final video
     transformationUrl += `/${backgroundId}.mp4`;
 
-    console.log("Generated URL:", transformationUrl);
+    console.log("Generated URL:", transformationUrl); // Debug log
     return transformationUrl;
   };
 
