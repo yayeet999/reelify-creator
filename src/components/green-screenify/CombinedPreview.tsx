@@ -1,4 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Volume2, VolumeX } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 
 interface CombinedPreviewProps {
   templateVideoUrl?: string;
@@ -14,6 +17,9 @@ export const CombinedPreview = ({
   const templateVideoRef = useRef<HTMLVideoElement>(null);
   const backgroundVideoRef = useRef<HTMLVideoElement>(null);
   const audioRef = useRef<HTMLAudioElement>(null);
+  const [isAudioMuted, setIsAudioMuted] = useState(false);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     const templateVideo = templateVideoRef.current;
@@ -45,18 +51,14 @@ export const CombinedPreview = ({
             })
           ];
 
-          if (audio) {
-            playPromises.push(
-              audio.play().catch(error => {
-                console.error('Audio play error:', error);
-                return audio.play();
-              })
-            );
-          }
-
           await Promise.all(playPromises);
         } catch (error) {
           console.error('Error playing media:', error);
+          toast({
+            title: "Playback Error",
+            description: "There was an error playing the video preview",
+            variant: "destructive",
+          });
         }
       };
 
@@ -69,12 +71,6 @@ export const CombinedPreview = ({
         console.error('Background video error:', e);
       });
 
-      if (audio) {
-        audio.addEventListener('error', (e) => {
-          console.error('Audio error:', e);
-        });
-      }
-
       // Play videos when metadata is loaded
       templateVideo.addEventListener('loadedmetadata', playMedia);
       backgroundVideo.addEventListener('loadedmetadata', playMedia);
@@ -84,12 +80,53 @@ export const CombinedPreview = ({
         backgroundVideo.removeEventListener('loadedmetadata', playMedia);
         templateVideo.removeEventListener('error', () => {});
         backgroundVideo.removeEventListener('error', () => {});
-        if (audio) {
-          audio.removeEventListener('error', () => {});
-        }
       };
     }
-  }, [templateVideoUrl, backgroundVideoUrl, audioUrl]);
+  }, [templateVideoUrl, backgroundVideoUrl, toast]);
+
+  // Handle audio state changes
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      // Add audio event listeners
+      const handlePlay = () => setIsAudioPlaying(true);
+      const handlePause = () => setIsAudioPlaying(false);
+      const handleEnded = () => setIsAudioPlaying(false);
+      const handleError = (e: Event) => {
+        console.error('Audio error:', e);
+        toast({
+          title: "Audio Error",
+          description: "There was an error playing the audio",
+          variant: "destructive",
+        });
+      };
+
+      audio.addEventListener('play', handlePlay);
+      audio.addEventListener('pause', handlePause);
+      audio.addEventListener('ended', handleEnded);
+      audio.addEventListener('error', handleError);
+
+      return () => {
+        audio.removeEventListener('play', handlePlay);
+        audio.removeEventListener('pause', handlePause);
+        audio.removeEventListener('ended', handleEnded);
+        audio.removeEventListener('error', handleError);
+      };
+    }
+  }, [audioUrl, toast]);
+
+  const toggleAudioMute = () => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.muted = !isAudioMuted;
+      setIsAudioMuted(!isAudioMuted);
+      
+      toast({
+        title: isAudioMuted ? "Audio Unmuted" : "Audio Muted",
+        description: isAudioMuted ? "Audio is now playing" : "Audio is now muted",
+      });
+    }
+  };
 
   if (!templateVideoUrl && !backgroundVideoUrl) {
     return (
@@ -131,14 +168,30 @@ export const CombinedPreview = ({
         />
       )}
 
-      {/* Audio Layer */}
+      {/* Audio Controls */}
       {audioUrl && (
-        <audio
-          ref={audioRef}
-          src={audioUrl}
-          loop
-          preload="auto"
-        />
+        <>
+          <audio
+            ref={audioRef}
+            src={audioUrl}
+            loop
+            preload="auto"
+          />
+          <div className="absolute bottom-2 right-2 z-20">
+            <Button
+              variant="secondary"
+              size="icon"
+              className="h-8 w-8 bg-black/50 hover:bg-black/70"
+              onClick={toggleAudioMute}
+            >
+              {isAudioMuted ? (
+                <VolumeX className="h-4 w-4 text-white" />
+              ) : (
+                <Volume2 className="h-4 w-4 text-white" />
+              )}
+            </Button>
+          </div>
+        </>
       )}
     </div>
   );
