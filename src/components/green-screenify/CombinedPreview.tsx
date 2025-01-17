@@ -1,30 +1,22 @@
-import { useEffect, useRef, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CombinedPreviewProps {
   templateVideoUrl?: string;
   backgroundVideoUrl?: string;
-  audioUrl?: string;
 }
 
 export const CombinedPreview = ({ 
   templateVideoUrl, 
   backgroundVideoUrl,
-  audioUrl 
 }: CombinedPreviewProps) => {
   const templateVideoRef = useRef<HTMLVideoElement>(null);
   const backgroundVideoRef = useRef<HTMLVideoElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [isAudioMuted, setIsAudioMuted] = useState(false);
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
     const templateVideo = templateVideoRef.current;
     const backgroundVideo = backgroundVideoRef.current;
-    const audio = audioRef.current;
 
     if (templateVideo && backgroundVideo) {
       const playMedia = async () => {
@@ -37,7 +29,7 @@ export const CombinedPreview = ({
           templateVideo.muted = true;
           backgroundVideo.muted = true;
 
-          // Play both videos and audio if present
+          // Play both videos
           const playPromises = [
             templateVideo.play().catch(error => {
               console.error('Template video play error:', error);
@@ -84,50 +76,6 @@ export const CombinedPreview = ({
     }
   }, [templateVideoUrl, backgroundVideoUrl, toast]);
 
-  // Handle audio state changes
-  useEffect(() => {
-    const audio = audioRef.current;
-    if (audio) {
-      // Add audio event listeners
-      const handlePlay = () => setIsAudioPlaying(true);
-      const handlePause = () => setIsAudioPlaying(false);
-      const handleEnded = () => setIsAudioPlaying(false);
-      const handleError = (e: Event) => {
-        console.error('Audio error:', e);
-        toast({
-          title: "Audio Error",
-          description: "There was an error playing the audio",
-          variant: "destructive",
-        });
-      };
-
-      audio.addEventListener('play', handlePlay);
-      audio.addEventListener('pause', handlePause);
-      audio.addEventListener('ended', handleEnded);
-      audio.addEventListener('error', handleError);
-
-      return () => {
-        audio.removeEventListener('play', handlePlay);
-        audio.removeEventListener('pause', handlePause);
-        audio.removeEventListener('ended', handleEnded);
-        audio.removeEventListener('error', handleError);
-      };
-    }
-  }, [audioUrl, toast]);
-
-  const toggleAudioMute = () => {
-    const audio = audioRef.current;
-    if (audio) {
-      audio.muted = !isAudioMuted;
-      setIsAudioMuted(!isAudioMuted);
-      
-      toast({
-        title: isAudioMuted ? "Audio Unmuted" : "Audio Muted",
-        description: isAudioMuted ? "Audio is now playing" : "Audio is now muted",
-      });
-    }
-  };
-
   if (!templateVideoUrl && !backgroundVideoUrl) {
     return (
       <div className="bg-accent/10 rounded-lg p-4 border-2 border-dashed border-primary/20">
@@ -166,32 +114,6 @@ export const CombinedPreview = ({
           playsInline
           preload="auto"
         />
-      )}
-
-      {/* Audio Controls */}
-      {audioUrl && (
-        <>
-          <audio
-            ref={audioRef}
-            src={audioUrl}
-            loop
-            preload="auto"
-          />
-          <div className="absolute bottom-2 right-2 z-20">
-            <Button
-              variant="secondary"
-              size="icon"
-              className="h-8 w-8 bg-black/50 hover:bg-black/70"
-              onClick={toggleAudioMute}
-            >
-              {isAudioMuted ? (
-                <VolumeX className="h-4 w-4 text-white" />
-              ) : (
-                <Volume2 className="h-4 w-4 text-white" />
-              )}
-            </Button>
-          </div>
-        </>
       )}
     </div>
   );
