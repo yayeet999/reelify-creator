@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { VideoGallery } from "@/components/green-screenify/VideoGallery";
 import { VideoUploader } from "@/components/green-screenify/VideoUploader";
-import { AudioUploader } from "@/components/green-screenify/AudioUploader";
+import { VoiceSelector } from "@/components/green-screenify/VoiceSelector";
 import { CombinedPreview } from "@/components/green-screenify/CombinedPreview";
 import { DownloadButton } from "@/components/green-screenify/DownloadButton";
 import { Card } from "@/components/ui/card";
@@ -24,7 +24,7 @@ const StarterGreenScreenify = () => {
             <Sparkles className="h-6 w-6 text-primary animate-pulse" />
           </div>
           <p className="text-lg text-muted-foreground">
-            Create stunning videos by combining transparent templates with your custom backgrounds and audio
+            Create stunning videos by combining transparent templates with your custom backgrounds and AI-generated voices
           </p>
         </div>
 
@@ -49,12 +49,12 @@ const StarterGreenScreenify = () => {
               <VideoUploader onVideoSelect={setBackgroundVideoUrl} />
             </Card>
 
-            {/* Audio Upload */}
+            {/* Voice Generation */}
             <Card className="p-6 shadow-md">
               <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                3. Add Custom Audio (Optional)
+                3. Generate Custom Voice (Optional)
               </h2>
-              <AudioUploader onAudioSelect={setAudioUrl} />
+              <VoiceSelector onAudioGenerated={setAudioUrl} />
             </Card>
           </div>
 
@@ -68,6 +68,7 @@ const StarterGreenScreenify = () => {
                 <CombinedPreview 
                   templateVideoUrl={selectedTemplateUrl}
                   backgroundVideoUrl={backgroundVideoUrl}
+                  audioUrl={audioUrl}
                 />
                 <DownloadButton 
                   disabled={!selectedTemplateUrl || !backgroundVideoUrl}
