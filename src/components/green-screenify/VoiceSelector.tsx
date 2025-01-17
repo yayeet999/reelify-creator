@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Mic } from "lucide-react";
+import { Mic, Play } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -34,7 +34,44 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
   const [selectedVoice, setSelectedVoice] = useState<string>("");
   const [text, setText] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [previewingVoiceId, setPreviewingVoiceId] = useState<string | null>(null);
   const { toast } = useToast();
+
+  const handlePreview = async (voiceId: string) => {
+    if (previewingVoiceId === voiceId) return;
+    
+    setPreviewingVoiceId(voiceId);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-voice', {
+        body: {
+          voiceId,
+          text: "Hey, this is a voice preview of my voice",
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.audioUrl) {
+        const audio = new Audio(data.audioUrl);
+        await audio.play();
+        toast({
+          title: "Preview Playing",
+          description: "Playing voice preview...",
+        });
+      } else {
+        throw new Error('No audio URL received');
+      }
+    } catch (error) {
+      console.error('Error playing preview:', error);
+      toast({
+        title: "Error",
+        description: "Failed to play voice preview. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setPreviewingVoiceId(null);
+    }
+  };
 
   const handleGenerate = async () => {
     if (!selectedVoice || !text.trim()) {
@@ -88,8 +125,25 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
           </SelectTrigger>
           <SelectContent>
             {AVAILABLE_VOICES.map((voice) => (
-              <SelectItem key={voice.id} value={voice.id}>
-                {voice.name}
+              <SelectItem 
+                key={voice.id} 
+                value={voice.id}
+                className="flex items-center justify-between group"
+              >
+                <span>{voice.name}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="opacity-0 group-hover:opacity-100 transition-opacity"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handlePreview(voice.id);
+                  }}
+                  disabled={previewingVoiceId === voice.id}
+                >
+                  <Play className="h-4 w-4" />
+                </Button>
               </SelectItem>
             ))}
           </SelectContent>
