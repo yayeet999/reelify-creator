@@ -40,9 +40,9 @@ export const DownloadButton = ({
     if (audioUrl) {
       const audioMatches = audioUrl.match(/\/v\d+\/temp_audio_upload\/([^/]+?)(?:\.(?:mp3|wav))?$/);
       if (audioMatches) {
-        audioId = audioMatches[1];
+        audioId = `temp_audio_upload/${audioMatches[1]}`;
       }
-      console.log("Extracted audio ID:", audioId); // Debug log
+      console.log("Extracted audio ID with path:", audioId);
     }
 
     // Construct transformation URL with proper sizing parameters
@@ -56,13 +56,13 @@ export const DownloadButton = ({
 
     // Add audio if provided
     if (audioId) {
-      transformationUrl += `/l_audio:${audioId}/fl_layer_apply`;
+      transformationUrl += `/l_video:audio/${audioId}/fl_layer_apply`;
     }
 
     // Add final video
     transformationUrl += `/${backgroundId}.mp4`;
 
-    console.log("Generated URL:", transformationUrl); // Debug log
+    console.log("Generated URL:", transformationUrl);
     return transformationUrl;
   };
 
@@ -101,7 +101,9 @@ export const DownloadButton = ({
       // Fetch the video data first
       const response = await fetch(transformedUrl);
       if (!response.ok) {
-        throw new Error("Failed to download video");
+        const errorText = await response.text();
+        console.error("Cloudinary error response:", errorText);
+        throw new Error(`Failed to download video: ${errorText}`);
       }
 
       // Convert response to blob
@@ -138,7 +140,7 @@ export const DownloadButton = ({
       console.error("Download error:", error);
       toast({
         title: "Download Failed",
-        description: "There was an error processing your download. Please try again.",
+        description: error.message || "There was an error processing your download. Please try again.",
         variant: "destructive",
       });
     } finally {
