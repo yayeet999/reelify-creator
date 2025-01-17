@@ -54,9 +54,9 @@ export const DownloadButton = ({
       + `c_scale,w_1080/` // Scale template video to match background width
       + `fl_layer_apply,g_center`;
 
-    // Add audio if provided
+    // Add audio if provided - FIXED: Using correct l_audio syntax
     if (audioId) {
-      transformationUrl += `/l_video:audio/${audioId}/fl_layer_apply`;
+      transformationUrl += `/l_audio:${audioId}/fl_layer_apply`;
     }
 
     // Add final video
