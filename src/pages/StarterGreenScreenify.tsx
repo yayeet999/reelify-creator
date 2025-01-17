@@ -68,7 +68,6 @@ const StarterGreenScreenify = () => {
                 <CombinedPreview 
                   templateVideoUrl={selectedTemplateUrl}
                   backgroundVideoUrl={backgroundVideoUrl}
-                  audioUrl={audioUrl}
                 />
                 <DownloadButton 
                   disabled={!selectedTemplateUrl || !backgroundVideoUrl}
