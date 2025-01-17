@@ -53,12 +53,13 @@ serve(async (req) => {
     const audioBuffer = await response.arrayBuffer()
     console.log('Received audio buffer size:', audioBuffer.byteLength)
 
-    // Upload to Cloudinary with the correct audio format
+    // Upload to Cloudinary with the correct preset and format
     const formData = new FormData()
     formData.append('file', new Blob([audioBuffer], { 
       type: 'audio/mpeg; rate=44100; bitrate=192000'
     }))
-    formData.append('upload_preset', 'temp_audio_upload')
+    formData.append('upload_preset', 'tempaudioupload')
+    formData.append('folder', 'temp_audio_upload')
     
     console.log('Uploading to Cloudinary...')
     const cloudinaryResponse = await fetch(
