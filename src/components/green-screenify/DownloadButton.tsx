@@ -22,7 +22,7 @@ export const DownloadButton = ({
   const { toast } = useToast();
   const { isLoading, canDownload, remainingDownloads, recordDownload } = useDownloadLimits();
 
-  const generateCloudinaryUrl = async () => {
+  const generateCloudinaryUrl = () => {
     if (!templateVideoUrl || !backgroundVideoUrl) return null;
 
     // Extract template video ID from URL
@@ -35,7 +35,16 @@ export const DownloadButton = ({
     if (!backgroundMatches) return null;
     const backgroundId = backgroundMatches[1];
 
-    // Initialize transformation URL
+    // Extract audio ID from URL if present
+    let audioId = null;
+    if (audioUrl) {
+      const audioMatches = audioUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp3|wav))?$/);
+      if (audioMatches) {
+        audioId = audioMatches[1];
+      }
+    }
+
+    // Construct transformation URL with proper sizing parameters
     let transformationUrl = `https://res.cloudinary.com/fornotreel/video/upload/`
       + `q_auto:good/`
       + `c_fill,ar_9:16,w_1080/` // Set aspect ratio and width
@@ -44,44 +53,9 @@ export const DownloadButton = ({
       + `c_scale,w_1080/` // Scale template video to match background width
       + `fl_layer_apply,g_center`;
 
-    // Handle audio if provided
-    if (audioUrl) {
-      try {
-        // First, try to handle ElevenLabs audio URL
-        const audioResponse = await fetch(audioUrl);
-        if (!audioResponse.ok) {
-          throw new Error('Failed to fetch audio from ElevenLabs');
-        }
-
-        // Get the audio data as blob
-        const audioBlob = await audioResponse.blob();
-
-        // Upload to Cloudinary
-        const formData = new FormData();
-        formData.append('file', audioBlob);
-        formData.append('upload_preset', 'ml_default');
-
-        const uploadResponse = await fetch(
-          'https://api.cloudinary.com/v1_1/fornotreel/upload',
-          {
-            method: 'POST',
-            body: formData,
-          }
-        );
-
-        if (!uploadResponse.ok) {
-          throw new Error('Failed to upload audio to Cloudinary');
-        }
-
-        const uploadResult = await uploadResponse.json();
-        const audioPublicId = uploadResult.public_id;
-
-        // Add audio layer to transformation
-        transformationUrl += `/l_audio:${audioPublicId}/fl_layer_apply`;
-      } catch (error) {
-        console.error('Audio processing error:', error);
-        throw new Error('Failed to process audio');
-      }
+    // Add audio if provided
+    if (audioId) {
+      transformationUrl += `/l_audio:${audioId}/fl_layer_apply`;
     }
 
     // Add final video
@@ -113,7 +87,7 @@ export const DownloadButton = ({
     setIsProcessing(true);
 
     try {
-      const transformedUrl = await generateCloudinaryUrl();
+      const transformedUrl = generateCloudinaryUrl();
       if (!transformedUrl) {
         throw new Error("Failed to generate video URL");
       }
@@ -123,7 +97,7 @@ export const DownloadButton = ({
         description: "Preparing your video for download...",
       });
 
-      // Fetch the video data
+      // Fetch the video data first
       const response = await fetch(transformedUrl);
       if (!response.ok) {
         throw new Error("Failed to download video");
@@ -138,14 +112,20 @@ export const DownloadButton = ({
         throw new Error("Failed to record download");
       }
 
-      // Create object URL and trigger download
+      // Create object URL from blob
       const downloadUrl = window.URL.createObjectURL(blob);
+      
+      // Create and configure download link
       const link = document.createElement('a');
       link.href = downloadUrl;
       link.download = `combined-video-${Date.now()}.mp4`;
       link.style.display = 'none';
       document.body.appendChild(link);
+      
+      // Trigger download
       link.click();
+      
+      // Clean up
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
 
