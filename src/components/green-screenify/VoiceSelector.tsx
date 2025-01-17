@@ -34,17 +34,24 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
   const [selectedVoice, setSelectedVoice] = useState<string>("");
   const [text, setText] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState(false);
-  const [previewingVoiceId, setPreviewingVoiceId] = useState<string | null>(null);
+  const [isPreviewPlaying, setIsPreviewPlaying] = useState(false);
   const { toast } = useToast();
 
-  const handlePreview = async (voiceId: string) => {
-    if (previewingVoiceId === voiceId) return;
-    
-    setPreviewingVoiceId(voiceId);
+  const handlePreview = async () => {
+    if (!selectedVoice) {
+      toast({
+        title: "Select a Voice",
+        description: "Please select a voice before previewing",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsPreviewPlaying(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-voice', {
         body: {
-          voiceId,
+          voiceId: selectedVoice,
           text: "Hey, this is a voice preview of my voice",
         },
       });
@@ -69,7 +76,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
         variant: "destructive",
       });
     } finally {
-      setPreviewingVoiceId(null);
+      setIsPreviewPlaying(false);
     }
   };
 
@@ -119,35 +126,34 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
     <div className="space-y-4">
       <div className="space-y-2">
         <label className="text-sm font-medium">Select Voice</label>
-        <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-          <SelectTrigger>
-            <SelectValue placeholder="Choose a voice" />
-          </SelectTrigger>
-          <SelectContent>
-            {AVAILABLE_VOICES.map((voice) => (
-              <SelectItem 
-                key={voice.id} 
-                value={voice.id}
-                className="flex items-center justify-between group"
-              >
-                <span>{voice.name}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="opacity-0 group-hover:opacity-100 transition-opacity"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handlePreview(voice.id);
-                  }}
-                  disabled={previewingVoiceId === voice.id}
+        <div className="flex items-center gap-2">
+          <Select 
+            value={selectedVoice} 
+            onValueChange={setSelectedVoice}
+          >
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Choose a voice" />
+            </SelectTrigger>
+            <SelectContent>
+              {AVAILABLE_VOICES.map((voice) => (
+                <SelectItem 
+                  key={voice.id} 
+                  value={voice.id}
                 >
-                  <Play className="h-4 w-4" />
-                </Button>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+                  {voice.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={handlePreview}
+            disabled={isPreviewPlaying || !selectedVoice}
+          >
+            <Play className={`h-4 w-4 ${isPreviewPlaying ? 'animate-pulse' : ''}`} />
+          </Button>
+        </div>
       </div>
 
       <div className="space-y-2">
