@@ -30,20 +30,25 @@ export const DownloadButton = ({
     let matches;
     if (type === 'audio') {
       // Match the full path including folder structure for audio
+      // Replace forward slashes with colons for Cloudinary folder structure
       matches = url.match(/\/v\d+\/(temp_audio_upload\/[^/]+?)(?:\.(?:mp3|wav))?$/);
+      if (matches) {
+        const extractedId = matches[1].replace('/', ':');
+        console.log(`Extracted and formatted audio ID:`, extractedId);
+        return extractedId;
+      }
     } else {
       // Match video ID only
       matches = url.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
+      if (matches) {
+        const extractedId = matches[1];
+        console.log(`Extracted video ID:`, extractedId);
+        return extractedId;
+      }
     }
     
-    if (!matches) {
-      console.error(`Failed to extract ${type} ID from URL:`, url);
-      return null;
-    }
-    
-    const extractedId = matches[1];
-    console.log(`Extracted ${type} ID:`, extractedId);
-    return extractedId;
+    console.error(`Failed to extract ${type} ID from URL:`, url);
+    return null;
   };
 
   const generateCloudinaryUrl = () => {
@@ -59,24 +64,24 @@ export const DownloadButton = ({
       return null;
     }
 
-    // Build transformation URL with proper encoding
+    // Build transformation URL
     let transformationUrl = `https://res.cloudinary.com/fornotreel/video/upload/`
       + `ac_none/`                    // Clear any existing audio
       + `q_auto:good/`               // Quality settings
       + `c_fill,ar_9:16,w_1080/`     // Video dimensions
       + `so_0/`                      // Start offset
-      + `l_video:${encodeURIComponent(templateId)}/`     // Template overlay (encoded)
+      + `l_video:${encodeURIComponent(templateId)}/`     // Template overlay
       + `c_scale,w_1080/`            // Scale template video
       + `fl_layer_apply,g_center`;   // Apply template layer
 
     // Add audio if provided
     if (audioId) {
       console.log("Adding audio to transformation:", audioId);
-      transformationUrl += `/l_audio:${encodeURIComponent(audioId)}`
+      transformationUrl += `/l_audio:${audioId}`  // Note: no URL encoding here since we've already formatted the ID
         + `/fl_layer_apply`;          // Apply audio layer
     }
 
-    // Add final video (encoded)
+    // Add final video
     transformationUrl += `/${encodeURIComponent(backgroundId)}.mp4`;
 
     console.log("Generated Cloudinary URL:", transformationUrl);
