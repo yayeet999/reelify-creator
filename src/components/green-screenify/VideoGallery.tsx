@@ -54,17 +54,12 @@ export const VideoGallery = ({ onSelectVideo }: VideoGalleryProps) => {
           }`}
           onClick={() => handleVideoSelect(video)}
         >
-          <div className="aspect-video relative overflow-hidden rounded-t-lg">
+          <div className="aspect-video relative overflow-hidden rounded-lg">
             <img
               src={video.thumbnail}
               alt="Template video thumbnail"
               className="w-full h-full object-cover"
             />
-          </div>
-          <div className="p-3">
-            <p className="text-sm font-medium text-center">
-              Template Video {video.id}
-            </p>
           </div>
         </Card>
       ))}
