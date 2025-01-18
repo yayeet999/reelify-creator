@@ -24,51 +24,62 @@ export const DownloadButton = ({
   const { toast } = useToast();
   const { isLoading, canDownload, remainingDownloads, recordDownload } = useDownloadLimits();
 
+  const extractCloudinaryId = (url: string, type: 'video' | 'audio') => {
+    console.log(`Extracting ${type} ID from URL:`, url);
+    
+    let matches;
+    if (type === 'audio') {
+      // Match the full path including folder structure for audio
+      matches = url.match(/\/v\d+\/(temp_audio_upload\/[^/]+?)(?:\.(?:mp3|wav))?$/);
+    } else {
+      // Match video ID only
+      matches = url.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
+    }
+    
+    if (!matches) {
+      console.error(`Failed to extract ${type} ID from URL:`, url);
+      return null;
+    }
+    
+    const extractedId = matches[1];
+    console.log(`Extracted ${type} ID:`, extractedId);
+    return extractedId;
+  };
+
   const generateCloudinaryUrl = () => {
     if (!templateVideoUrl || !backgroundVideoUrl) return null;
 
-    // Extract template video ID from URL
-    const templateMatches = templateVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
-    if (!templateMatches) return null;
-    const templateId = templateMatches[1];
+    // Extract IDs
+    const templateId = extractCloudinaryId(templateVideoUrl, 'video');
+    const backgroundId = extractCloudinaryId(backgroundVideoUrl, 'video');
+    const audioId = audioUrl ? extractCloudinaryId(audioUrl, 'audio') : null;
 
-    // Extract background video ID from URL
-    const backgroundMatches = backgroundVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
-    if (!backgroundMatches) return null;
-    const backgroundId = backgroundMatches[1];
-
-    // Extract audio ID from URL if present, including folder structure
-    let audioId = null;
-    if (audioUrl) {
-      console.log("DownloadButton - Processing audio URL:", audioUrl);
-      // Updated regex to capture the full path including folder structure
-      const audioMatches = audioUrl.match(/\/v\d+\/(temp_audio_upload\/[^/]+?)(?:\.(?:mp3|wav))?$/);
-      if (audioMatches) {
-        audioId = audioMatches[1];
-        console.log("DownloadButton - Extracted audio ID with folder structure:", audioId);
-      }
+    if (!templateId || !backgroundId) {
+      console.error("Failed to extract video IDs");
+      return null;
     }
 
-    // Start building the transformation URL
+    // Build transformation URL with proper encoding
     let transformationUrl = `https://res.cloudinary.com/fornotreel/video/upload/`
       + `ac_none/`                    // Clear any existing audio
       + `q_auto:good/`               // Quality settings
       + `c_fill,ar_9:16,w_1080/`     // Video dimensions
       + `so_0/`                      // Start offset
-      + `l_video:${templateId}/`     // Template overlay
+      + `l_video:${encodeURIComponent(templateId)}/`     // Template overlay (encoded)
       + `c_scale,w_1080/`            // Scale template video
       + `fl_layer_apply,g_center`;   // Apply template layer
 
-    // Add audio if provided, now including the folder structure
+    // Add audio if provided
     if (audioId) {
-      transformationUrl += `/l_audio:${audioId}/`
-        + `fl_layer_apply`;          // Apply audio layer
+      console.log("Adding audio to transformation:", audioId);
+      transformationUrl += `/l_audio:${encodeURIComponent(audioId)}`
+        + `/fl_layer_apply`;          // Apply audio layer
     }
 
-    // Add final video
-    transformationUrl += `/${backgroundId}.mp4`;
+    // Add final video (encoded)
+    transformationUrl += `/${encodeURIComponent(backgroundId)}.mp4`;
 
-    console.log("DownloadButton - Generated Cloudinary URL:", transformationUrl);
+    console.log("Generated Cloudinary URL:", transformationUrl);
     return transformationUrl;
   };
 
@@ -107,7 +118,7 @@ export const DownloadButton = ({
       // Clone the response before using it
       const response = await fetch(transformedUrl);
       if (!response.ok) {
-        throw new Error("Failed to download video");
+        throw new Error(`Failed to download video: ${response.status} ${response.statusText}`);
       }
 
       // Convert response to blob
@@ -144,7 +155,7 @@ export const DownloadButton = ({
       console.error("Download error:", error);
       toast({
         title: "Download Failed",
-        description: "There was an error processing your download. Please try again.",
+        description: error instanceof Error ? error.message : "There was an error processing your download. Please try again.",
         variant: "destructive",
       });
     } finally {
