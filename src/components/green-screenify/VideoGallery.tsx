@@ -9,11 +9,6 @@ interface TemplateVideo {
 
 const templateVideos: TemplateVideo[] = [
   {
-    id: "template1",
-    thumbnail: "/thumbnail14.jpg",
-    videoUrl: "https://res.cloudinary.com/fornotreel/video/upload/v1737068279/forgreenscreen_kncjqw.webm"
-  },
-  {
     id: "template2",
     thumbnail: "/thumbnail82.jpg",
     videoUrl: "https://res.cloudinary.com/fornotreel/video/upload/v1737190459/url82_ex3e8z.webm"
@@ -45,7 +40,7 @@ export const VideoGallery = ({ onSelectVideo }: VideoGalleryProps) => {
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 max-w-3xl mx-auto">
       {templateVideos.map((video) => (
         <Card
           key={video.id}
@@ -54,7 +49,7 @@ export const VideoGallery = ({ onSelectVideo }: VideoGalleryProps) => {
           }`}
           onClick={() => handleVideoSelect(video)}
         >
-          <div className="aspect-video relative overflow-hidden rounded-lg">
+          <div className="aspect-video relative overflow-hidden rounded-lg w-full max-w-[200px] sm:max-w-[250px]">
             <img
               src={video.thumbnail}
               alt="Template video thumbnail"
