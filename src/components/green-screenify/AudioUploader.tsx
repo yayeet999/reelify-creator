@@ -32,8 +32,7 @@ export const AudioUploader = ({ onAudioSelect }: AudioUploaderProps) => {
     formData.append('file', file);
     formData.append('upload_preset', 'for_temp_videos_forSTARTERgreen');
     formData.append('resource_type', 'video'); // Cloudinary handles audio under video resource type
-    formData.append('auto_transcription', 'true'); // Enable automatic transcription
-    formData.append('raw_convert', 'google_speech'); // Use Google Speech for better accuracy
+    formData.append('auto_transcription', 'true'); // Enable auto transcription
 
     try {
       const response = await fetch(

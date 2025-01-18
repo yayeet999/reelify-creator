@@ -79,13 +79,6 @@ export const DownloadButton = ({
       console.log("Adding audio to transformation:", audioId);
       transformationUrl += `/l_audio:${audioId}`  // Note: no URL encoding here since we've already formatted the ID
         + `/fl_layer_apply`;          // Apply audio layer
-
-      // Add subtitles layer using the audio's transcript
-      transformationUrl += `/l_subtitles:${audioId}.transcript`
-        + `/co_white`                 // White text color
-        + `/fs_40`                    // Font size
-        + `/bg_rgb:000000,co_white,b_0.6`  // Semi-transparent black background
-        + `/fl_layer_apply,g_south,y_50`;  // Position at bottom with padding
     }
 
     // Add final video
