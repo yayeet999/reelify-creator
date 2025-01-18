@@ -44,18 +44,20 @@ export const DownloadButton = ({
       }
     }
 
-    // Construct transformation URL with proper sizing parameters
+    // Start building the transformation URL
     let transformationUrl = `https://res.cloudinary.com/fornotreel/video/upload/`
-      + `q_auto:good/`
-      + `c_fill,ar_9:16,w_1080/` // Set aspect ratio and width
-      + `so_0/`
-      + `l_video:${templateId}/`
-      + `c_scale,w_1080/` // Scale template video to match background width
-      + `fl_layer_apply,g_center`;
+      + `ac_none/`                    // Clear any existing audio
+      + `q_auto:good/`               // Quality settings
+      + `c_fill,ar_9:16,w_1080/`     // Video dimensions
+      + `so_0/`                      // Start offset
+      + `l_video:${templateId}/`     // Template overlay
+      + `c_scale,w_1080/`            // Scale template video
+      + `fl_layer_apply,g_center`;   // Apply template layer
 
     // Add audio if provided
     if (audioId) {
-      transformationUrl += `/l_audio:${audioId}/fl_layer_apply`;
+      transformationUrl += `/l_audio:${audioId}/`
+        + `fl_layer_apply`;          // Apply audio layer
     }
 
     // Add final video
@@ -97,7 +99,7 @@ export const DownloadButton = ({
         description: "Preparing your video for download...",
       });
 
-      // Fetch the video data first
+      // Clone the response before using it
       const response = await fetch(transformedUrl);
       if (!response.ok) {
         throw new Error("Failed to download video");
