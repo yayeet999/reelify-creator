@@ -25,46 +25,54 @@ export const DownloadButton = ({
   const generateCloudinaryUrl = () => {
     if (!templateVideoUrl || !backgroundVideoUrl) return null;
 
-    // Extract template video ID from URL, including file extension
-    const templateMatches = templateVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(webm|mp4))?$/);
-    if (!templateMatches) return null;
+    // Extract template video ID from URL
+    const templateMatches = templateVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
+    if (!templateMatches) {
+      console.error("Template video ID not found");
+      return null;
+    }
     const templateId = templateMatches[1];
-    const templateExt = templateMatches[2] || 'mp4';
-    const fullTemplateId = `${templateId}.${templateExt}`;
+    console.log("Template ID:", templateId);
 
     // Extract background video ID from URL
     const backgroundMatches = backgroundVideoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
-    if (!backgroundMatches) return null;
+    if (!backgroundMatches) {
+      console.error("Background video ID not found");
+      return null;
+    }
     const backgroundId = backgroundMatches[1];
+    console.log("Background ID:", backgroundId);
 
     // Extract audio ID from URL if present, including folder path
     let audioId = null;
     if (audioUrl) {
       const audioMatches = audioUrl.match(/\/v\d+\/temp_audio_upload\/([^/]+?)(?:\.(?:mp3|wav))?$/);
-      if (audioMatches) {
-        audioId = `temp_audio_upload/${audioMatches[1]}`;
+      if (!audioMatches) {
+        console.error("Audio ID not found");
+        return null;
       }
+      audioId = `temp_audio_upload/${audioMatches[1]}`;
       console.log("Extracted audio ID with path:", audioId);
     }
 
-    // Construct transformation URL with proper sizing parameters
+    // Base URL and quality settings
     let transformationUrl = `https://res.cloudinary.com/fornotreel/video/upload/`
       + `q_auto:good/`
       + `c_fill,ar_9:16,w_1080/` // Set aspect ratio and width
-      + `so_0/`
-      + `l_video:${fullTemplateId}/`
-      + `c_scale,w_1080/` // Scale template video to match background width
-      + `fl_layer_apply,g_center`;
+      + `so_0/`  // Start offset
+      + `l_video:${templateId}.webm/`  // Layer the template video with explicit extension
+      + `c_scale,w_1080/` // Scale template to match background
+      + `fl_layer_apply,g_center`; // Apply template centered
 
-    // Add audio if provided
+    // Add audio layer if provided
     if (audioId) {
       transformationUrl += `/l_audio:${audioId}/fl_layer_apply`;
     }
 
-    // Add final video
+    // Add final background video
     transformationUrl += `/${backgroundId}.mp4`;
 
-    console.log("Generated URL:", transformationUrl);
+    console.log("Generated transformation URL:", transformationUrl);
     return transformationUrl;
   };
 
