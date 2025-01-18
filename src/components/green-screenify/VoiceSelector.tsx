@@ -33,7 +33,7 @@ const AVAILABLE_VOICES: Voice[] = [
 ];
 
 interface VoiceSelectorProps {
-  onAudioGenerated: (url: string, text: string) => void;
+  onAudioGenerated: (url: string) => void;
 }
 
 export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
@@ -111,7 +111,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
       if (data?.audioUrl) {
         console.log("VoiceSelector - Generated Audio URL:", data.audioUrl);
         setGeneratedAudioUrl(data.audioUrl);
-        onAudioGenerated(data.audioUrl, text.trim());
+        onAudioGenerated(data.audioUrl);
         toast({
           title: "Success",
           description: "Voice generated successfully!",

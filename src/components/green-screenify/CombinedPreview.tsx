@@ -1,47 +1,22 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 
 interface CombinedPreviewProps {
   templateVideoUrl?: string;
   backgroundVideoUrl?: string;
-  audioUrl?: string;
-  subtitlesText?: string;
 }
 
 export const CombinedPreview = ({ 
   templateVideoUrl, 
   backgroundVideoUrl,
-  audioUrl,
-  subtitlesText,
 }: CombinedPreviewProps) => {
   const templateVideoRef = useRef<HTMLVideoElement>(null);
   const backgroundVideoRef = useRef<HTMLVideoElement>(null);
-  const audioRef = useRef<HTMLAudioElement>(null);
   const { toast } = useToast();
-  const [currentSubtitle, setCurrentSubtitle] = useState<string>("");
-  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
-
-  // Split text into chunks of roughly 3-4 words
-  const getSubtitleChunks = (text: string = "") => {
-    const words = text.split(" ");
-    const chunks: string[] = [];
-    let currentChunk: string[] = [];
-
-    words.forEach((word, index) => {
-      currentChunk.push(word);
-      if (currentChunk.length === 3 || index === words.length - 1) {
-        chunks.push(currentChunk.join(" "));
-        currentChunk = [];
-      }
-    });
-
-    return chunks;
-  };
 
   useEffect(() => {
     const templateVideo = templateVideoRef.current;
     const backgroundVideo = backgroundVideoRef.current;
-    const audio = audioRef.current;
 
     if (templateVideo && backgroundVideo) {
       const playMedia = async () => {
@@ -101,49 +76,6 @@ export const CombinedPreview = ({
     }
   }, [templateVideoUrl, backgroundVideoUrl, toast]);
 
-  // Handle audio and subtitles
-  useEffect(() => {
-    if (!audioUrl || !subtitlesText) return;
-
-    const audio = audioRef.current;
-    if (!audio) return;
-
-    const subtitleChunks = getSubtitleChunks(subtitlesText);
-    const chunkDuration = audio.duration ? audio.duration / subtitleChunks.length : 2;
-
-    const handleTimeUpdate = () => {
-      if (!audio.duration) return;
-
-      const currentTime = audio.currentTime;
-      const chunkIndex = Math.floor(currentTime / chunkDuration);
-      
-      if (chunkIndex < subtitleChunks.length) {
-        setCurrentSubtitle(subtitleChunks[chunkIndex]);
-      } else {
-        setCurrentSubtitle("");
-      }
-    };
-
-    const handlePlay = () => setIsAudioPlaying(true);
-    const handlePause = () => setIsAudioPlaying(false);
-    const handleEnded = () => {
-      setIsAudioPlaying(false);
-      setCurrentSubtitle("");
-    };
-
-    audio.addEventListener('timeupdate', handleTimeUpdate);
-    audio.addEventListener('play', handlePlay);
-    audio.addEventListener('pause', handlePause);
-    audio.addEventListener('ended', handleEnded);
-
-    return () => {
-      audio.removeEventListener('timeupdate', handleTimeUpdate);
-      audio.removeEventListener('play', handlePlay);
-      audio.removeEventListener('pause', handlePause);
-      audio.removeEventListener('ended', handleEnded);
-    };
-  }, [audioUrl, subtitlesText]);
-
   if (!templateVideoUrl && !backgroundVideoUrl) {
     return (
       <div className="bg-accent/10 rounded-lg p-4 border-2 border-dashed border-primary/20">
@@ -182,27 +114,6 @@ export const CombinedPreview = ({
           playsInline
           preload="auto"
         />
-      )}
-
-      {/* Audio Element */}
-      {audioUrl && (
-        <audio
-          ref={audioRef}
-          src={audioUrl}
-          controls
-          className="absolute bottom-0 left-0 right-0 z-20 w-full opacity-50 hover:opacity-100 transition-opacity"
-        />
-      )}
-
-      {/* Subtitles Overlay */}
-      {isAudioPlaying && currentSubtitle && (
-        <div className="absolute bottom-14 left-0 right-0 z-30 p-2 text-center">
-          <div className="bg-black/50 rounded-lg p-2 mx-2">
-            <p className="text-white text-sm font-medium leading-snug">
-              {currentSubtitle}
-            </p>
-          </div>
-        </div>
       )}
     </div>
   );
