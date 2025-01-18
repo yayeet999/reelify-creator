@@ -12,6 +12,21 @@ const templateVideos: TemplateVideo[] = [
     id: "template1",
     thumbnail: "/thumbnail14.jpg",
     videoUrl: "https://res.cloudinary.com/fornotreel/video/upload/v1737068279/forgreenscreen_kncjqw.webm"
+  },
+  {
+    id: "template2",
+    thumbnail: "/thumbnail82.jpg",
+    videoUrl: "https://res.cloudinary.com/fornotreel/video/upload/v1737190459/url82_ex3e8z.webm"
+  },
+  {
+    id: "template3",
+    thumbnail: "/thumbnail83.jpg",
+    videoUrl: "https://res.cloudinary.com/fornotreel/video/upload/v1737190469/url83_wtj6op.webm"
+  },
+  {
+    id: "template4",
+    thumbnail: "/thumbnail84.jpg",
+    videoUrl: "https://res.cloudinary.com/fornotreel/video/upload/v1737190487/url84_izzzje.webm"
   }
 ];
 
