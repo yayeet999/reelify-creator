@@ -37,14 +37,15 @@ export const DownloadButton = ({
     if (!backgroundMatches) return null;
     const backgroundId = backgroundMatches[1];
 
-    // Extract audio ID from URL if present
+    // Extract audio ID from URL if present, including folder structure
     let audioId = null;
     if (audioUrl) {
       console.log("DownloadButton - Processing audio URL:", audioUrl);
-      const audioMatches = audioUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp3|wav))?$/);
+      // Updated regex to capture the full path including folder structure
+      const audioMatches = audioUrl.match(/\/v\d+\/(temp_audio_upload\/[^/]+?)(?:\.(?:mp3|wav))?$/);
       if (audioMatches) {
         audioId = audioMatches[1];
-        console.log("DownloadButton - Extracted audio ID:", audioId);
+        console.log("DownloadButton - Extracted audio ID with folder structure:", audioId);
       }
     }
 
@@ -58,7 +59,7 @@ export const DownloadButton = ({
       + `c_scale,w_1080/`            // Scale template video
       + `fl_layer_apply,g_center`;   // Apply template layer
 
-    // Add audio if provided
+    // Add audio if provided, now including the folder structure
     if (audioId) {
       transformationUrl += `/l_audio:${audioId}/`
         + `fl_layer_apply`;          // Apply audio layer
