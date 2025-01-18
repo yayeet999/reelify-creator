@@ -11,10 +11,12 @@ const StarterGreenScreenify = () => {
   const [selectedTemplateUrl, setSelectedTemplateUrl] = useState<string>();
   const [backgroundVideoUrl, setBackgroundVideoUrl] = useState<string>();
   const [audioUrl, setAudioUrl] = useState<string>();
+  const [subtitlesText, setSubtitlesText] = useState<string>();
 
-  const handleAudioGenerated = (url: string) => {
+  const handleAudioGenerated = (url: string, text: string) => {
     console.log("StarterGreenScreenify - Audio URL generated:", url);
     setAudioUrl(url);
+    setSubtitlesText(text);
   };
 
   return (
@@ -73,6 +75,8 @@ const StarterGreenScreenify = () => {
                 <CombinedPreview 
                   templateVideoUrl={selectedTemplateUrl}
                   backgroundVideoUrl={backgroundVideoUrl}
+                  audioUrl={audioUrl}
+                  subtitlesText={subtitlesText}
                 />
                 <DownloadButton 
                   disabled={!selectedTemplateUrl || !backgroundVideoUrl}
