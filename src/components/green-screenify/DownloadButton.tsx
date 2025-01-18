@@ -18,6 +18,8 @@ export const DownloadButton = ({
   backgroundVideoUrl,
   audioUrl
 }: DownloadButtonProps) => {
+  console.log("DownloadButton - Received props:", { templateVideoUrl, backgroundVideoUrl, audioUrl });
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
   const { isLoading, canDownload, remainingDownloads, recordDownload } = useDownloadLimits();
@@ -38,9 +40,11 @@ export const DownloadButton = ({
     // Extract audio ID from URL if present
     let audioId = null;
     if (audioUrl) {
+      console.log("DownloadButton - Processing audio URL:", audioUrl);
       const audioMatches = audioUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp3|wav))?$/);
       if (audioMatches) {
         audioId = audioMatches[1];
+        console.log("DownloadButton - Extracted audio ID:", audioId);
       }
     }
 
@@ -63,7 +67,7 @@ export const DownloadButton = ({
     // Add final video
     transformationUrl += `/${backgroundId}.mp4`;
 
-    console.log("Generated URL:", transformationUrl);
+    console.log("DownloadButton - Generated Cloudinary URL:", transformationUrl);
     return transformationUrl;
   };
 

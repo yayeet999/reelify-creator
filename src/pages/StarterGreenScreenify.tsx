@@ -12,6 +12,11 @@ const StarterGreenScreenify = () => {
   const [backgroundVideoUrl, setBackgroundVideoUrl] = useState<string>();
   const [audioUrl, setAudioUrl] = useState<string>();
 
+  const handleAudioGenerated = (url: string) => {
+    console.log("StarterGreenScreenify - Audio URL generated:", url);
+    setAudioUrl(url);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
       <div className="space-y-8">
@@ -54,7 +59,7 @@ const StarterGreenScreenify = () => {
               <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
                 3. Generate Custom Voice (Optional)
               </h2>
-              <VoiceSelector onAudioGenerated={setAudioUrl} />
+              <VoiceSelector onAudioGenerated={handleAudioGenerated} />
             </Card>
           </div>
 

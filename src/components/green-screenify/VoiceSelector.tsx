@@ -109,6 +109,7 @@ export const VoiceSelector = ({ onAudioGenerated }: VoiceSelectorProps) => {
       if (error) throw error;
 
       if (data?.audioUrl) {
+        console.log("VoiceSelector - Generated Audio URL:", data.audioUrl);
         setGeneratedAudioUrl(data.audioUrl);
         onAudioGenerated(data.audioUrl);
         toast({
