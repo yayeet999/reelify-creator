@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
+import { StatsSection } from "@/components/StatsSection";
 
 export const Hero = () => {
   return (
@@ -21,17 +22,9 @@ export const Hero = () => {
               Watch Demo
             </Button>
           </div>
-          <div className="mt-8 p-4 bg-white/50 backdrop-blur-sm rounded-xl border shadow-lg">
-            <video
-              className="rounded-lg w-full max-w-2xl mx-auto shadow-xl"
-              poster="/placeholder.svg"
-              loop
-              muted
-            >
-              <source src="#" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
-          </div>
+          
+          {/* Stats Section */}
+          <StatsSection />
         </div>
       </div>
     </div>
