@@ -1,5 +1,5 @@
 import { Instagram, Users, MousePointerClick, Video } from "lucide-react";
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 const contentTypeData = [
@@ -48,7 +48,7 @@ const stats = [
 export const StatsSection = () => {
   return (
     <div className="w-full py-8">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+      <div className="max-w-[1920px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* Charts Section */}
         <div className="space-y-12">
           {/* Content Type Distribution Chart */}
