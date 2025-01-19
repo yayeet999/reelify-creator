@@ -79,12 +79,8 @@ export const StatsSection = () => {
                         return (
                           <ChartTooltipContent
                             className="bg-white/80 backdrop-blur-sm"
-                            content={
-                              <div className="flex flex-col">
-                                <span className="font-semibold">{data.name}</span>
-                                <span>{data.value}%</span>
-                              </div>
-                            }
+                            formatter={(value, name) => [value, name]}
+                            content={`${data.name}: ${data.value}%`}
                           />
                         );
                       }
