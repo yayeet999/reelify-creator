@@ -79,8 +79,7 @@ export const StatsSection = () => {
                         return (
                           <ChartTooltipContent
                             className="bg-white/80 backdrop-blur-sm"
-                            formatter={(value, name) => [value, name]}
-                            content={`${data.name}: ${data.value}%`}
+                            formatter={(value) => [`${value}%`, data.name]}
                           />
                         );
                       }
