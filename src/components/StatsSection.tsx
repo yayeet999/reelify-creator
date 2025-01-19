@@ -51,12 +51,9 @@ export const StatsSection = () => {
     <div className="w-full py-8">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* Charts Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="space-y-12">
           {/* Content Type Distribution Chart */}
-          <div className="bg-white/50 backdrop-blur-sm rounded-xl border shadow-lg p-6 animate-fade-up">
-            <h3 className="text-lg font-semibold mb-4">
-              Content Type Distribution
-            </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div className="h-[300px]">
               <ChartContainer
                 className="w-full h-full"
@@ -81,41 +78,30 @@ export const StatsSection = () => {
                       ))}
                     </Pie>
                     <ChartTooltip
-                      content={(props) => {
-                        if (props.active && props.payload?.length) {
-                          const data = props.payload[0].payload;
-                          return (
-                            <ChartTooltipContent
-                              className="bg-white/80 backdrop-blur-sm"
-                              formatter={(value) => [`${value}%`, data.name]}
-                            />
-                          );
-                        }
-                        return null;
-                      }}
+                      formatter={(value: number, name: string) => [`${value}%`, name]}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               </ChartContainer>
             </div>
-            <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
-              {contentTypeData.map((item) => (
-                <div key={item.name} className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span>{item.name}</span>
-                </div>
-              ))}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Content Type Distribution</h3>
+              <div className="grid gap-3">
+                {contentTypeData.map((item) => (
+                  <div key={item.name} className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-sm">{item.name}: {item.value}%</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
 
           {/* Audience Engagement Chart */}
-          <div className="bg-white/50 backdrop-blur-sm rounded-xl border shadow-lg p-6 animate-fade-up">
-            <h3 className="text-lg font-semibold mb-4">
-              Audience Engagement with UGC
-            </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div className="h-[300px]">
               <ChartContainer
                 className="w-full h-full"
@@ -139,33 +125,25 @@ export const StatsSection = () => {
                       ))}
                     </Pie>
                     <ChartTooltip
-                      content={(props) => {
-                        if (props.active && props.payload?.length) {
-                          const data = props.payload[0].payload;
-                          return (
-                            <ChartTooltipContent
-                              className="bg-white/80 backdrop-blur-sm"
-                              formatter={(value) => [`${value}%`, data.name]}
-                            />
-                          );
-                        }
-                        return null;
-                      }}
+                      formatter={(value: number, name: string) => [`${value}%`, name]}
                     />
                   </PieChart>
                 </ResponsiveContainer>
               </ChartContainer>
             </div>
-            <div className="grid grid-cols-3 gap-2 mt-4 text-sm">
-              {audienceEngagementData.map((item) => (
-                <div key={item.name} className="flex items-center gap-2">
-                  <div 
-                    className="w-3 h-3 rounded-full" 
-                    style={{ backgroundColor: item.color }}
-                  />
-                  <span>{item.name}: {item.value}%</span>
-                </div>
-              ))}
+            <div className="space-y-4">
+              <h3 className="text-lg font-semibold">Audience Engagement with UGC</h3>
+              <div className="grid gap-3">
+                {audienceEngagementData.map((item) => (
+                  <div key={item.name} className="flex items-center gap-2">
+                    <div 
+                      className="w-3 h-3 rounded-full" 
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className="text-sm">{item.name}: {item.value}%</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -175,7 +153,7 @@ export const StatsSection = () => {
           {stats.map((stat) => (
             <div
               key={stat.id}
-              className="bg-white/50 backdrop-blur-sm rounded-xl border shadow-lg p-6 hover:shadow-xl transition-shadow animate-fade-up"
+              className="p-6 rounded-xl border shadow-sm hover:shadow-md transition-shadow animate-fade-up"
             >
               <stat.icon className="w-8 h-8 text-primary mb-4" />
               <div className="text-3xl font-bold text-primary mb-2">{stat.stat}</div>
