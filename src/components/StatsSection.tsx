@@ -3,10 +3,9 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 const contentTypeData = [
-  { name: "User-generated content", value: 54, color: "#0D9488" },
-  { name: "Influencer content", value: 31, color: "#14B8A6" },
-  { name: "Brand content", value: 15, color: "#5EEAD4" },
-  { name: "Stock content", value: 0, color: "#99F6E4" },
+  { name: "UGC", value: 54, color: "#0D9488" },
+  { name: "Influencer", value: 31, color: "#14B8A6" },
+  { name: "Brand", value: 15, color: "#5EEAD4" },
 ];
 
 const audienceEngagementData = [
