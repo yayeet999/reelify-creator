@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { StatsSection } from "@/components/StatsSection";
+import { FeatureGrid } from "@/components/FeatureGrid";
 
 export const Hero = () => {
   return (
@@ -24,6 +25,9 @@ export const Hero = () => {
             </Button>
           </div>
         </div>
+        
+        {/* Feature Grid */}
+        <FeatureGrid />
         
         {/* Stats Section without max width constraint */}
         <StatsSection />
