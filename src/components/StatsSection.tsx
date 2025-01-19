@@ -1,5 +1,5 @@
 import { Instagram, Users, MousePointerClick, Video } from "lucide-react";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
 const contentTypeData = [
@@ -48,12 +48,12 @@ const stats = [
 
 export const StatsSection = () => {
   return (
-    <div className="w-full max-w-[1600px] mx-auto py-8 px-4">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+    <div className="w-full py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         {/* Charts Section */}
-        <div className="space-y-16">
+        <div className="space-y-12">
           {/* Content Type Distribution Chart */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div className="h-[300px]">
               <ChartContainer
                 className="w-full h-full"
@@ -101,7 +101,7 @@ export const StatsSection = () => {
           </div>
 
           {/* Audience Engagement Chart */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
             <div className="h-[300px]">
               <ChartContainer
                 className="w-full h-full"
@@ -149,7 +149,7 @@ export const StatsSection = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {stats.map((stat) => (
             <div
               key={stat.id}
