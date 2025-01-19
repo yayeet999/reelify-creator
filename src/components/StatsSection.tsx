@@ -2,11 +2,17 @@ import { Instagram, Users, MousePointerClick, Video } from "lucide-react";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 
-const data = [
+const contentTypeData = [
   { name: "User-generated content", value: 54, color: "#0D9488" },
   { name: "Influencer content", value: 31, color: "#14B8A6" },
   { name: "Brand content", value: 15, color: "#5EEAD4" },
   { name: "Stock content", value: 0, color: "#99F6E4" },
+];
+
+const audienceEngagementData = [
+  { name: "Yes", value: 60, color: "#4FD1C5" },
+  { name: "Neutral", value: 25, color: "#4A5568" },
+  { name: "No", value: 15, color: "#FC8181" },
 ];
 
 const stats = [
@@ -43,63 +49,124 @@ const stats = [
 export const StatsSection = () => {
   return (
     <div className="w-full py-8">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-        {/* Donut Chart */}
-        <div className="bg-white/50 backdrop-blur-sm rounded-xl border shadow-lg p-6 animate-fade-up">
-          <h3 className="text-lg font-semibold mb-4">
-            The Most Engaging Content on Social Media
-          </h3>
-          <div className="h-[300px]">
-            <ChartContainer
-              className="w-full h-full"
-              config={{
-                ugc: { color: "#0D9488" },
-                influencer: { color: "#14B8A6" },
-                brand: { color: "#5EEAD4" },
-                stock: { color: "#99F6E4" },
-              }}
-            >
-              <ResponsiveContainer>
-                <PieChart>
-                  <Pie
-                    data={data}
-                    innerRadius={0}
-                    outerRadius={100}
-                    paddingAngle={0}
-                    dataKey="value"
-                  >
-                    {data.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <ChartTooltip
-                    content={(props) => {
-                      if (props.active && props.payload?.length) {
-                        const data = props.payload[0].payload;
-                        return (
-                          <ChartTooltipContent
-                            className="bg-white/80 backdrop-blur-sm"
-                            formatter={(value) => [`${value}%`, data.name]}
-                          />
-                        );
-                      }
-                      return null;
-                    }}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Content Type Distribution Chart */}
+          <div className="bg-white/50 backdrop-blur-sm rounded-xl border shadow-lg p-6 animate-fade-up">
+            <h3 className="text-lg font-semibold mb-4">
+              Content Type Distribution
+            </h3>
+            <div className="h-[300px]">
+              <ChartContainer
+                className="w-full h-full"
+                config={{
+                  ugc: { color: "#0D9488" },
+                  influencer: { color: "#14B8A6" },
+                  brand: { color: "#5EEAD4" },
+                  stock: { color: "#99F6E4" },
+                }}
+              >
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie
+                      data={contentTypeData}
+                      innerRadius={0}
+                      outerRadius={100}
+                      paddingAngle={0}
+                      dataKey="value"
+                    >
+                      {contentTypeData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip
+                      content={(props) => {
+                        if (props.active && props.payload?.length) {
+                          const data = props.payload[0].payload;
+                          return (
+                            <ChartTooltipContent
+                              className="bg-white/80 backdrop-blur-sm"
+                              formatter={(value) => [`${value}%`, data.name]}
+                            />
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+            <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
+              {contentTypeData.map((item) => (
+                <div key={item.name} className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full" 
+                    style={{ backgroundColor: item.color }}
                   />
-                </PieChart>
-              </ResponsiveContainer>
-            </ChartContainer>
+                  <span>{item.name}</span>
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
-            {data.map((item) => (
-              <div key={item.name} className="flex items-center gap-2">
-                <div 
-                  className="w-3 h-3 rounded-full" 
-                  style={{ backgroundColor: item.color }}
-                />
-                <span>{item.name}</span>
-              </div>
-            ))}
+
+          {/* Audience Engagement Chart */}
+          <div className="bg-white/50 backdrop-blur-sm rounded-xl border shadow-lg p-6 animate-fade-up">
+            <h3 className="text-lg font-semibold mb-4">
+              Audience Engagement with UGC
+            </h3>
+            <div className="h-[300px]">
+              <ChartContainer
+                className="w-full h-full"
+                config={{
+                  yes: { color: "#4FD1C5" },
+                  neutral: { color: "#4A5568" },
+                  no: { color: "#FC8181" },
+                }}
+              >
+                <ResponsiveContainer>
+                  <PieChart>
+                    <Pie
+                      data={audienceEngagementData}
+                      innerRadius={60}
+                      outerRadius={100}
+                      paddingAngle={2}
+                      dataKey="value"
+                    >
+                      {audienceEngagementData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <ChartTooltip
+                      content={(props) => {
+                        if (props.active && props.payload?.length) {
+                          const data = props.payload[0].payload;
+                          return (
+                            <ChartTooltipContent
+                              className="bg-white/80 backdrop-blur-sm"
+                              formatter={(value) => [`${value}%`, data.name]}
+                            />
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                  </PieChart>
+                </ResponsiveContainer>
+              </ChartContainer>
+            </div>
+            <div className="grid grid-cols-3 gap-2 mt-4 text-sm">
+              {audienceEngagementData.map((item) => (
+                <div key={item.name} className="flex items-center gap-2">
+                  <div 
+                    className="w-3 h-3 rounded-full" 
+                    style={{ backgroundColor: item.color }}
+                  />
+                  <span>{item.name}: {item.value}%</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
