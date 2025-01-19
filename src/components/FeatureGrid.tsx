@@ -6,9 +6,9 @@ export const FeatureGrid = () => {
       {/* Column 1: Bullet Points */}
       <div className="space-y-4">
         <ul className="space-y-3">
-          {["Quick setup process", "Easy to customize", "Instant results"].map((text, index) => (
+          {["Green Screen Templates", "Custom Voiceover", "Easy to customize"].map((text, index) => (
             <li key={index} className="flex items-start gap-2">
-              <Check className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <Check className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
               <span className="text-sm text-gray-600">{text}</span>
             </li>
           ))}
@@ -30,9 +30,9 @@ export const FeatureGrid = () => {
       {/* Column 3: Bullet Points */}
       <div className="space-y-4">
         <ul className="space-y-3">
-          {["Powerful AI features", "Smart automation", "Real-time preview"].map((text, index) => (
+          {["Realistic UGC creators", "AI generate hooks", "Include your video, download instantly"].map((text, index) => (
             <li key={index} className="flex items-start gap-2">
-              <Check className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <Check className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
               <span className="text-sm text-gray-600">{text}</span>
             </li>
           ))}
@@ -54,9 +54,9 @@ export const FeatureGrid = () => {
       {/* Column 5: Bullet Points */}
       <div className="space-y-4">
         <ul className="space-y-3">
-          {["Export in seconds", "Multiple formats", "Cloud storage"].map((text, index) => (
+          {["Huge variety for your personal style", "High quality REALISTIC creators", "Best marketing ROI"].map((text, index) => (
             <li key={index} className="flex items-start gap-2">
-              <Check className="w-5 h-5 text-primary mt-0.5 shrink-0" />
+              <Check className="w-5 h-5 text-green-500 mt-0.5 shrink-0" />
               <span className="text-sm text-gray-600">{text}</span>
             </li>
           ))}
