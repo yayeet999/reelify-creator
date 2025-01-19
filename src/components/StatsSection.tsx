@@ -131,7 +131,7 @@ export const StatsSection = () => {
               </ChartContainer>
             </div>
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Audience Engagement with UGC</h3>
+              <h3 className="text-lg font-semibold">Do Users prefer UGC over brand content?</h3>
               <div className="grid gap-3">
                 {audienceEngagementData.map((item) => (
                   <div key={item.name} className="flex items-center gap-2">
