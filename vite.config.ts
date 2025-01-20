@@ -9,8 +9,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     strictPort: true,
-    middlewareMode: false,
-    // Add SPA fallback
+    middlewareMode: true, // Enable middleware mode
     fs: {
       strict: true,
     },
