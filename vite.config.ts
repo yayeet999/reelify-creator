@@ -10,8 +10,17 @@ export default defineConfig(({ mode }) => ({
     strictPort: true,
     fs: {
       strict: false,
-      allow: [".."], // Allow serving files from one level up to handle static assets
+      allow: [".."],
     },
+    // Add middleware to handle client-side routing
+    middlewares: [
+      (req, res, next) => {
+        if (!req.url?.includes('.') && req.url !== '/') {
+          req.url = '/';
+        }
+        next();
+      }
+    ],
   },
   preview: {
     port: 8080,
@@ -26,7 +35,7 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
-  base: "/", // Ensure proper base URL handling
+  base: "/",
   build: {
     outDir: "dist",
     assetsDir: "assets",
