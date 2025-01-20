@@ -12,6 +12,7 @@ serve(async (req) => {
   const signature = req.headers.get('stripe-signature')
   
   if (!signature) {
+    console.error('No signature provided')
     return new Response('No signature provided', { status: 400 })
   }
 
@@ -24,6 +25,12 @@ serve(async (req) => {
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+      {
+        auth: {
+          autoRefreshToken: false,
+          persistSession: false,
+        },
+      }
     )
 
     switch (event.type) {
@@ -31,8 +38,20 @@ serve(async (req) => {
         const session = event.data.object
         console.log('Checkout session completed:', session.id)
         
+        // Map price IDs to subscription tiers
+        let tier = 'free'
+        if (session.metadata?.price_id === 'price_1Qf3YWF2YoGQdvcW69wTFx7i') {
+          tier = 'starter'
+        } else if (session.metadata?.price_id === 'price_1Qf3aLF2YoGQdvcWiKMuplKL') {
+          tier = 'pro'
+        } else if (session.metadata?.price_id === 'price_1Qf3bQF2YoGQdvcWx23MIde4') {
+          tier = 'enterprise'
+        }
+
+        console.log('Updating subscription tier to:', tier)
+
         // Update subscription record
-        const { error } = await supabase
+        const { error: subscriptionError } = await supabase
           .from('subscriptions')
           .upsert({
             user_id: session.client_reference_id,
@@ -42,28 +61,23 @@ serve(async (req) => {
             price_id: session.metadata?.price_id,
           })
 
-        if (error) throw error
-
-        // Update user's subscription tier based on price ID
-        let tier = 'starter'
-        switch (session.metadata?.price_id) {
-          case 'price_1Qf3YWF2YoGQdvcW69wTFx7i':
-            tier = 'starter'
-            break
-          case 'price_1Qf3aLF2YoGQdvcWiKMuplKL':
-            tier = 'pro'
-            break
-          case 'price_1Qf3bQF2YoGQdvcWx23MIde4':
-            tier = 'enterprise'
-            break
+        if (subscriptionError) {
+          console.error('Error updating subscription:', subscriptionError)
+          throw subscriptionError
         }
 
+        // Update user's subscription tier
         const { error: profileError } = await supabase
           .from('profiles')
           .update({ subscription_tier: tier })
           .eq('id', session.client_reference_id)
 
-        if (profileError) throw profileError
+        if (profileError) {
+          console.error('Error updating profile:', profileError)
+          throw profileError
+        }
+
+        console.log('Successfully updated subscription and profile')
         break
       }
 
@@ -72,14 +86,16 @@ serve(async (req) => {
         const subscription = event.data.object
         console.log('Subscription changed:', subscription.id)
 
-        // Find subscription by stripe_subscription_id
         const { data: subscriptionData, error: fetchError } = await supabase
           .from('subscriptions')
           .select('id, user_id')
           .eq('stripe_subscription_id', subscription.id)
           .single()
 
-        if (fetchError) throw fetchError
+        if (fetchError) {
+          console.error('Error fetching subscription:', fetchError)
+          throw fetchError
+        }
 
         if (subscriptionData) {
           const { error: updateError } = await supabase
@@ -94,16 +110,21 @@ serve(async (req) => {
             })
             .eq('id', subscriptionData.id)
 
-          if (updateError) throw updateError
+          if (updateError) {
+            console.error('Error updating subscription:', updateError)
+            throw updateError
+          }
 
-          // If subscription is cancelled/deleted, update user's tier to free
           if (subscription.status === 'canceled' || event.type === 'customer.subscription.deleted') {
             const { error: profileError } = await supabase
               .from('profiles')
               .update({ subscription_tier: 'free' })
               .eq('id', subscriptionData.user_id)
 
-            if (profileError) throw profileError
+            if (profileError) {
+              console.error('Error updating profile:', profileError)
+              throw profileError
+            }
           }
         }
         break

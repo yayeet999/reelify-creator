@@ -11,7 +11,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -19,11 +18,10 @@ serve(async (req) => {
   try {
     const { priceId } = await req.json()
     
-    // Get the user from the request
     const authHeader = req.headers.get('Authorization')!
     const token = authHeader.replace('Bearer ', '')
     
-    // Create a checkout session
+    // Create a checkout session with better success/cancel URLs
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -33,10 +31,15 @@ serve(async (req) => {
         },
       ],
       mode: 'subscription',
-      success_url: `${req.headers.get('origin')}/dashboard?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${req.headers.get('origin')}/pricing`,
+      success_url: `${req.headers.get('origin')}/dashboard?session_id={CHECKOUT_SESSION_ID}&payment_success=true`,
+      cancel_url: `${req.headers.get('origin')}/#pricing?payment_cancelled=true`,
       client_reference_id: token,
+      metadata: {
+        price_id: priceId,
+      },
     })
+
+    console.log('Checkout session created:', session.id)
 
     return new Response(
       JSON.stringify({ url: session.url }),
@@ -46,7 +49,7 @@ serve(async (req) => {
       },
     )
   } catch (error) {
-    console.error('Error:', error)
+    console.error('Error creating checkout session:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
       { 

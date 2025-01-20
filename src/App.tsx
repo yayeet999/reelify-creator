@@ -78,6 +78,18 @@ const LandingPage = () => {
     return <div>Loading...</div>;
   }
 
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentSuccess = urlParams.get('payment_success');
+    const paymentCancelled = urlParams.get('payment_cancelled');
+
+    if (paymentSuccess) {
+      toast.success("Payment successful! Your subscription has been activated.");
+    } else if (paymentCancelled) {
+      toast.error("Payment was cancelled. Please try again if you'd like to subscribe.");
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b">
