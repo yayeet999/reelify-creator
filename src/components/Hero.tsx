@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
 import { StatsSection } from "@/components/StatsSection";
 import { FeatureGrid } from "@/components/FeatureGrid";
+import { Link } from "react-router-dom";
 
 export const Hero = () => {
   return (
@@ -16,10 +17,12 @@ export const Hero = () => {
             Transform your content with AI-powered video effects and hooks that capture attention and drive engagement.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <Button size="lg" className="group">
-              Get Started Free
-              <Play className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link to="/auth">
+              <Button size="lg" className="group">
+                Get Started Free
+                <Play className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
             <Button size="lg" variant="outline">
               Watch Demo
             </Button>
