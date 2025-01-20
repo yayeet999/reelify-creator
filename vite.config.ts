@@ -9,13 +9,18 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
     strictPort: true,
-    middlewareMode: false,
-    // Add historyApiFallback to handle client-side routing
+    middlewareMode: true, // Enable proper middleware handling
     fs: {
-      strict: true,
+      strict: false, // Allow proper static file serving
     },
-    // Configure middleware to handle SPA routing
-    proxy: {},
+    proxy: {
+      // Handle all routes through the SPA
+      "^(?!/assets|/@|/node_modules|/src/.*$).*": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+        rewrite: (path) => "/index.html",
+      },
+    },
   },
   preview: {
     port: 8080,
@@ -31,4 +36,6 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  // Ensure proper base URL handling
+  base: "/",
 }));
