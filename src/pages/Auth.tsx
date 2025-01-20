@@ -118,7 +118,19 @@ const Auth = () => {
           <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <SupabaseAuth
               supabaseClient={supabase}
-              appearance={{ theme: ThemeSupa }}
+              appearance={{
+                theme: ThemeSupa,
+                style: {
+                  button: {
+                    borderRadius: '6px',
+                    height: '40px',
+                  },
+                  input: {
+                    borderRadius: '6px',
+                    height: '40px',
+                  },
+                },
+              }}
               theme="light"
               providers={[]}
             />
