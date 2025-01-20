@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import type { AuthError } from "@supabase/supabase-js";
+import type { Profile } from "@/integrations/supabase/types/profiles";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -16,12 +17,15 @@ const Auth = () => {
   useEffect(() => {
     const checkSession = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        
         if (session) {
-          handlePostAuthFlow(session);
+          await handlePostAuthFlow(session);
         }
       } catch (error) {
         console.error('Session check error:', error);
+        setErrorMessage(getErrorMessage(error as AuthError));
       }
     };
     
@@ -58,14 +62,21 @@ const Auth = () => {
 
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('subscription_tier')
+        .select('*')
         .eq('id', session.user.id)
         .maybeSingle();
 
       if (error) throw error;
 
+      if (!profile) {
+        // Handle case where profile doesn't exist
+        console.error('No profile found for user');
+        navigate("/free/dashboard");
+        return;
+      }
+
       // Navigate based on subscription tier
-      switch (profile?.subscription_tier) {
+      switch (profile.subscription_tier) {
         case 'starter':
           navigate("/dashboard");
           break;
