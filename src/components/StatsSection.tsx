@@ -1,18 +1,4 @@
-import { Instagram, Users, MousePointerClick, Video } from "lucide-react";
-import { ChartContainer, ChartTooltip } from "@/components/ui/chart";
-import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-
-const contentTypeData = [
-  { name: "UGC", value: 54, color: "#0D9488" },
-  { name: "Influencer", value: 31, color: "#14B8A6" },
-  { name: "Brand", value: 15, color: "#5EEAD4" },
-];
-
-const audienceEngagementData = [
-  { name: "Yes", value: 60, color: "#4FD1C5" },
-  { name: "Neutral", value: 25, color: "#4A5568" },
-  { name: "No", value: 15, color: "#FC8181" },
-];
+import { Instagram, Users, MousePointerClick, Video, DollarSign, Sparkles } from "lucide-react";
 
 const stats = [
   {
@@ -49,99 +35,47 @@ export const StatsSection = () => {
   return (
     <div className="w-full py-8">
       <div className="max-w-[1920px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-        {/* Charts Section */}
-        <div className="space-y-12">
-          {/* Content Type Distribution Chart */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            <div className="h-[300px]">
-              <ChartContainer
-                className="w-full h-full"
-                config={{
-                  ugc: { color: "#0D9488" },
-                  influencer: { color: "#14B8A6" },
-                  brand: { color: "#5EEAD4" },
-                  stock: { color: "#99F6E4" },
-                }}
-              >
-                <ResponsiveContainer>
-                  <PieChart>
-                    <Pie
-                      data={contentTypeData}
-                      innerRadius={0}
-                      outerRadius={100}
-                      paddingAngle={0}
-                      dataKey="value"
-                    >
-                      {contentTypeData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip
-                      formatter={(value: number, name: string) => [`${value}%`, name]}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
+        {/* Cost Comparison Section */}
+        <div className="space-y-8">
+          <div className="bg-white rounded-xl border p-8 space-y-6">
+            <h3 className="text-2xl font-bold text-gray-900">Traditional UGC Costs</h3>
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Content Type Distribution</h3>
-              <div className="grid gap-3">
-                {contentTypeData.map((item) => (
-                  <div key={item.name} className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-sm">{item.name}: {item.value}%</span>
-                  </div>
-                ))}
+              <div className="flex items-start gap-3">
+                <DollarSign className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                <div>
+                  <p className="text-lg font-semibold">$150 - $212 per piece</p>
+                  <p className="text-gray-600">Average rate for UGC content creation</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <DollarSign className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                <div>
+                  <p className="text-lg font-semibold">$150 median cost</p>
+                  <p className="text-gray-600">Typical cost for a single UGC video</p>
+                </div>
+              </div>
+              <div className="mt-4 text-sm text-gray-500">
+                Source: <a href="https://inbeat.agency/blog/ugc-rates" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">inbeat.agency</a>
               </div>
             </div>
           </div>
 
-          {/* Audience Engagement Chart */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-            <div className="h-[300px]">
-              <ChartContainer
-                className="w-full h-full"
-                config={{
-                  yes: { color: "#4FD1C5" },
-                  neutral: { color: "#4A5568" },
-                  no: { color: "#FC8181" },
-                }}
-              >
-                <ResponsiveContainer>
-                  <PieChart>
-                    <Pie
-                      data={audienceEngagementData}
-                      innerRadius={60}
-                      outerRadius={100}
-                      paddingAngle={2}
-                      dataKey="value"
-                    >
-                      {audienceEngagementData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
-                      ))}
-                    </Pie>
-                    <ChartTooltip
-                      formatter={(value: number, name: string) => [`${value}%`, name]}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              </ChartContainer>
-            </div>
+          <div className="bg-gradient-to-br from-accent-purple to-accent-pink rounded-xl p-8 space-y-6">
+            <h3 className="text-2xl font-bold text-gray-900">The NotReel Advantage</h3>
             <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Do Users prefer UGC over brand content?</h3>
-              <div className="grid gap-3">
-                {audienceEngagementData.map((item) => (
-                  <div key={item.name} className="flex items-center gap-2">
-                    <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: item.color }}
-                    />
-                    <span className="text-sm">{item.name}: {item.value}%</span>
-                  </div>
-                ))}
+              <div className="flex items-start gap-3">
+                <Sparkles className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                <div>
+                  <p className="text-lg font-semibold">90% Cost Reduction</p>
+                  <p className="text-gray-700">Create unlimited AI-powered UGC content at a fraction of traditional costs</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Sparkles className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
+                <div>
+                  <p className="text-lg font-semibold">Unlimited Potential</p>
+                  <p className="text-gray-700">Generate diverse, high-quality content without the traditional per-video costs</p>
+                </div>
               </div>
             </div>
           </div>
