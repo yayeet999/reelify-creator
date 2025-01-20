@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { User, Code, FilePlus } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
+import { FAQ } from "@/components/FAQ";
 
 const quickStartOptions = [
   {
@@ -75,6 +76,9 @@ const Index = () => {
             </p>
           </div>
         </div>
+
+        {/* FAQ Section */}
+        <FAQ />
       </div>
     </div>
   );
