@@ -4,7 +4,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import type { AuthError } from "@supabase/supabase-js";
@@ -16,9 +15,13 @@ const Auth = () => {
 
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        handlePostAuthFlow(session);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          handlePostAuthFlow(session);
+        }
+      } catch (error) {
+        console.error('Session check error:', error);
       }
     };
     
@@ -33,7 +36,7 @@ const Auth = () => {
           await handlePostAuthFlow(session);
         } catch (error) {
           console.error('Auth error:', error);
-          setErrorMessage(getErrorMessage(error));
+          setErrorMessage(getErrorMessage(error as AuthError));
         } finally {
           setIsLoading(false);
         }
@@ -43,35 +46,41 @@ const Auth = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handlePostAuthFlow = async (session) => {
-    const storedPaymentUrl = localStorage.getItem('selectedPaymentUrl');
-    
-    if (storedPaymentUrl) {
-      localStorage.removeItem('selectedPaymentUrl');
-      window.location.href = storedPaymentUrl;
-      return;
-    }
+  const handlePostAuthFlow = async (session: any) => {
+    try {
+      const storedPaymentUrl = localStorage.getItem('selectedPaymentUrl');
+      
+      if (storedPaymentUrl) {
+        localStorage.removeItem('selectedPaymentUrl');
+        window.location.href = storedPaymentUrl;
+        return;
+      }
 
-    // If no stored payment URL, get user's subscription tier
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('subscription_tier')
-      .eq('id', session.user.id)
-      .single();
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('subscription_tier')
+        .eq('id', session.user.id)
+        .maybeSingle();
 
-    // Navigate based on subscription tier
-    switch (profile?.subscription_tier) {
-      case 'starter':
-        navigate("/dashboard");
-        break;
-      case 'pro':
-        navigate("/pro/dashboard");
-        break;
-      case 'enterprise':
-        navigate("/enterprise/dashboard");
-        break;
-      default:
-        navigate("/free/dashboard");
+      if (error) throw error;
+
+      // Navigate based on subscription tier
+      switch (profile?.subscription_tier) {
+        case 'starter':
+          navigate("/dashboard");
+          break;
+        case 'pro':
+          navigate("/pro/dashboard");
+          break;
+        case 'enterprise':
+          navigate("/enterprise/dashboard");
+          break;
+        default:
+          navigate("/free/dashboard");
+      }
+    } catch (error) {
+      console.error('Post auth flow error:', error);
+      throw error;
     }
   };
 
@@ -118,7 +127,13 @@ const Auth = () => {
           <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
             <SupabaseAuth
               supabaseClient={supabase}
-              appearance={{ theme: ThemeSupa }}
+              appearance={{ 
+                theme: ThemeSupa,
+                style: {
+                  button: { background: 'rgb(var(--primary))', color: 'white' },
+                  anchor: { color: 'rgb(var(--primary))' },
+                }
+              }}
               theme="light"
               providers={[]}
             />
