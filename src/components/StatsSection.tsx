@@ -41,7 +41,7 @@ const steps = [
   {
     id: 2,
     title: "AI Transform",
-    description: "Transform your content with AI-powered UGC styles and viral templates",
+    description: "Customize and transform your content with high-quality and viral features",
     icon: ArrowRight,
   },
   {
