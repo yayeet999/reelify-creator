@@ -8,17 +8,10 @@
     <meta name="author" content="Lovable" />
     <meta property="og:image" content="/og-image.png" />
   </head>
+
   <body>
     <div id="root"></div>
-    <script type="module">
-      // Only include gptengineer.js in development
-      if (import.meta.env.DEV) {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.gpteng.co/gptengineer.js';
-        script.type = 'module';
-        document.body.appendChild(script);
-      }
-    </script>
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

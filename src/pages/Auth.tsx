@@ -1,33 +1,129 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import type { AuthError } from "@supabase/supabase-js";
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    // Redirect if user is already logged in
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate('/dashboard');
+        handlePostAuthFlow(session);
+      }
+    };
+    
+    checkSession();
+  }, []);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === 'SIGNED_IN' && session) {
+        setIsLoading(true);
+        try {
+          await handlePostAuthFlow(session);
+        } catch (error) {
+          console.error('Auth error:', error);
+          setErrorMessage(getErrorMessage(error));
+        } finally {
+          setIsLoading(false);
+        }
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, []);
+
+  const handlePostAuthFlow = async (session) => {
+    const storedPaymentUrl = localStorage.getItem('selectedPaymentUrl');
+    
+    if (storedPaymentUrl) {
+      localStorage.removeItem('selectedPaymentUrl');
+      window.location.href = storedPaymentUrl;
+      return;
+    }
+
+    // If no stored payment URL, get user's subscription tier
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('subscription_tier')
+      .eq('id', session.user.id)
+      .single();
+
+    // Navigate based on subscription tier
+    switch (profile?.subscription_tier) {
+      case 'starter':
+        navigate("/dashboard");
+        break;
+      case 'pro':
+        navigate("/pro/dashboard");
+        break;
+      case 'enterprise':
+        navigate("/enterprise/dashboard");
+        break;
+      default:
+        navigate("/free/dashboard");
+    }
+  };
+
+  const getErrorMessage = (error: AuthError) => {
+    switch (error.message) {
+      case 'Invalid login credentials':
+        return 'Invalid email or password. Please check your credentials and try again.';
+      case 'Email not confirmed':
+        return 'Please verify your email address before signing in.';
+      default:
+        return error.message;
+    }
+  };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 p-4">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-center text-2xl font-bold mb-8">Welcome Back</h2>
-        <SupabaseAuth
-          supabaseClient={supabase}
-          appearance={{ theme: ThemeSupa }}
-          theme="light"
-          providers={[]}
-        />
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="absolute top-4 left-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-2"
+            onClick={() => navigate("/")}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Home
+          </Button>
+        </div>
+        <div>
+          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+            Welcome to notreel.ai
+          </h2>
+        </div>
+        {errorMessage && (
+          <Alert variant="destructive">
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+        {isLoading ? (
+          <div className="flex justify-center items-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <SupabaseAuth
+              supabaseClient={supabase}
+              appearance={{ theme: ThemeSupa }}
+              theme="light"
+              providers={[]}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

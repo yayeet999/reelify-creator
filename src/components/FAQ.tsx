@@ -20,7 +20,7 @@ const faqs = [
   },
   {
     question: "Are the people in the videos real content creators?",
-    answer: "No, our videos feature AI-generated presenters that are indistinguishable from real people. This innovative technology allows us to create highly realistic, customizable content that's both scalable and cost-effective. You get the authenticity of human presenters with the flexibility and efficiency of AI."
+    answer: "Yes! Our videos feature real content creators who have partnered with us. This ensures authentic, relatable content that resonates with your audience while maintaining professional quality."
   },
   {
     question: "Can I cancel my subscription at any time?",
@@ -40,7 +40,7 @@ const faqs = [
   },
   {
     question: "What makes notreel.ai different from other video creation tools?",
-    answer: "notreel.ai combines hyper-realistic AI presenters, AI-powered hooks generation, and custom voiceovers in one platform. Our focus on quality and ease of use sets us apart, helping you create professional, engaging content quickly."
+    answer: "notreel.ai combines authentic creators, AI-powered hooks generation, and custom voiceovers in one platform. Our focus on authenticity and ease of use sets us apart, helping you create genuine, engaging content quickly."
   }
 ];
 
