@@ -10,10 +10,6 @@ import Auth from "./pages/Auth";
 import CreateContent from "./pages/CreateContent";
 import Settings from "./pages/Settings";
 import GenerateHooks from "./pages/GenerateHooks";
-import { Hero } from "./components/Hero";
-import { Features } from "./components/Features";
-import { Pricing } from "./components/Pricing";
-import { FAQ } from "./components/FAQ";
 import FreeDashboard from "./pages/FreeDashboard";
 import ProDashboard from "./pages/ProDashboard";
 import EnterpriseDashboard from "./pages/EnterpriseDashboard";
@@ -40,9 +36,11 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            {/* Public Routes */}
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
             
+            {/* Protected Routes */}
             {/* Starter Plan Routes */}
             <Route
               path="/dashboard"
@@ -179,7 +177,7 @@ const App = () => (
               }
             />
 
-            {/* Common Routes */}
+            {/* Common Protected Routes */}
             <Route
               path="/settings"
               element={
