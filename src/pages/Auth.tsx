@@ -1,7 +1,7 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { toast } from "sonner";
@@ -9,69 +9,103 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, Loader2 } from "lucide-react";
 import type { AuthError } from "@supabase/supabase-js";
 
+const LOADING_TIMEOUT = 10000; // 10 seconds timeout
+
 const Auth = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
+  // Check for existing session on mount
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        handlePostAuthFlow(session);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
+        if (session) {
+          setIsLoading(true);
+          await handlePostAuthFlow(session);
+        }
+      } catch (error) {
+        console.error('Session check error:', error);
+        setErrorMessage(getErrorMessage(error));
       }
     };
     
     checkSession();
   }, []);
 
+  // Handle auth state changes
   useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
         setIsLoading(true);
+        // Set timeout for loading state
+        timeoutId = setTimeout(() => {
+          setIsLoading(false);
+          setErrorMessage("Login attempt timed out. Please try again.");
+          toast.error("Login attempt timed out. Please try again.");
+        }, LOADING_TIMEOUT);
+
         try {
           await handlePostAuthFlow(session);
         } catch (error) {
           console.error('Auth error:', error);
           setErrorMessage(getErrorMessage(error));
+          toast.error(getErrorMessage(error));
         } finally {
+          clearTimeout(timeoutId);
           setIsLoading(false);
         }
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   const handlePostAuthFlow = async (session) => {
-    const storedPaymentUrl = localStorage.getItem('selectedPaymentUrl');
-    
-    if (storedPaymentUrl) {
-      localStorage.removeItem('selectedPaymentUrl');
-      window.location.href = storedPaymentUrl;
-      return;
-    }
+    try {
+      const storedPaymentUrl = localStorage.getItem('selectedPaymentUrl');
+      
+      if (storedPaymentUrl) {
+        localStorage.removeItem('selectedPaymentUrl');
+        window.location.href = storedPaymentUrl;
+        return;
+      }
 
-    // If no stored payment URL, get user's subscription tier
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('subscription_tier')
-      .eq('id', session.user.id)
-      .single();
+      // Get user's subscription tier with error handling
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('subscription_tier')
+        .eq('id', session.user.id)
+        .single();
 
-    // Navigate based on subscription tier
-    switch (profile?.subscription_tier) {
-      case 'starter':
-        navigate("/dashboard");
-        break;
-      case 'pro':
-        navigate("/pro/dashboard");
-        break;
-      case 'enterprise':
-        navigate("/enterprise/dashboard");
-        break;
-      default:
-        navigate("/free/dashboard");
+      if (profileError) {
+        throw new Error('Failed to fetch user profile');
+      }
+
+      // Navigate based on subscription tier
+      switch (profile?.subscription_tier) {
+        case 'starter':
+          navigate("/dashboard");
+          break;
+        case 'pro':
+          navigate("/pro/dashboard");
+          break;
+        case 'enterprise':
+          navigate("/enterprise/dashboard");
+          break;
+        default:
+          navigate("/free/dashboard");
+      }
+    } catch (error) {
+      console.error('Post-auth flow error:', error);
+      throw error; // Re-throw to be handled by the caller
     }
   };
 
@@ -81,8 +115,10 @@ const Auth = () => {
         return 'Invalid email or password. Please check your credentials and try again.';
       case 'Email not confirmed':
         return 'Please verify your email address before signing in.';
+      case 'Failed to fetch user profile':
+        return 'Unable to load your profile. Please try again.';
       default:
-        return error.message;
+        return error.message || 'An unexpected error occurred. Please try again.';
     }
   };
 
