@@ -22,8 +22,15 @@ export const Navbar = () => {
             <div className="md:hidden">
               <SidebarTrigger />
             </div>
-            <a href="/" className="text-2xl font-bold text-primary">
-              notreel.ai
+            <a href="/" className="flex items-center gap-2">
+              <img 
+                src="/logonotreel.png" 
+                alt="NotReel Logo" 
+                className="h-8 w-auto"
+              />
+              <span className="text-2xl font-bold text-primary">
+                notreel.ai
+              </span>
             </a>
           </div>
 
