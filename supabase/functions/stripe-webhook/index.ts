@@ -8,19 +8,39 @@ const stripe = new Stripe(Deno.env.get('STRIPE_SECRET_KEY') || '', {
 
 const webhookSecret = Deno.env.get('STRIPE_WEBHOOK_SECRET') || ''
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 serve(async (req) => {
+  // Handle CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+
   const signature = req.headers.get('stripe-signature')
   
   if (!signature) {
     console.error('No signature provided')
-    return new Response('No signature provided', { status: 400 })
+    return new Response('No signature provided', { 
+      status: 400,
+      headers: corsHeaders
+    })
   }
 
   try {
     const body = await req.text()
-    const event = stripe.webhooks.constructEvent(body, signature, webhookSecret)
+    console.log('Received webhook with signature:', signature)
     
-    console.log('Processing webhook event:', event.type)
+    // CRITICAL FIX: Using constructEventAsync instead of constructEvent
+    const event = await stripe.webhooks.constructEventAsync(
+      body,
+      signature,
+      webhookSecret
+    )
+    
+    console.log('Successfully constructed event:', event.type)
     
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -36,7 +56,7 @@ serve(async (req) => {
     switch (event.type) {
       case 'checkout.session.completed': {
         const session = event.data.object
-        console.log('Checkout session completed:', session.id)
+        console.log('Processing checkout session:', session.id)
         
         // Map price IDs to subscription tiers
         let tier = 'free'
@@ -48,7 +68,7 @@ serve(async (req) => {
           tier = 'enterprise'
         }
 
-        console.log('Updating subscription tier to:', tier)
+        console.log('Updating to tier:', tier, 'for user:', session.client_reference_id)
 
         // Update subscription record
         const { error: subscriptionError } = await supabase
@@ -62,7 +82,7 @@ serve(async (req) => {
           })
 
         if (subscriptionError) {
-          console.error('Error updating subscription:', subscriptionError)
+          console.error('Subscription update failed:', subscriptionError)
           throw subscriptionError
         }
 
@@ -73,7 +93,7 @@ serve(async (req) => {
           .eq('id', session.client_reference_id)
 
         if (profileError) {
-          console.error('Error updating profile:', profileError)
+          console.error('Profile update failed:', profileError)
           throw profileError
         }
 
@@ -84,7 +104,7 @@ serve(async (req) => {
       case 'customer.subscription.updated':
       case 'customer.subscription.deleted': {
         const subscription = event.data.object
-        console.log('Subscription changed:', subscription.id)
+        console.log('Processing subscription change:', subscription.id)
 
         const { data: subscriptionData, error: fetchError } = await supabase
           .from('subscriptions')
@@ -93,7 +113,7 @@ serve(async (req) => {
           .single()
 
         if (fetchError) {
-          console.error('Error fetching subscription:', fetchError)
+          console.error('Failed to fetch subscription:', fetchError)
           throw fetchError
         }
 
@@ -111,7 +131,7 @@ serve(async (req) => {
             .eq('id', subscriptionData.id)
 
           if (updateError) {
-            console.error('Error updating subscription:', updateError)
+            console.error('Failed to update subscription:', updateError)
             throw updateError
           }
 
@@ -122,7 +142,7 @@ serve(async (req) => {
               .eq('id', subscriptionData.user_id)
 
             if (profileError) {
-              console.error('Error updating profile:', profileError)
+              console.error('Failed to update profile:', profileError)
               throw profileError
             }
           }
@@ -132,11 +152,11 @@ serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ received: true }), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 200,
     })
   } catch (err) {
-    console.error('Error processing webhook:', err)
+    console.error('Webhook processing failed:', err)
     return new Response(
       JSON.stringify({
         error: {
@@ -145,7 +165,7 @@ serve(async (req) => {
       }),
       {
         status: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     )
   }
