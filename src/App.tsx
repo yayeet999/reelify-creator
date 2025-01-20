@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, Link } from "react
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
+import { useToast } from "@/hooks/use-toast";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateContent from "./pages/CreateContent";
@@ -37,6 +38,7 @@ const LandingPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -50,7 +52,25 @@ const LandingPage = () => {
       }
     };
     checkAuth();
-  }, []);
+
+    // Check URL parameters for payment status
+    const urlParams = new URLSearchParams(window.location.search);
+    const paymentSuccess = urlParams.get('payment_success');
+    const paymentCancelled = urlParams.get('payment_cancelled');
+
+    if (paymentSuccess) {
+      toast({
+        title: "Payment Successful",
+        description: "Your subscription has been activated.",
+      });
+    } else if (paymentCancelled) {
+      toast({
+        title: "Payment Cancelled",
+        description: "Please try again if you'd like to subscribe.",
+        variant: "destructive",
+      });
+    }
+  }, [toast]);
 
   useEffect(() => {
     if (location.hash === '#pricing') {
@@ -63,32 +83,9 @@ const LandingPage = () => {
     }
   }, [location.hash]);
 
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  const scrollToSection = (id: string) => {
-    const section = document.getElementById(id);
-    if (section) {
-      section.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   if (isLoading) {
     return <div>Loading...</div>;
   }
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const paymentSuccess = urlParams.get('payment_success');
-    const paymentCancelled = urlParams.get('payment_cancelled');
-
-    if (paymentSuccess) {
-      toast.success("Payment successful! Your subscription has been activated.");
-    } else if (paymentCancelled) {
-      toast.error("Payment was cancelled. Please try again if you'd like to subscribe.");
-    }
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -122,19 +119,19 @@ const LandingPage = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="flex items-center space-x-6">
               <button 
-                onClick={scrollToTop}
+                onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 className="text-primary hover:text-primary/80"
               >
                 Home
               </button>
               <button 
-                onClick={() => scrollToSection('pricing')} 
+                onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} 
                 className="text-primary hover:text-primary/80"
               >
                 Pricing
               </button>
               <button 
-                onClick={() => scrollToSection('faq')} 
+                onClick={() => document.getElementById('faq')?.scrollIntoView({ behavior: 'smooth' })} 
                 className="text-primary hover:text-primary/80"
               >
                 FAQ
