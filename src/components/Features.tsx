@@ -4,22 +4,22 @@ const features = [
   {
     icon: Sparkles,
     title: "AI-Powered Effects",
-    description: "Transform your videos with cutting-edge AI effects that make your content stand out.",
+    description: "Create stunning content with cutting-edge AI effects.",
   },
   {
     icon: Video,
-    title: "Smart Video Editor",
-    description: "Edit videos effortlessly with our intuitive AI-assisted editing tools.",
+    title: "Pro Video Suite",
+    description: "Edit and enhance your videos with powerful AI tools.",
   },
   {
     icon: Zap,
     title: "Quick Generation",
-    description: "Generate engaging content in seconds, not hours, with our advanced AI technology.",
+    description: "Create viral-ready content in seconds.",
   },
   {
     icon: Target,
     title: "Engagement Hooks",
-    description: "Create attention-grabbing hooks that keep viewers watching till the end.",
+    description: "Grab attention and keep viewers watching.",
   },
 ];
 
