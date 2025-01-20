@@ -128,13 +128,7 @@ const LandingPage = () => {
                 FAQ
               </button>
             </div>
-            <div className="flex items-center space-x-6">
-              <Link 
-                to="/auth" 
-                className="bg-primary text-white px-4 py-2 rounded-md hover:bg-primary/90 transition-colors"
-              >
-                Get Started Free
-              </Link>
+            <div className="flex items-center">
               <div className="text-sm text-gray-500">
                 © {new Date().getFullYear()} notreel.ai. All rights reserved.
               </div>
