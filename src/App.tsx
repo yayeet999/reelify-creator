@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate, useLocation, Link } from "react
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";  // Changed: Import standalone toast function
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import CreateContent from "./pages/CreateContent";
@@ -38,7 +38,6 @@ const LandingPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
-  const { toast } = useToast();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -52,8 +51,10 @@ const LandingPage = () => {
       }
     };
     checkAuth();
+  }, []);
 
-    // Check URL parameters for payment status
+  useEffect(() => {
+    // Separate useEffect for URL parameters to avoid hook dependency issues
     const urlParams = new URLSearchParams(window.location.search);
     const paymentSuccess = urlParams.get('payment_success');
     const paymentCancelled = urlParams.get('payment_cancelled');
@@ -70,18 +71,7 @@ const LandingPage = () => {
         variant: "destructive",
       });
     }
-  }, [toast]);
-
-  useEffect(() => {
-    if (location.hash === '#pricing') {
-      setTimeout(() => {
-        const pricingSection = document.getElementById('pricing');
-        if (pricingSection) {
-          pricingSection.scrollIntoView({ behavior: 'smooth' });
-        }
-      }, 100);
-    }
-  }, [location.hash]);
+  }, []);  // Empty dependency array since we don't use any external values
 
   if (isLoading) {
     return <div>Loading...</div>;
