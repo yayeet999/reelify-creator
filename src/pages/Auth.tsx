@@ -4,48 +4,32 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Check for existing session on mount
+  // Simple session check on mount
   useEffect(() => {
     const checkSession = async () => {
-      try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        if (error) throw error;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('subscription_tier')
+          .eq('id', session.user.id)
+          .single();
+
+        const routes = {
+          starter: "/dashboard",
+          pro: "/pro/dashboard",
+          enterprise: "/enterprise/dashboard",
+          free: "/free/dashboard"
+        };
         
-        if (session?.user) {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('subscription_tier')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profileError) throw profileError;
-
-          // Navigate based on subscription tier
-          const tier = profile?.subscription_tier;
-          const routes = {
-            starter: "/dashboard",
-            pro: "/pro/dashboard",
-            enterprise: "/enterprise/dashboard",
-            free: "/free/dashboard"
-          };
-          
-          navigate(routes[tier] || "/free/dashboard");
-        } else {
-          setIsLoading(false);
-        }
-      } catch (error) {
-        console.error('Session check error:', error);
-        setErrorMessage(error.message);
-        setIsLoading(false);
+        navigate(routes[profile?.subscription_tier || 'free']);
       }
     };
 
@@ -56,29 +40,20 @@ const Auth = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        try {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('subscription_tier')
-            .eq('id', session.user.id)
-            .single();
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('subscription_tier')
+          .eq('id', session.user.id)
+          .single();
 
-          if (profileError) throw profileError;
-
-          const tier = profile?.subscription_tier;
-          const routes = {
-            starter: "/dashboard",
-            pro: "/pro/dashboard",
-            enterprise: "/enterprise/dashboard",
-            free: "/free/dashboard"
-          };
-          
-          navigate(routes[tier] || "/free/dashboard");
-        } catch (error) {
-          console.error('Auth error:', error);
-          setErrorMessage(error.message);
-          toast.error("Authentication error. Please try again.");
-        }
+        const routes = {
+          starter: "/dashboard",
+          pro: "/pro/dashboard",
+          enterprise: "/enterprise/dashboard",
+          free: "/free/dashboard"
+        };
+        
+        navigate(routes[profile?.subscription_tier || 'free']);
       }
     });
 
@@ -111,20 +86,14 @@ const Auth = () => {
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         )}
-        {isLoading ? (
-          <div className="flex justify-center items-center p-8">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        ) : (
-          <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-            <SupabaseAuth
-              supabaseClient={supabase}
-              appearance={{ theme: ThemeSupa }}
-              theme="light"
-              providers={[]}
-            />
-          </div>
-        )}
+        <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+          <SupabaseAuth
+            supabaseClient={supabase}
+            appearance={{ theme: ThemeSupa }}
+            theme="light"
+            providers={[]}
+          />
+        </div>
       </div>
     </div>
   );
