@@ -14,7 +14,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -25,22 +24,19 @@ serve(async (req) => {
     console.error('No signature provided')
     return new Response('No signature provided', { 
       status: 400,
-      headers: corsHeaders
+      headers: corsHeaders 
     })
   }
 
   try {
     const body = await req.text()
-    console.log('Received webhook with signature:', signature)
-    
-    // CRITICAL FIX: Using constructEventAsync instead of constructEvent
     const event = await stripe.webhooks.constructEventAsync(
       body,
       signature,
       webhookSecret
     )
     
-    console.log('Successfully constructed event:', event.type)
+    console.log('Processing webhook event:', event.type)
     
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -79,6 +75,8 @@ serve(async (req) => {
             stripe_subscription_id: session.subscription,
             status: 'active',
             price_id: session.metadata?.price_id,
+            current_period_start: new Date().toISOString(),
+            current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           })
 
         if (subscriptionError) {
@@ -101,51 +99,111 @@ serve(async (req) => {
         break
       }
 
-      case 'customer.subscription.updated':
-      case 'customer.subscription.deleted': {
+      case 'customer.subscription.updated': {
         const subscription = event.data.object
-        console.log('Processing subscription change:', subscription.id)
+        console.log('Processing subscription update:', subscription.id)
 
-        const { data: subscriptionData, error: fetchError } = await supabase
+        // First, try to find the customer's user_id through the subscriptions table
+        const { data: existingSubscription, error: fetchError } = await supabase
           .from('subscriptions')
           .select('id, user_id')
           .eq('stripe_subscription_id', subscription.id)
-          .single()
+          .maybeSingle()
 
         if (fetchError) {
-          console.error('Failed to fetch subscription:', fetchError)
+          console.error('Error fetching subscription:', fetchError)
           throw fetchError
         }
 
-        if (subscriptionData) {
+        // If we don't have a subscription record yet, we need to find the user through the customer ID
+        if (!existingSubscription) {
+          console.log('No existing subscription found, creating new record')
+          
+          // Get price ID from the subscription
+          const priceId = subscription.items.data[0]?.price.id
+
+          // Map price ID to tier
+          let tier = 'free'
+          if (priceId === 'price_1Qf3YWF2YoGQdvcW69wTFx7i') {
+            tier = 'starter'
+          } else if (priceId === 'price_1Qf3aLF2YoGQdvcWiKMuplKL') {
+            tier = 'pro'
+          } else if (priceId === 'price_1Qf3bQF2YoGQdvcWx23MIde4') {
+            tier = 'enterprise'
+          }
+
+          // Find user by customer ID in subscriptions table
+          const { data: customerSubscription } = await supabase
+            .from('subscriptions')
+            .select('user_id')
+            .eq('stripe_customer_id', subscription.customer)
+            .maybeSingle()
+
+          if (!customerSubscription?.user_id) {
+            console.error('Could not find user for customer:', subscription.customer)
+            throw new Error('User not found')
+          }
+
+          // Create new subscription record
+          const { error: createError } = await supabase
+            .from('subscriptions')
+            .insert({
+              user_id: customerSubscription.user_id,
+              stripe_customer_id: subscription.customer,
+              stripe_subscription_id: subscription.id,
+              status: subscription.status,
+              price_id: priceId,
+              current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            })
+
+          if (createError) {
+            console.error('Error creating subscription:', createError)
+            throw createError
+          }
+
+          // Update user's subscription tier
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .update({ subscription_tier: tier })
+            .eq('id', customerSubscription.user_id)
+
+          if (profileError) {
+            console.error('Error updating profile:', profileError)
+            throw profileError
+          }
+
+          console.log('Successfully created subscription and updated profile')
+        } else {
+          // Update existing subscription
           const { error: updateError } = await supabase
             .from('subscriptions')
             .update({
               status: subscription.status,
-              cancel_at_period_end: subscription.cancel_at_period_end,
-              cancel_at: subscription.cancel_at ? new Date(subscription.cancel_at * 1000).toISOString() : null,
-              canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
               current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
             })
-            .eq('id', subscriptionData.id)
+            .eq('id', existingSubscription.id)
 
           if (updateError) {
-            console.error('Failed to update subscription:', updateError)
+            console.error('Error updating subscription:', updateError)
             throw updateError
           }
 
-          if (subscription.status === 'canceled' || event.type === 'customer.subscription.deleted') {
+          // If subscription is canceled or deleted, revert to free tier
+          if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
             const { error: profileError } = await supabase
               .from('profiles')
               .update({ subscription_tier: 'free' })
-              .eq('id', subscriptionData.user_id)
+              .eq('id', existingSubscription.user_id)
 
             if (profileError) {
-              console.error('Failed to update profile:', profileError)
+              console.error('Error updating profile:', profileError)
               throw profileError
             }
           }
+
+          console.log('Successfully updated existing subscription')
         }
         break
       }
