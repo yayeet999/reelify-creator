@@ -1,4 +1,4 @@
-import { Instagram, Users, MousePointerClick, Video, DollarSign, Sparkles } from "lucide-react";
+import { Instagram, Users, MousePointerClick, Video, DollarSign, Sparkles, Upload, ArrowRight, Download } from "lucide-react";
 
 const stats = [
   {
@@ -28,6 +28,27 @@ const stats = [
     title: "TikTok Success",
     description: "TikTok videos with key messages in first 3 seconds get higher engagement",
     icon: Video,
+  },
+];
+
+const steps = [
+  {
+    id: 1,
+    title: "Upload Content",
+    description: "Upload your video or choose from our templates",
+    icon: Upload,
+  },
+  {
+    id: 2,
+    title: "AI Transform",
+    description: "Our AI enhances your content automatically",
+    icon: ArrowRight,
+  },
+  {
+    id: 3,
+    title: "Download & Share",
+    description: "Get your viral-ready content in minutes",
+    icon: Download,
   },
 ];
 
@@ -89,22 +110,46 @@ export const StatsSection = () => {
           </div>
         </div>
 
-        {/* Stats Grid - Takes up 3 columns */}
-        <div className="lg:col-span-3 grid grid-cols-1 sm:grid-cols-2 gap-6">
-          {stats.map((stat, index) => (
-            <div
-              key={stat.id}
-              className="p-6 rounded-xl border bg-white shadow-sm hover:shadow-md transition-all duration-300 animate-fade-up group"
-              style={{ animationDelay: `${index * 150}ms` }}
-            >
-              <stat.icon className="w-8 h-8 text-primary mb-4 group-hover:scale-110 transition-transform" />
-              <div className="text-3xl font-bold text-primary mb-2 group-hover:translate-y-[-2px] transition-transform">
-                {stat.stat}
+        {/* Stats Grid and How It Works - Takes up 3 columns */}
+        <div className="lg:col-span-3 space-y-6">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {stats.map((stat, index) => (
+              <div
+                key={stat.id}
+                className="p-6 rounded-xl border bg-white shadow-sm hover:shadow-md transition-all duration-300 animate-fade-up group"
+                style={{ animationDelay: `${index * 150}ms` }}
+              >
+                <stat.icon className="w-8 h-8 text-primary mb-4 group-hover:scale-110 transition-transform" />
+                <div className="text-3xl font-bold text-primary mb-2 group-hover:translate-y-[-2px] transition-transform">
+                  {stat.stat}
+                </div>
+                <div className="font-semibold mb-1 text-gray-900">{stat.title}</div>
+                <p className="text-sm text-gray-600">{stat.description}</p>
               </div>
-              <div className="font-semibold mb-1 text-gray-900">{stat.title}</div>
-              <p className="text-sm text-gray-600">{stat.description}</p>
+            ))}
+          </div>
+
+          {/* How It Works Card */}
+          <div className="bg-gradient-to-br from-accent-yellow/30 to-accent-orange/30 rounded-xl p-8 animate-fade-up">
+            <h3 className="text-2xl font-bold text-gray-900 mb-6">How It Works</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {steps.map((step, index) => (
+                <div key={step.id} className="flex flex-col items-center text-center space-y-3">
+                  <div className="relative">
+                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm">
+                      <step.icon className="w-8 h-8 text-primary" />
+                    </div>
+                    {index < steps.length - 1 && (
+                      <div className="hidden md:block absolute top-1/2 -right-3 w-6 h-0.5 bg-primary/30" />
+                    )}
+                  </div>
+                  <h4 className="font-semibold text-gray-900">{step.title}</h4>
+                  <p className="text-sm text-gray-600">{step.description}</p>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>
