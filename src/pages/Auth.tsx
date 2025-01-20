@@ -5,31 +5,58 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simple session check on mount
+  const handleAuthError = (error: Error) => {
+    console.error('Auth error:', error);
+    setErrorMessage(error.message);
+    toast.error("Authentication error. Please try again.");
+    setIsLoading(false);
+  };
+
+  const redirectBasedOnTier = async (userId: string) => {
+    try {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('subscription_tier')
+        .eq('id', userId)
+        .single();
+
+      if (profileError) throw profileError;
+
+      const routes = {
+        starter: "/dashboard",
+        pro: "/pro/dashboard",
+        enterprise: "/enterprise/dashboard",
+        free: "/free/dashboard"
+      };
+      
+      navigate(routes[profile?.subscription_tier || 'free']);
+    } catch (error) {
+      handleAuthError(error);
+    }
+  };
+
+  // Check for existing session on mount
   useEffect(() => {
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('subscription_tier')
-          .eq('id', session.user.id)
-          .single();
-
-        const routes = {
-          starter: "/dashboard",
-          pro: "/pro/dashboard",
-          enterprise: "/enterprise/dashboard",
-          free: "/free/dashboard"
-        };
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) throw error;
         
-        navigate(routes[profile?.subscription_tier || 'free']);
+        if (session?.user) {
+          await redirectBasedOnTier(session.user.id);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (error) {
+        handleAuthError(error);
       }
     };
 
@@ -40,20 +67,11 @@ const Auth = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('subscription_tier')
-          .eq('id', session.user.id)
-          .single();
-
-        const routes = {
-          starter: "/dashboard",
-          pro: "/pro/dashboard",
-          enterprise: "/enterprise/dashboard",
-          free: "/free/dashboard"
-        };
-        
-        navigate(routes[profile?.subscription_tier || 'free']);
+        try {
+          await redirectBasedOnTier(session.user.id);
+        } catch (error) {
+          handleAuthError(error);
+        }
       }
     });
 
@@ -86,14 +104,20 @@ const Auth = () => {
             <AlertDescription>{errorMessage}</AlertDescription>
           </Alert>
         )}
-        <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          <SupabaseAuth
-            supabaseClient={supabase}
-            appearance={{ theme: ThemeSupa }}
-            theme="light"
-            providers={[]}
-          />
-        </div>
+        {isLoading ? (
+          <div className="flex justify-center items-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
+          <div className="mt-8 bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+            <SupabaseAuth
+              supabaseClient={supabase}
+              appearance={{ theme: ThemeSupa }}
+              theme="light"
+              providers={[]}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
