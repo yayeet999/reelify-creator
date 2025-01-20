@@ -11,15 +11,16 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 const Auth = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
+  // Check for existing session on mount
   useEffect(() => {
     const checkSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) throw error;
-        if (session) {
-          setIsLoading(true);
+        
+        if (session?.user) {
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('subscription_tier')
@@ -29,19 +30,17 @@ const Auth = () => {
           if (profileError) throw profileError;
 
           // Navigate based on subscription tier
-          switch (profile?.subscription_tier) {
-            case 'starter':
-              navigate("/dashboard");
-              break;
-            case 'pro':
-              navigate("/pro/dashboard");
-              break;
-            case 'enterprise':
-              navigate("/enterprise/dashboard");
-              break;
-            default:
-              navigate("/free/dashboard");
-          }
+          const tier = profile?.subscription_tier;
+          const routes = {
+            starter: "/dashboard",
+            pro: "/pro/dashboard",
+            enterprise: "/enterprise/dashboard",
+            free: "/free/dashboard"
+          };
+          
+          navigate(routes[tier] || "/free/dashboard");
+        } else {
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('Session check error:', error);
@@ -49,7 +48,7 @@ const Auth = () => {
         setIsLoading(false);
       }
     };
-    
+
     checkSession();
   }, [navigate]);
 
@@ -57,7 +56,6 @@ const Auth = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
-        setIsLoading(true);
         try {
           const { data: profile, error: profileError } = await supabase
             .from('profiles')
@@ -67,25 +65,19 @@ const Auth = () => {
 
           if (profileError) throw profileError;
 
-          // Navigate based on subscription tier
-          switch (profile?.subscription_tier) {
-            case 'starter':
-              navigate("/dashboard");
-              break;
-            case 'pro':
-              navigate("/pro/dashboard");
-              break;
-            case 'enterprise':
-              navigate("/enterprise/dashboard");
-              break;
-            default:
-              navigate("/free/dashboard");
-          }
+          const tier = profile?.subscription_tier;
+          const routes = {
+            starter: "/dashboard",
+            pro: "/pro/dashboard",
+            enterprise: "/enterprise/dashboard",
+            free: "/free/dashboard"
+          };
+          
+          navigate(routes[tier] || "/free/dashboard");
         } catch (error) {
           console.error('Auth error:', error);
           setErrorMessage(error.message);
-          toast.error(error.message);
-          setIsLoading(false);
+          toast.error("Authentication error. Please try again.");
         }
       }
     });
