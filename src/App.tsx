@@ -7,6 +7,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { AppRoutes } from "@/routes/AppRoutes";
+import { Hero } from "@/components/Hero";
+import { Features } from "@/components/Features";
+import { Pricing } from "@/components/Pricing";
+import { FAQ } from "@/components/FAQ";
 
 const queryClient = new QueryClient();
 
