@@ -75,14 +75,14 @@ export const StatsSection = () => {
                 <Sparkles className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-lg font-semibold text-primary">90% Cost Reduction</p>
-                  <p className="text-gray-700">Create unlimited AI-powered UGC content at a fraction of traditional costs</p>
+                  <p className="text-gray-700">Create powerful realistic AI-powered UGC marketing content at a fraction of traditional costs</p>
                 </div>
               </div>
               <div className="flex items-start gap-3 bg-white/80 backdrop-blur-sm p-4 rounded-lg">
                 <Sparkles className="w-6 h-6 text-primary mt-1 flex-shrink-0" />
                 <div>
                   <p className="text-lg font-semibold text-primary">Unlimited Potential</p>
-                  <p className="text-gray-700">Generate diverse, high-quality content without the traditional per-video costs</p>
+                  <p className="text-gray-700">Generate the perfect high-quality viral video for your specific business</p>
                 </div>
               </div>
             </div>
