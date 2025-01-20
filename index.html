@@ -9,12 +9,14 @@
     <meta property="og:image" content="/og-image.png" />
     <base href="/" />
     <script>
-      // Handle client-side routing fallback
+      // Handle client-side routing fallback and WebSocket connection
       (function() {
         const path = window.location.pathname;
         if (path !== '/' && !path.includes('.')) {
           localStorage.setItem('path_redirect', path);
         }
+        // Ensure WebSocket connects over HTTPS
+        window.wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
       })();
     </script>
   </head>
