@@ -41,7 +41,7 @@ const steps = [
   {
     id: 2,
     title: "AI Transform",
-    description: "Our AI enhances your content automatically",
+    description: "Transform your content with AI-powered UGC styles and viral templates",
     icon: ArrowRight,
   },
   {
@@ -134,15 +134,10 @@ export const StatsSection = () => {
           <div className="bg-gradient-to-br from-accent-yellow/30 to-accent-orange/30 rounded-xl p-8 animate-fade-up">
             <h3 className="text-2xl font-bold text-gray-900 mb-6">How It Works</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {steps.map((step, index) => (
+              {steps.map((step) => (
                 <div key={step.id} className="flex flex-col items-center text-center space-y-3">
-                  <div className="relative">
-                    <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm">
-                      <step.icon className="w-8 h-8 text-primary" />
-                    </div>
-                    {index < steps.length - 1 && (
-                      <div className="hidden md:block absolute top-1/2 -right-3 w-6 h-0.5 bg-primary/30" />
-                    )}
+                  <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm">
+                    <step.icon className="w-8 h-8 text-primary" />
                   </div>
                   <h4 className="font-semibold text-gray-900">{step.title}</h4>
                   <p className="text-sm text-gray-600">{step.description}</p>
