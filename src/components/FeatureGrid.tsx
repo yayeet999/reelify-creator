@@ -2,7 +2,7 @@ import { Check } from "lucide-react";
 
 export const FeatureGrid = () => {
   return (
-    <div className="w-full max-w-[1920px] mx-auto px-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12">
+    <div className="w-full max-w-[1920px] mx-auto px-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-12 bg-white">
       {/* Column 1: Bullet Points */}
       <div className="flex flex-col justify-between h-full py-4">
         <ul className="space-y-6">

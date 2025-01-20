@@ -23,7 +23,7 @@ export const Hero = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-accent-purple/50 to-white pt-16">
+    <div className="relative min-h-screen flex items-center justify-center bg-white pt-16">
       <div className="w-full px-4 max-w-[1920px] mx-auto">
         {/* Hero content with max width */}
         <div className="text-center max-w-3xl mx-auto animate-fade-up mb-12 pt-8">
