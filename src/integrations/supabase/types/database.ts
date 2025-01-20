@@ -1,6 +1,7 @@
 import { Json } from './json';
 import { Profile, ProfileInsert, ProfileUpdate } from './profiles';
 import { Subscription, SubscriptionInsert, SubscriptionUpdate } from './subscriptions';
+import { UserSettings, UserSettingsInsert, UserSettingsUpdate } from './user-settings';
 import { SubscriptionTier } from './enums';
 
 export interface Database {
@@ -16,6 +17,12 @@ export interface Database {
         Row: Subscription;
         Insert: SubscriptionInsert;
         Update: SubscriptionUpdate;
+        Relationships: [];
+      };
+      user_settings: {
+        Row: UserSettings;
+        Insert: UserSettingsInsert;
+        Update: UserSettingsUpdate;
         Relationships: [];
       };
     };
