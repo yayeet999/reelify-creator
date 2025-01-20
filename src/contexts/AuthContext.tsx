@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { Profile } from "@/integrations/supabase/types/profiles";
 import { useToast } from "@/hooks/use-toast";
+import type { RealtimeChannel } from "@supabase/supabase-js";
 
 interface AuthContextType {
   isAuthenticated: boolean | null;
@@ -19,9 +20,49 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  // Function to fetch profile with retry mechanism
+  const fetchProfile = async (userId: string, retryCount = 3): Promise<Profile | null> => {
+    try {
+      const { data: profile, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', userId)
+        .single();
+
+      if (error) throw error;
+      return profile;
+    } catch (error) {
+      if (retryCount > 0) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        return fetchProfile(userId, retryCount - 1);
+      }
+      throw error;
+    }
+  };
+
+  // Set up real-time profile subscription
+  const subscribeToProfile = (userId: string): RealtimeChannel => {
+    return supabase
+      .channel(`profile:${userId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'profiles',
+          filter: `id=eq.${userId}`,
+        },
+        async (payload) => {
+          const newProfile = payload.new as Profile;
+          setUserProfile(newProfile);
+        }
+      )
+      .subscribe();
+  };
+
   useEffect(() => {
     let mounted = true;
-    let authSubscription: { data: { subscription: { unsubscribe: () => void } } };
+    let profileSubscription: RealtimeChannel | null = null;
 
     const initializeAuth = async () => {
       try {
@@ -34,15 +75,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setIsAuthenticated(isAuthed);
 
           if (isAuthed && session) {
-            const { data: profile, error: profileError } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', session.user.id)
-              .single();
-
-            if (profileError) throw profileError;
-            if (mounted) {
-              setUserProfile(profile);
+            try {
+              const profile = await fetchProfile(session.user.id);
+              if (mounted) {
+                setUserProfile(profile);
+                // Set up real-time subscription for profile changes
+                profileSubscription = subscribeToProfile(session.user.id);
+              }
+            } catch (error) {
+              console.error('Profile fetch error:', error);
+              if (mounted) {
+                toast({
+                  title: "Profile Error",
+                  description: "Unable to load user profile. Please try signing in again.",
+                  variant: "destructive",
+                });
+                // Force sign out on profile error
+                await supabase.auth.signOut();
+                setIsAuthenticated(false);
+                setUserProfile(null);
+                navigate("/auth");
+              }
             }
           }
         }
@@ -68,44 +121,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     initializeAuth();
 
     // Set up auth state change listener
-    authSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!mounted) return;
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!mounted) return;
 
-      const isAuthed = !!session;
-      setIsAuthenticated(isAuthed);
+        const isAuthed = !!session;
+        setIsAuthenticated(isAuthed);
 
-      if (isAuthed && session) {
-        try {
-          const { data: profile, error: profileError } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (profileError) throw profileError;
-          if (mounted) {
-            setUserProfile(profile);
+        if (isAuthed && session) {
+          try {
+            const profile = await fetchProfile(session.user.id);
+            if (mounted) {
+              setUserProfile(profile);
+              // Update real-time subscription
+              if (profileSubscription) {
+                profileSubscription.unsubscribe();
+              }
+              profileSubscription = subscribeToProfile(session.user.id);
+            }
+          } catch (error) {
+            console.error('Profile fetch error:', error);
+            if (mounted) {
+              toast({
+                title: "Profile Error",
+                description: "Unable to load user profile",
+                variant: "destructive",
+              });
+              // Force sign out on profile error
+              await supabase.auth.signOut();
+              setIsAuthenticated(false);
+              setUserProfile(null);
+              navigate("/auth");
+            }
           }
-        } catch (error) {
-          console.error('Profile fetch error:', error);
-          if (mounted) {
-            toast({
-              title: "Profile Error",
-              description: "Unable to load user profile",
-              variant: "destructive",
-            });
+        } else {
+          setUserProfile(null);
+          if (profileSubscription) {
+            profileSubscription.unsubscribe();
+            profileSubscription = null;
           }
         }
-      } else {
-        setUserProfile(null);
       }
-    });
+    );
 
     // Cleanup function
     return () => {
       mounted = false;
-      if (authSubscription?.data?.subscription) {
-        authSubscription.data.subscription.unsubscribe();
+      if (profileSubscription) {
+        profileSubscription.unsubscribe();
+      }
+      if (authSubscription) {
+        authSubscription.unsubscribe();
       }
     };
   }, [navigate, toast]);
