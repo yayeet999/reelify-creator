@@ -12,39 +12,40 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 
   useEffect(() => {
     let mounted = true;
+    let authSubscription: { data: { subscription: { unsubscribe: () => void } } };
 
-    const checkAuth = async () => {
+    const initializeAuth = async () => {
       try {
+        // Get initial session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-        
         if (sessionError) throw sessionError;
-        
+
         if (mounted) {
-          setIsAuthenticated(!!session);
-          
-          if (session) {
+          const isAuthed = !!session;
+          setIsAuthenticated(isAuthed);
+
+          if (isAuthed && session) {
             const { data: profile, error: profileError } = await supabase
               .from('profiles')
               .select('*')
               .eq('id', session.user.id)
               .single();
-            
+
             if (profileError) throw profileError;
-            
             if (mounted) {
               setUserProfile(profile);
             }
           }
         }
       } catch (error) {
-        console.error('Auth check error:', error);
-        toast({
-          title: "Authentication Error",
-          description: "Please try signing in again",
-          variant: "destructive",
-        });
+        console.error('Auth initialization error:', error);
         if (mounted) {
           setIsAuthenticated(false);
+          toast({
+            title: "Authentication Error",
+            description: "Please try signing in again",
+            variant: "destructive",
+          });
         }
       } finally {
         if (mounted) {
@@ -53,28 +54,47 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (mounted) {
-        setIsAuthenticated(!!session);
-        if (session) {
-          const { data: profile } = await supabase
+    // Initialize auth state
+    initializeAuth();
+
+    // Set up auth state change listener
+    authSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
+
+      const isAuthed = !!session;
+      setIsAuthenticated(isAuthed);
+
+      if (isAuthed && session) {
+        try {
+          const { data: profile, error: profileError } = await supabase
             .from('profiles')
             .select('*')
             .eq('id', session.user.id)
             .single();
-          
+
+          if (profileError) throw profileError;
           if (mounted) {
             setUserProfile(profile);
+          }
+        } catch (error) {
+          console.error('Profile fetch error:', error);
+          if (mounted) {
+            toast({
+              title: "Profile Error",
+              description: "Unable to load user profile",
+              variant: "destructive",
+            });
           }
         }
       }
     });
 
-    checkAuth();
-
+    // Cleanup function
     return () => {
       mounted = false;
-      subscription.unsubscribe();
+      if (authSubscription?.data?.subscription) {
+        authSubscription.data.subscription.unsubscribe();
+      }
     };
   }, [toast]);
 
@@ -96,19 +116,15 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
       enterprise: '/enterprise/dashboard'
     };
 
-    // Check if user is trying to access a path that doesn't match their tier
     const userTier = userProfile.subscription_tier;
     const correctPath = tierPaths[userTier];
     
-    // If user is on a dashboard path but it's not the correct one for their tier
     if (Object.values(tierPaths).includes(currentPath) && currentPath !== correctPath) {
       return <Navigate to={correctPath} replace />;
     }
 
-    // Return children directly without any layout wrapping
     return <>{children}</>;
   }
 
-  // Return children directly if no profile is found
   return <>{children}</>;
 };
