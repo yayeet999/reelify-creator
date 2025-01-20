@@ -12,15 +12,6 @@ export default defineConfig(({ mode }) => ({
       strict: false,
       allow: [".."],
     },
-    // Add middleware to handle client-side routing
-    middlewares: [
-      (req, res, next) => {
-        if (!req.url?.includes('.') && req.url !== '/') {
-          req.url = '/';
-        }
-        next();
-      }
-    ],
   },
   preview: {
     port: 8080,

@@ -10,17 +10,14 @@
     <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="0" />
-    <!-- Remove base href as it can interfere with routing -->
     <script>
-      // Enhanced client-side routing fallback
       (function() {
-        const path = window.location.pathname;
         const redirectPath = sessionStorage.getItem('redirect_path');
         if (redirectPath) {
           sessionStorage.removeItem('redirect_path');
           window.history.replaceState(null, '', redirectPath);
-        } else if (path !== '/' && !path.includes('.')) {
-          sessionStorage.setItem('redirect_path', path);
+        } else if (window.location.pathname !== '/' && !window.location.pathname.includes('.')) {
+          sessionStorage.setItem('redirect_path', window.location.pathname);
         }
       })();
     </script>
