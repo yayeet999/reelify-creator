@@ -68,7 +68,7 @@ const LandingPage = () => {
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen flex flex-col">
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
@@ -84,12 +84,34 @@ const LandingPage = () => {
           </div>
         </div>
       </nav>
-      <Hero />
-      <Features />
-      <div id="pricing" className="scroll-mt-20">
-        <Pricing />
-      </div>
-      <FAQ />
+      <main className="flex-grow">
+        <Hero />
+        <Features />
+        <div id="pricing" className="scroll-mt-20">
+          <Pricing />
+        </div>
+        <FAQ />
+      </main>
+      <footer className="bg-white border-t mt-20">
+        <div className="container mx-auto px-4 py-8">
+          <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+            <div className="flex items-center space-x-4">
+              <Link to="/" className="text-primary hover:text-primary/80">
+                Home
+              </Link>
+              <Link to="/#pricing" className="text-primary hover:text-primary/80">
+                Pricing
+              </Link>
+              <a href="mailto:support@notreel.ai" className="text-primary hover:text-primary/80">
+                Contact
+              </a>
+            </div>
+            <div className="text-sm text-gray-500">
+              © {new Date().getFullYear()} notreel.ai. All rights reserved.
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
