@@ -7,20 +7,6 @@
     <meta name="description" content="Lovable Generated Project" />
     <meta name="author" content="Lovable" />
     <meta property="og:image" content="/og-image.png" />
-    <meta http-equiv="cache-control" content="no-cache, no-store, must-revalidate" />
-    <meta http-equiv="pragma" content="no-cache" />
-    <meta http-equiv="expires" content="0" />
-    <script>
-      (function() {
-        const redirectPath = sessionStorage.getItem('redirect_path');
-        if (redirectPath) {
-          sessionStorage.removeItem('redirect_path');
-          window.history.replaceState(null, '', redirectPath);
-        } else if (window.location.pathname !== '/' && !window.location.pathname.includes('.')) {
-          sessionStorage.setItem('redirect_path', window.location.pathname);
-        }
-      })();
-    </script>
   </head>
   <body>
     <div id="root"></div>
