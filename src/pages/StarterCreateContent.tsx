@@ -1,4 +1,4 @@
-import { FileText, Video, Code } from "lucide-react";
+import { FileText, Video, Code, Film } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 import { useNavigate } from "react-router-dom";
 
@@ -17,6 +17,12 @@ const StarterCreateContent = () => {
       description: "Create videos with custom backgrounds",
       icon: <Video className="w-5 h-5" />,
       path: "/starter/green-screenify",
+    },
+    {
+      title: "Video Editor",
+      description: "Create and customize video content",
+      icon: <Film className="w-5 h-5" />,
+      path: "/starter/video-editor",
     },
     {
       title: "View Saved Hooks",
