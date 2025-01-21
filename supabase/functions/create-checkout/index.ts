@@ -21,6 +21,8 @@ serve(async (req) => {
     const authHeader = req.headers.get('Authorization')!
     const token = authHeader.replace('Bearer ', '')
     
+    console.log('Creating checkout session with token:', token)
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -35,10 +37,11 @@ serve(async (req) => {
       client_reference_id: token,
       metadata: {
         price_id: priceId,
+        user_id: token, // Adding user_id to metadata as backup
       },
     })
 
-    console.log('Checkout session created:', session.id)
+    console.log('Checkout session created:', session.id, 'for user:', token)
 
     return new Response(
       JSON.stringify({ url: session.url }),

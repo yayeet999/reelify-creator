@@ -54,6 +54,14 @@ serve(async (req) => {
         const session = event.data.object
         console.log('Processing checkout session:', session.id)
         
+        // Extract user ID from client_reference_id
+        const userId = session.client_reference_id
+        if (!userId) {
+          throw new Error('No user ID found in session')
+        }
+
+        console.log('User ID from session:', userId)
+        
         let tier = 'free'
         if (session.metadata?.price_id === 'price_1Qf3YWF2YoGQdvcW69wTFx7i') {
           tier = 'starter'
@@ -63,13 +71,13 @@ serve(async (req) => {
           tier = 'enterprise'
         }
 
-        console.log('Updating to tier:', tier, 'for user:', session.client_reference_id)
+        console.log('Updating to tier:', tier, 'for user:', userId)
 
         // Update subscription record with metadata
         const { error: subscriptionError } = await supabase
           .from('subscriptions')
           .upsert({
-            user_id: session.client_reference_id,
+            user_id: userId,
             stripe_customer_id: session.customer,
             stripe_subscription_id: session.subscription,
             status: 'active',
@@ -88,7 +96,7 @@ serve(async (req) => {
         const { error: profileError } = await supabase
           .from('profiles')
           .update({ subscription_tier: tier })
-          .eq('id', session.client_reference_id)
+          .eq('id', userId)
 
         if (profileError) {
           console.error('Profile update failed:', profileError)
