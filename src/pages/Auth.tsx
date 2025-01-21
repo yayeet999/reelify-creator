@@ -46,6 +46,9 @@ const Auth = () => {
     }
   };
 
+  // Get the current origin without any trailing slashes
+  const siteUrl = window.location.origin.replace(/\/$/, '');
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow">
@@ -80,7 +83,7 @@ const Auth = () => {
             }
           }}
           providers={[]}
-          redirectTo={window.location.origin + "/starter-dashboard"}
+          redirectTo={`${siteUrl}/starter-dashboard`}
         />
       </div>
     </div>
