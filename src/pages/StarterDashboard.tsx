@@ -4,12 +4,6 @@ import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 
 const quickStartOptions = [
   {
-    title: "Complete Your Profile",
-    description: "Set up your personal information and preferences",
-    icon: <User className="w-5 h-5" />,
-    path: "/profile",
-  },
-  {
     title: "Generate Hooks",
     description: "Create reusable React hooks for your projects",
     icon: <Code className="w-5 h-5" />,
@@ -36,7 +30,7 @@ const StarterDashboard = () => {
               Dashboard <span className="text-2xl text-primary">(Starter Plan)</span>
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Welcome to your Starter Plan dashboard! Here's what you can do
+              Welcome! Here's what you can do
             </p>
           </div>
         </div>
@@ -54,12 +48,12 @@ const StarterDashboard = () => {
           ))}
         </div>
 
-        {/* Additional Stats or Info Section */}
+        {/* Additional Info Section */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           <div className="bg-accent-purple/30 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Starter Plan Features</h3>
+            <h3 className="text-lg font-semibold mb-2">Quick Tips</h3>
             <p className="text-sm text-muted-foreground">
-              Explore all the enhanced features available in your Starter Plan subscription.
+              Explore the dashboard to access all starter features and customize your experience.
             </p>
           </div>
           <div className="bg-accent-pink/30 rounded-lg p-6 shadow-sm">
