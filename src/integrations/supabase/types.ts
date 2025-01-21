@@ -9,86 +9,6 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      audio_uploads: {
-        Row: {
-          cloudinary_public_id: string
-          cloudinary_url: string
-          created_at: string
-          id: string
-          transcription_status: string | null
-          transcription_url: string | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          cloudinary_public_id: string
-          cloudinary_url: string
-          created_at?: string
-          id?: string
-          transcription_status?: string | null
-          transcription_url?: string | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          cloudinary_public_id?: string
-          cloudinary_url?: string
-          created_at?: string
-          id?: string
-          transcription_status?: string | null
-          transcription_url?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "audio_uploads_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          created_at: string
-          display_name: string | null
-          email: string | null
-          id: string
-          last_sign_in: string | null
-          phone: string | null
-          provider: string | null
-          provider_type: string | null
-          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id: string
-          last_sign_in?: string | null
-          phone?: string | null
-          provider?: string | null
-          provider_type?: string | null
-          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          display_name?: string | null
-          email?: string | null
-          id?: string
-          last_sign_in?: string | null
-          phone?: string | null
-          provider?: string | null
-          provider_type?: string | null
-          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
-          updated_at?: string
-        }
-        Relationships: []
-      }
       saved_hooks: {
         Row: {
           created_at: string
@@ -119,178 +39,79 @@ export type Database = {
             foreignKeyName: "saved_hooks_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
       }
-      subscriptions: {
+      users: {
         Row: {
-          cancel_at: string | null
-          canceled_at: string | null
           created_at: string
           current_period_end: string | null
           current_period_start: string | null
+          display_name: string | null
+          download_count: number | null
+          email: string | null
           id: string
+          last_download_reset: string | null
+          last_sign_in: string | null
           metadata: Json | null
+          period_download_limit: number | null
           price_id: string | null
-          quantity: number | null
+          provider: string | null
+          provider_type: string | null
           status: string | null
           stripe_customer_id: string | null
           stripe_subscription_id: string | null
+          subscription_tier: Database["public"]["Enums"]["subscription_tier"]
+          total_downloads: number | null
           updated_at: string
-          user_id: string
         }
         Insert: {
-          cancel_at?: string | null
-          canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
-          id?: string
+          display_name?: string | null
+          download_count?: number | null
+          email?: string | null
+          id: string
+          last_download_reset?: string | null
+          last_sign_in?: string | null
           metadata?: Json | null
+          period_download_limit?: number | null
           price_id?: string | null
-          quantity?: number | null
+          provider?: string | null
+          provider_type?: string | null
           status?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          total_downloads?: number | null
           updated_at?: string
-          user_id: string
         }
         Update: {
-          cancel_at?: string | null
-          canceled_at?: string | null
           created_at?: string
           current_period_end?: string | null
           current_period_start?: string | null
+          display_name?: string | null
+          download_count?: number | null
+          email?: string | null
           id?: string
+          last_download_reset?: string | null
+          last_sign_in?: string | null
           metadata?: Json | null
+          period_download_limit?: number | null
           price_id?: string | null
-          quantity?: number | null
+          provider?: string | null
+          provider_type?: string | null
           status?: string | null
           stripe_customer_id?: string | null
           stripe_subscription_id?: string | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "subscriptions_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      temp_video_uploads: {
-        Row: {
-          cloudinary_public_id: string
-          cloudinary_url: string
-          created_at: string
-          id: string
-          is_used: boolean | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          cloudinary_public_id: string
-          cloudinary_url: string
-          created_at?: string
-          id?: string
-          is_used?: boolean | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          cloudinary_public_id?: string
-          cloudinary_url?: string
-          created_at?: string
-          id?: string
-          is_used?: boolean | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "temp_video_uploads_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      tier_features: {
-        Row: {
-          created_at: string
-          feature_limit: number | null
-          feature_name: string
-          id: string
-          tier: Database["public"]["Enums"]["subscription_tier"]
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          feature_limit?: number | null
-          feature_name: string
-          id?: string
-          tier: Database["public"]["Enums"]["subscription_tier"]
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          feature_limit?: number | null
-          feature_name?: string
-          id?: string
-          tier?: Database["public"]["Enums"]["subscription_tier"]
+          subscription_tier?: Database["public"]["Enums"]["subscription_tier"]
+          total_downloads?: number | null
           updated_at?: string
         }
         Relationships: []
-      }
-      video_downloads: {
-        Row: {
-          billing_period_end: string
-          billing_period_start: string
-          downloaded_at: string
-          id: string
-          template_video_id: string | null
-          transformation_params: Json | null
-          transformation_status: string | null
-          user_id: string
-          video_url: string
-        }
-        Insert: {
-          billing_period_end: string
-          billing_period_start: string
-          downloaded_at?: string
-          id?: string
-          template_video_id?: string | null
-          transformation_params?: Json | null
-          transformation_status?: string | null
-          user_id: string
-          video_url: string
-        }
-        Update: {
-          billing_period_end?: string
-          billing_period_start?: string
-          downloaded_at?: string
-          id?: string
-          template_video_id?: string | null
-          transformation_params?: Json | null
-          transformation_status?: string | null
-          user_id?: string
-          video_url?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "video_downloads_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
       }
     }
     Views: {
