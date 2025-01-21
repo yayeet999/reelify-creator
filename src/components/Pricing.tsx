@@ -9,7 +9,7 @@ const tiers = [
   {
     name: "Starter",
     price: "$19",
-    paymentUrl: "https://buy.stripe.com/cN22896n85Dv3g47su",
+    priceId: "price_1Qf3YWF2YoGQdvcW69wTFx7i",
     description: "Perfect for content creators just getting started",
     features: [
       "20 videos per month",
@@ -19,7 +19,7 @@ const tiers = [
   {
     name: "Pro",
     price: "$49",
-    paymentUrl: "https://buy.stripe.com/5kA6opaDo6Hzg2QdQR",
+    priceId: "price_1Qf3aLF2YoGQdvcWiKMuplKL",
     description: "Ideal for growing creators and small businesses",
     features: [
       "75 videos per month",
@@ -32,7 +32,7 @@ const tiers = [
   {
     name: "Enterprise",
     price: "$95",
-    paymentUrl: "https://buy.stripe.com/cN25kl9zkgi9eYM288",
+    priceId: "price_1Qf3bQF2YoGQdvcWx23MIde4",
     description: "For professional creators and large teams",
     features: [
       "200 videos per month",
@@ -49,19 +49,27 @@ export const Pricing = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
-  const handleSubscribe = async (paymentUrl: string, tierName: string) => {
+  const handleSubscribe = async (priceId: string, tierName: string) => {
     setIsLoading(tierName);
     
     try {
       const session = await supabase.auth.getSession();
       if (!session.data.session) {
-        localStorage.setItem('selectedPaymentUrl', paymentUrl);
+        localStorage.setItem('selectedPriceId', priceId);
         navigate("/auth");
         return;
       }
 
-      // If user is authenticated, redirect directly to Stripe payment page
-      window.location.href = paymentUrl;
+      // Create checkout session
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId }
+      });
+
+      if (error) throw error;
+      if (!data.url) throw new Error('No checkout URL returned');
+
+      // Redirect to Stripe Checkout
+      window.location.href = data.url;
     } catch (error) {
       console.error('Error:', error);
       toast.error("Failed to process subscription request");
@@ -126,8 +134,8 @@ export const Pricing = () => {
                     : "border border-primary/30 bg-white text-primary hover:bg-primary/5",
                   isLoading === tier.name && "opacity-70 cursor-not-allowed"
                 )}
-                onClick={() => tier.paymentUrl && handleSubscribe(tier.paymentUrl, tier.name)}
-                disabled={isLoading === tier.name || !tier.paymentUrl}
+                onClick={() => tier.priceId && handleSubscribe(tier.priceId, tier.name)}
+                disabled={isLoading === tier.name || !tier.priceId}
               >
                 {isLoading === tier.name ? (
                   <span className="flex items-center justify-center">

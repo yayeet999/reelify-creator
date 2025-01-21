@@ -132,6 +132,7 @@ export type Database = {
           current_period_end: string | null
           current_period_start: string | null
           id: string
+          metadata: Json | null
           price_id: string | null
           quantity: number | null
           status: string | null
@@ -147,6 +148,7 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          metadata?: Json | null
           price_id?: string | null
           quantity?: number | null
           status?: string | null
@@ -162,6 +164,7 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          metadata?: Json | null
           price_id?: string | null
           quantity?: number | null
           status?: string | null
