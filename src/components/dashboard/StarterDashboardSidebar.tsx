@@ -26,7 +26,7 @@ const menuItems = [
   {
     title: "Home",
     icon: Home,
-    path: "/dashboard",
+    path: "/starter-dashboard",
     description: "Overview and quick actions",
   },
   {

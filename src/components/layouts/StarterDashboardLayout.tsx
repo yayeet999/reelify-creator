@@ -9,7 +9,7 @@ export function StarterDashboardLayout({ children }: { children: React.ReactNode
         <StarterDashboardSidebar />
         <div className="flex-1 flex flex-col">
           <Navbar />
-          <main className="flex-1 mt-16">
+          <main className="flex-1 p-8 mt-16">
             {children}
           </main>
         </div>
