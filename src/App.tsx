@@ -8,6 +8,8 @@ import Auth from "./pages/Auth";
 import StarterDashboard from "./pages/StarterDashboard";
 import { StarterDashboardLayout } from "./components/layouts/StarterDashboardLayout";
 import GenerateHooks from "./pages/GenerateHooks";
+import StarterGreenScreenify from "./pages/StarterGreenScreenify";
+import StarterSavedHooks from "./pages/StarterSavedHooks";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +25,8 @@ const App = () => (
           <Route element={<StarterDashboardLayout />}>
             <Route path="/starter-dashboard" element={<StarterDashboard />} />
             <Route path="/starter/hooks" element={<GenerateHooks />} />
+            <Route path="/starter/saved-hooks" element={<StarterSavedHooks />} />
+            <Route path="/starter/green-screenify" element={<StarterGreenScreenify />} />
           </Route>
         </Routes>
       </BrowserRouter>
