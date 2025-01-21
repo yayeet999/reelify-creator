@@ -21,7 +21,6 @@ serve(async (req) => {
     const authHeader = req.headers.get('Authorization')!
     const token = authHeader.replace('Bearer ', '')
     
-    // Create a checkout session with better success/cancel URLs
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [

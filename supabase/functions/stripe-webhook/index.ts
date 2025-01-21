@@ -54,7 +54,6 @@ serve(async (req) => {
         const session = event.data.object
         console.log('Processing checkout session:', session.id)
         
-        // Map price IDs to subscription tiers
         let tier = 'free'
         if (session.metadata?.price_id === 'price_1Qf3YWF2YoGQdvcW69wTFx7i') {
           tier = 'starter'
@@ -66,7 +65,7 @@ serve(async (req) => {
 
         console.log('Updating to tier:', tier, 'for user:', session.client_reference_id)
 
-        // Update subscription record
+        // Update subscription record with metadata
         const { error: subscriptionError } = await supabase
           .from('subscriptions')
           .upsert({
@@ -75,6 +74,7 @@ serve(async (req) => {
             stripe_subscription_id: session.subscription,
             status: 'active',
             price_id: session.metadata?.price_id,
+            metadata: session.metadata || {},
             current_period_start: new Date().toISOString(),
             current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
           })
@@ -115,14 +115,11 @@ serve(async (req) => {
           throw fetchError
         }
 
-        // If we don't have a subscription record yet, we need to find the user through the customer ID
         if (!existingSubscription) {
           console.log('No existing subscription found, creating new record')
           
-          // Get price ID from the subscription
           const priceId = subscription.items.data[0]?.price.id
 
-          // Map price ID to tier
           let tier = 'free'
           if (priceId === 'price_1Qf3YWF2YoGQdvcW69wTFx7i') {
             tier = 'starter'
@@ -144,7 +141,7 @@ serve(async (req) => {
             throw new Error('User not found')
           }
 
-          // Create new subscription record
+          // Create new subscription record with metadata
           const { error: createError } = await supabase
             .from('subscriptions')
             .insert({
@@ -153,6 +150,7 @@ serve(async (req) => {
               stripe_subscription_id: subscription.id,
               status: subscription.status,
               price_id: priceId,
+              metadata: subscription.metadata || {},
               current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
             })
@@ -175,11 +173,12 @@ serve(async (req) => {
 
           console.log('Successfully created subscription and updated profile')
         } else {
-          // Update existing subscription
+          // Update existing subscription with metadata
           const { error: updateError } = await supabase
             .from('subscriptions')
             .update({
               status: subscription.status,
+              metadata: subscription.metadata || {},
               current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
             })
