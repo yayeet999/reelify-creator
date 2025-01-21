@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
@@ -60,7 +60,7 @@ const StarterGenerateHooks = () => {
           .insert({
             hook_text: hookText,
             product_name: productName,
-            user_id: user.id // Add the user_id here
+            user_id: user.id
           });
 
         if (saveError) {

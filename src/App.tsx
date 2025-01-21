@@ -7,9 +7,10 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import StarterDashboard from "./pages/StarterDashboard";
 import { StarterDashboardLayout } from "./components/layouts/StarterDashboardLayout";
-import GenerateHooks from "./pages/GenerateHooks";
+import StarterGenerateHooks from "./pages/StarterGenerateHooks";
 import StarterGreenScreenify from "./pages/StarterGreenScreenify";
 import StarterSavedHooks from "./pages/StarterSavedHooks";
+import StarterCreateContent from "./pages/StarterCreateContent";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +25,8 @@ const App = () => (
           <Route path="/auth" element={<Auth />} />
           <Route element={<StarterDashboardLayout />}>
             <Route path="/starter-dashboard" element={<StarterDashboard />} />
-            <Route path="/starter/hooks" element={<GenerateHooks />} />
+            <Route path="/starter/create" element={<StarterCreateContent />} />
+            <Route path="/starter/hooks" element={<StarterGenerateHooks />} />
             <Route path="/starter/saved-hooks" element={<StarterSavedHooks />} />
             <Route path="/starter/green-screenify" element={<StarterGreenScreenify />} />
           </Route>
