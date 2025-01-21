@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import StarterDashboard from "./pages/StarterDashboard";
+import { StarterDashboardLayout } from "./components/layouts/StarterDashboardLayout";
+import GenerateHooks from "./pages/GenerateHooks";
 
 const queryClient = new QueryClient();
 
@@ -18,7 +20,10 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/auth" element={<Auth />} />
-          <Route path="/starter-dashboard" element={<StarterDashboard />} />
+          <Route element={<StarterDashboardLayout />}>
+            <Route path="/starter-dashboard" element={<StarterDashboard />} />
+            <Route path="/starter/hooks" element={<GenerateHooks />} />
+          </Route>
         </Routes>
       </BrowserRouter>
     </TooltipProvider>
