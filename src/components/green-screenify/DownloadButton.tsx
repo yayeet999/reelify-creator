@@ -2,8 +2,6 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useDownloadLimits } from "@/hooks/use-download-limits";
-import { supabase } from "@/integrations/supabase/client";
 
 interface DownloadButtonProps {
   disabled?: boolean;
@@ -18,19 +16,14 @@ export const DownloadButton = ({
   backgroundVideoUrl,
   audioUrl
 }: DownloadButtonProps) => {
-  console.log("DownloadButton - Received props:", { templateVideoUrl, backgroundVideoUrl, audioUrl });
-  
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
-  const { isLoading, canDownload, remainingDownloads, recordDownload } = useDownloadLimits();
 
   const extractCloudinaryId = (url: string, type: 'video' | 'audio') => {
     console.log(`Extracting ${type} ID from URL:`, url);
     
     let matches;
     if (type === 'audio') {
-      // Match the full path including folder structure for audio
-      // Replace forward slashes with colons for Cloudinary folder structure
       matches = url.match(/\/v\d+\/(temp_audio_upload\/[^/]+?)(?:\.(?:mp3|wav))?$/);
       if (matches) {
         const extractedId = matches[1].replace('/', ':');
@@ -38,7 +31,6 @@ export const DownloadButton = ({
         return extractedId;
       }
     } else {
-      // Match video ID only
       matches = url.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
       if (matches) {
         const extractedId = matches[1];
@@ -77,7 +69,7 @@ export const DownloadButton = ({
     // Add audio if provided
     if (audioId) {
       console.log("Adding audio to transformation:", audioId);
-      transformationUrl += `/l_audio:${audioId}`  // Note: no URL encoding here since we've already formatted the ID
+      transformationUrl += `/l_audio:${audioId}`
         + `/fl_layer_apply`;          // Apply audio layer
     }
 
@@ -98,15 +90,6 @@ export const DownloadButton = ({
       return;
     }
 
-    if (!canDownload) {
-      toast({
-        title: "Download Limit Reached",
-        description: "You've reached your download limit for this billing period.",
-        variant: "destructive",
-      });
-      return;
-    }
-
     setIsProcessing(true);
 
     try {
@@ -120,41 +103,28 @@ export const DownloadButton = ({
         description: "Preparing your video for download...",
       });
 
-      // Clone the response before using it
       const response = await fetch(transformedUrl);
       if (!response.ok) {
         throw new Error(`Failed to download video: ${response.status} ${response.statusText}`);
       }
 
-      // Convert response to blob
       const blob = await response.blob();
-      
-      // Record the download attempt
-      const success = await recordDownload(transformedUrl);
-      if (!success) {
-        throw new Error("Failed to record download");
-      }
-
-      // Create object URL from blob
       const downloadUrl = window.URL.createObjectURL(blob);
       
-      // Create and configure download link
       const link = document.createElement('a');
       link.href = downloadUrl;
       link.download = `combined-video-${Date.now()}.mp4`;
       link.style.display = 'none';
       document.body.appendChild(link);
       
-      // Trigger download
       link.click();
       
-      // Clean up
       document.body.removeChild(link);
       window.URL.revokeObjectURL(downloadUrl);
 
       toast({
-        title: "Download Started",
-        description: `You have ${remainingDownloads ? remainingDownloads - 1 : 0} downloads remaining.`,
+        title: "Download Complete",
+        description: "Your video has been downloaded successfully.",
       });
     } catch (error) {
       console.error("Download error:", error);
@@ -172,14 +142,11 @@ export const DownloadButton = ({
     <Button
       className="w-full bg-primary hover:bg-primary/90"
       size="lg"
-      disabled={disabled || isLoading || isProcessing || !canDownload}
+      disabled={disabled || isProcessing}
       onClick={handleDownload}
     >
       <Download className="mr-2 h-4 w-4" />
-      {isProcessing ? "Processing..." : 
-       isLoading ? "Checking limits..." :
-       !canDownload ? "Download limit reached" :
-       "Download Combined Video"}
+      {isProcessing ? "Processing..." : "Download Combined Video"}
     </Button>
   );
 };

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 interface VideoUploaderProps {
   onVideoSelect: (url: string) => void;
@@ -43,17 +42,6 @@ export const VideoUploader = ({ onVideoSelect }: VideoUploaderProps) => {
       if (!response.ok) throw new Error('Upload failed');
 
       const data = await response.json();
-      
-      // Track upload in database
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        await supabase.from('temp_video_uploads').insert({
-          user_id: session.user.id,
-          cloudinary_public_id: data.public_id,
-          cloudinary_url: data.secure_url,
-        });
-      }
-
       onVideoSelect(data.secure_url);
       
       toast({

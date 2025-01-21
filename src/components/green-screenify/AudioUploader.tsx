@@ -1,8 +1,6 @@
 import { useState } from "react";
 import { Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 
 interface AudioUploaderProps {
   onAudioSelect: (url: string) => void;
@@ -46,17 +44,6 @@ export const AudioUploader = ({ onAudioSelect }: AudioUploaderProps) => {
       if (!response.ok) throw new Error('Upload failed');
 
       const data = await response.json();
-      
-      // Track upload in database
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session) {
-        await supabase.from('audio_uploads').insert({
-          user_id: session.user.id,
-          cloudinary_public_id: data.public_id,
-          cloudinary_url: data.secure_url,
-        });
-      }
-
       onAudioSelect(data.secure_url);
       
       toast({
