@@ -54,9 +54,10 @@ serve(async (req) => {
         const session = event.data.object
         console.log('Processing checkout session:', session.id)
         
-        const userId = session.client_reference_id
+        // Get user ID from metadata (more reliable than client_reference_id)
+        const userId = session.metadata?.supabase_user_id
         if (!userId) {
-          throw new Error('No user ID found in session')
+          throw new Error('No user ID found in session metadata')
         }
 
         console.log('User ID from session:', userId)
@@ -74,8 +75,7 @@ serve(async (req) => {
 
         const { error: userError } = await supabase
           .from('users')
-          .upsert({
-            id: userId,
+          .update({
             stripe_customer_id: session.customer,
             stripe_subscription_id: session.subscription,
             status: 'active',
@@ -85,6 +85,7 @@ serve(async (req) => {
             current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
             subscription_tier: tier
           })
+          .eq('id', userId)
 
         if (userError) {
           console.error('User update failed:', userError)
@@ -99,91 +100,55 @@ serve(async (req) => {
         const subscription = event.data.object
         console.log('Processing subscription update:', subscription.id)
 
-        const { data: existingUser, error: fetchError } = await supabase
+        // Get customer details to find user
+        const customer = await stripe.customers.retrieve(subscription.customer as string)
+        const userId = customer.metadata?.supabase_user_id
+
+        if (!userId) {
+          console.error('No user ID found in customer metadata')
+          throw new Error('User not found')
+        }
+
+        const priceId = subscription.items.data[0]?.price.id
+
+        let tier = 'free'
+        if (priceId === 'price_1Qf3YWF2YoGQdvcW69wTFx7i') {
+          tier = 'starter'
+        } else if (priceId === 'price_1Qf3aLF2YoGQdvcWiKMuplKL') {
+          tier = 'pro'
+        } else if (priceId === 'price_1Qf3bQF2YoGQdvcWx23MIde4') {
+          tier = 'enterprise'
+        }
+
+        const { error: updateError } = await supabase
           .from('users')
-          .select('id')
-          .eq('stripe_subscription_id', subscription.id)
-          .maybeSingle()
+          .update({
+            status: subscription.status,
+            metadata: subscription.metadata || {},
+            current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            subscription_tier: tier
+          })
+          .eq('id', userId)
 
-        if (fetchError) {
-          console.error('Error fetching user:', fetchError)
-          throw fetchError
+        if (updateError) {
+          console.error('Error updating user:', updateError)
+          throw updateError
         }
 
-        if (!existingUser) {
-          console.log('No existing user found for subscription:', subscription.id)
-          
-          const priceId = subscription.items.data[0]?.price.id
-
-          let tier = 'free'
-          if (priceId === 'price_1Qf3YWF2YoGQdvcW69wTFx7i') {
-            tier = 'starter'
-          } else if (priceId === 'price_1Qf3aLF2YoGQdvcWiKMuplKL') {
-            tier = 'pro'
-          } else if (priceId === 'price_1Qf3bQF2YoGQdvcWx23MIde4') {
-            tier = 'enterprise'
-          }
-
-          const { data: customerUser } = await supabase
+        if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
+          const { error: tierError } = await supabase
             .from('users')
-            .select('id')
-            .eq('stripe_customer_id', subscription.customer)
-            .maybeSingle()
+            .update({ subscription_tier: 'free' })
+            .eq('id', userId)
 
-          if (!customerUser?.id) {
-            console.error('Could not find user for customer:', subscription.customer)
-            throw new Error('User not found')
+          if (tierError) {
+            console.error('Error updating tier:', tierError)
+            throw tierError
           }
-
-          const { error: updateError } = await supabase
-            .from('users')
-            .update({
-              stripe_subscription_id: subscription.id,
-              status: subscription.status,
-              price_id: priceId,
-              metadata: subscription.metadata || {},
-              current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-              subscription_tier: tier
-            })
-            .eq('id', customerUser.id)
-
-          if (updateError) {
-            console.error('Error updating user:', updateError)
-            throw updateError
-          }
-
-          console.log('Successfully updated user subscription data')
-        } else {
-          const { error: updateError } = await supabase
-            .from('users')
-            .update({
-              status: subscription.status,
-              metadata: subscription.metadata || {},
-              current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-            })
-            .eq('id', existingUser.id)
-
-          if (updateError) {
-            console.error('Error updating user:', updateError)
-            throw updateError
-          }
-
-          if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
-            const { error: tierError } = await supabase
-              .from('users')
-              .update({ subscription_tier: 'free' })
-              .eq('id', existingUser.id)
-
-            if (tierError) {
-              console.error('Error updating tier:', tierError)
-              throw tierError
-            }
-          }
-
-          console.log('Successfully updated existing subscription')
         }
+
+        console.log('Successfully updated subscription status')
         break
       }
     }
