@@ -13,7 +13,6 @@ import CreateContent from "./pages/CreateContent";
 import VideoEditor from "./pages/VideoEditor";
 import { AuthProvider } from "./contexts/AuthContext";
 import { AuthGuard } from "./components/guards/AuthGuard";
-import { SubscriptionGuard } from "./components/guards/SubscriptionGuard";
 
 const queryClient = new QueryClient();
 
