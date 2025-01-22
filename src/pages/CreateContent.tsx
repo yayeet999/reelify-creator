@@ -1,11 +1,14 @@
-import { FileText, Video, Code, Film } from "lucide-react";
+import { FileText, Video, Code, Film, Lock } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 import { useNavigate } from "react-router-dom";
 import { FeatureGate } from "@/components/FeatureGate";
 import { FEATURES } from "@/config/features";
+import { useSubscriptionTier } from "@/hooks/useSubscriptionTier";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const CreateContent = () => {
   const navigate = useNavigate();
+  const { currentTier } = useSubscriptionTier();
 
   const contentOptions = [
     {
@@ -50,23 +53,45 @@ const CreateContent = () => {
             <p className="mt-2 text-lg text-muted-foreground">
               Choose what type of content you want to create
             </p>
+            {currentTier === 'free' && (
+              <Alert className="mt-4 bg-primary/5 border-primary/10">
+                <AlertDescription>
+                  Some features require a paid subscription. Upgrade to access all features.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </div>
 
         {/* Content Options Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {contentOptions.map((option) => (
-            <FeatureGate
-              key={option.title}
-              requiredTier={option.feature.requiredTier}
-            >
-              <QuickStartCard
-                title={option.title}
-                description={option.description}
-                icon={option.icon}
-                onClick={() => navigate(option.path)}
-              />
-            </FeatureGate>
+            <div key={option.title} className="relative group">
+              <FeatureGate
+                requiredTier={option.feature.requiredTier}
+                fallback={
+                  <div className="relative">
+                    <QuickStartCard
+                      title={option.title}
+                      description={option.description}
+                      icon={option.icon}
+                      onClick={() => {}}
+                      className="opacity-75"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/5 rounded-lg">
+                      <Lock className="h-6 w-6 text-primary" />
+                    </div>
+                  </div>
+                }
+              >
+                <QuickStartCard
+                  title={option.title}
+                  description={option.description}
+                  icon={option.icon}
+                  onClick={() => navigate(option.path)}
+                />
+              </FeatureGate>
+            </div>
           ))}
         </div>
       </div>
