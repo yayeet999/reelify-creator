@@ -1,10 +1,10 @@
-// Move content from StarterSavedHooks.tsx
 import { useState, useEffect } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import { Trash2, Package } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { FeatureGate } from "@/components/FeatureGate";
 
 interface SavedHook {
   id: string;
@@ -90,20 +90,18 @@ const SavedHooks = () => {
     }
   };
 
-  if (isLoading) {
-    return (
-      <div className="container mx-auto px-4 py-8 max-w-7xl">
+  const SavedHooksContent = () => {
+    if (isLoading) {
+      return (
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-gray-200 rounded w-1/4"></div>
           <div className="h-32 bg-gray-200 rounded"></div>
           <div className="h-32 bg-gray-200 rounded"></div>
         </div>
-      </div>
-    );
-  }
+      );
+    }
 
-  return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
+    return (
       <div className="space-y-8">
         <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
           <div className="max-w-3xl">
@@ -160,6 +158,14 @@ const SavedHooks = () => {
           </ScrollArea>
         </div>
       </div>
+    );
+  };
+
+  return (
+    <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
+      <FeatureGate requiredTier="starter">
+        <SavedHooksContent />
+      </FeatureGate>
     </div>
   );
 };
