@@ -1,125 +1,91 @@
+import { useState } from "react";
 import { FeatureGate } from "@/components/FeatureGate";
 import { FEATURES } from "@/config/features";
-import { useRef, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Slider } from "@/components/ui/slider";
-import { VideoPreview } from "@/components/video-editor/VideoPreview";
-import { TextPositionSelector, type Position } from "@/components/video-editor/TextPositionSelector";
-import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
-import { ColorPicker } from "@/components/video-editor/ColorPicker";
-import { useToast } from "@/components/ui/use-toast";
+import { VideoGallery } from "@/components/green-screenify/VideoGallery";
+import { VideoUploader } from "@/components/green-screenify/VideoUploader";
+import { AudioUploader } from "@/components/green-screenify/AudioUploader";
+import { CombinedPreview } from "@/components/green-screenify/CombinedPreview";
+import { DownloadButton } from "@/components/green-screenify/DownloadButton";
+import { Card } from "@/components/ui/card";
+import { Sparkles } from "lucide-react";
 
 export default function GreenScreenify() {
-  const [videoUrl, setVideoUrl] = useState("");
-  const [text, setText] = useState("");
-  const [textColor, setTextColor] = useState("#ffffff");
-  const [textSize, setTextSize] = useState(32);
-  const [position, setPosition] = useState<Position>("middle");
-  const [animation, setAnimation] = useState<AnimationType>("none");
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const { toast } = useToast();
+  const [selectedTemplateUrl, setSelectedTemplateUrl] = useState<string>();
+  const [backgroundVideoUrl, setBackgroundVideoUrl] = useState<string>();
+  const [audioUrl, setAudioUrl] = useState<string>();
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setVideoUrl(url);
-    }
-  };
-
-  const handleExport = () => {
-    toast({
-      title: "Export Started",
-      description: "Your video is being processed...",
-    });
-    // Export logic will be implemented here
+  const handleAudioGenerated = (url: string) => {
+    console.log("GreenScreenify - Audio URL generated:", url);
+    setAudioUrl(url);
   };
 
   return (
     <FeatureGate requiredTier={FEATURES.GREEN_SCREENIFY.requiredTier}>
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-3xl font-bold mb-6">Green Screenify</h1>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          <div className="space-y-6">
-            <div>
-              <Label htmlFor="video-upload">Upload Video</Label>
-              <Input
-                id="video-upload"
-                type="file"
-                accept="video/*"
-                onChange={handleFileChange}
-                className="mt-2"
-              />
+      <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
+        <div className="space-y-8">
+          {/* Header Section */}
+          <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-8 border border-primary/20">
+            <div className="flex items-center gap-3 mb-3">
+              <h1 className="text-4xl font-bold tracking-tight text-primary">
+                Green Screenify
+              </h1>
+              <Sparkles className="h-6 w-6 text-primary animate-pulse" />
             </div>
-
-            <div>
-              <Label htmlFor="text-overlay">Text Overlay</Label>
-              <Input
-                id="text-overlay"
-                value={text}
-                onChange={(e) => setText(e.target.value)}
-                placeholder="Enter text overlay"
-                className="mt-2"
-              />
-            </div>
-
-            <div>
-              <Label>Text Color</Label>
-              <ColorPicker color={textColor} onChange={setTextColor} />
-            </div>
-
-            <div>
-              <Label>Text Size</Label>
-              <Slider
-                value={[textSize]}
-                onValueChange={(value) => setTextSize(value[0])}
-                min={16}
-                max={72}
-                step={1}
-                className="mt-2"
-              />
-            </div>
-
-            <div>
-              <Label>Text Position</Label>
-              <TextPositionSelector
-                position={position}
-                onChange={setPosition}
-              />
-            </div>
-
-            <div>
-              <Label>Text Animation</Label>
-              <TextAnimationSelector
-                animation={animation}
-                onChange={setAnimation}
-              />
-            </div>
-
-            <Button onClick={handleExport} className="w-full">
-              Export Video
-            </Button>
+            <p className="text-lg text-muted-foreground">
+              Create stunning videos by combining transparent templates with your custom backgrounds and AI-generated voices
+            </p>
           </div>
 
-          <div className="flex items-center justify-center bg-black/5 rounded-lg p-4">
-            {videoUrl ? (
-              <VideoPreview
-                videoUrl={videoUrl}
-                text={text}
-                textColor={textColor}
-                textSize={textSize}
-                position={position}
-                animation={animation}
-                videoRef={videoRef}
-              />
-            ) : (
-              <div className="text-center text-muted-foreground">
-                <p>Upload a video to preview</p>
-              </div>
-            )}
+          <div className="grid gap-8 lg:grid-cols-12">
+            {/* Left Column - Template and Upload */}
+            <div className="space-y-8 lg:col-span-8">
+              {/* Template Selection */}
+              <Card className="p-6 shadow-md">
+                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                  1. Select Template Video
+                </h2>
+                <VideoGallery 
+                  onSelectVideo={(video) => setSelectedTemplateUrl(video.videoUrl)} 
+                />
+              </Card>
+
+              {/* Background Upload */}
+              <Card className="p-6 shadow-md">
+                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                  2. Upload Background Video
+                </h2>
+                <VideoUploader onVideoSelect={setBackgroundVideoUrl} />
+              </Card>
+
+              {/* Audio Upload */}
+              <Card className="p-6 shadow-md">
+                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                  3. Add Audio (Optional)
+                </h2>
+                <AudioUploader onAudioSelect={handleAudioGenerated} />
+              </Card>
+            </div>
+
+            {/* Right Column - Preview and Download */}
+            <div className="lg:col-span-4 space-y-6">
+              <Card className="p-6 shadow-md">
+                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
+                  4. Preview & Download
+                </h2>
+                <div className="space-y-6">
+                  <CombinedPreview 
+                    templateVideoUrl={selectedTemplateUrl}
+                    backgroundVideoUrl={backgroundVideoUrl}
+                  />
+                  <DownloadButton 
+                    disabled={!selectedTemplateUrl || !backgroundVideoUrl}
+                    templateVideoUrl={selectedTemplateUrl}
+                    backgroundVideoUrl={backgroundVideoUrl}
+                    audioUrl={audioUrl}
+                  />
+                </div>
+              </Card>
+            </div>
           </div>
         </div>
       </div>
