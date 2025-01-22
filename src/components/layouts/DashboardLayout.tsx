@@ -4,6 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Outlet, Navigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { Loader2 } from "lucide-react";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 export function DashboardLayout() {
   const { isAuthenticated, isLoading } = useAuth();
@@ -21,16 +22,20 @@ export function DashboardLayout() {
   }
 
   return (
-    <SidebarProvider defaultOpen={true}>
-      <div className="min-h-screen flex w-full">
-        <DashboardSidebar />
-        <div className="flex-1 flex flex-col">
-          <Navbar />
-          <main className="flex-1 p-8 mt-16">
-            <Outlet />
-          </main>
+    <ErrorBoundary>
+      <SidebarProvider defaultOpen={true}>
+        <div className="min-h-screen flex w-full">
+          <DashboardSidebar />
+          <div className="flex-1 flex flex-col">
+            <Navbar />
+            <main className="flex-1 p-8 mt-16">
+              <ErrorBoundary>
+                <Outlet />
+              </ErrorBoundary>
+            </main>
+          </div>
         </div>
-      </div>
-    </SidebarProvider>
+      </SidebarProvider>
+    </ErrorBoundary>
   );
 }

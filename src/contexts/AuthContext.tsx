@@ -3,6 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import type { SubscriptionTier } from "@/types/subscription";
 import { toast } from "@/components/ui/use-toast";
+import type { PostgrestSingleResponse } from '@supabase/supabase-js';
+
+// Constants for timeouts
+const AUTH_TIMEOUT = 10000; // 10 seconds
+const SUBSCRIPTION_TIMEOUT = 5000; // 5 seconds
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -15,6 +20,18 @@ interface AuthState {
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
+
+// Utility function for timeout handling
+const withTimeout = <T,>(promise: Promise<T>, timeout: number, errorMessage: string): Promise<T> => {
+  return Promise.race([
+    promise,
+    new Promise<T>((_, reject) => {
+      setTimeout(() => {
+        reject(new Error(errorMessage));
+      }, timeout);
+    }),
+  ]);
+};
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -70,20 +87,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsSubscriptionLoading(true);
       setSubscriptionError(null);
       
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const userResponse = await withTimeout(
+        supabase.auth.getUser(),
+        SUBSCRIPTION_TIMEOUT,
+        "Subscription check timed out"
+      );
+
+      if (!userResponse.data.user) {
         setSubscriptionTier("free");
         return;
       }
 
-      const { data: profile, error } = await supabase
-        .from("users")
-        .select("subscription_tier")
-        .eq("id", user.id)
-        .single();
+      const profileResponse = await withTimeout(
+        supabase
+          .from("users")
+          .select("subscription_tier")
+          .eq("id", userResponse.data.user.id)
+          .single() as Promise<PostgrestSingleResponse<{ subscription_tier: SubscriptionTier }>>,
+        SUBSCRIPTION_TIMEOUT,
+        "Subscription data fetch timed out"
+      );
 
-      if (error) {
-        console.error("Error checking subscription:", error);
+      if (profileResponse.error) {
+        console.error("Error checking subscription:", profileResponse.error);
         setSubscriptionError("Failed to check subscription status");
         setSubscriptionTier("free");
         toast({
@@ -95,14 +121,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      setSubscriptionTier(profile.subscription_tier);
+      setSubscriptionTier(profileResponse.data.subscription_tier);
     } catch (error) {
       console.error("Error in checkSubscription:", error);
-      setSubscriptionError("An unexpected error occurred");
+      setSubscriptionError(error instanceof Error ? error.message : "An unexpected error occurred");
       setSubscriptionTier("free");
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Using free tier as fallback.",
+        description: error instanceof Error ? error.message : "An unexpected error occurred. Using free tier as fallback.",
         variant: "destructive",
         action: <button onClick={retrySubscriptionCheck}>Retry</button>,
       });
@@ -132,10 +158,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initializeAuth = async () => {
       try {
         setIsLoading(true);
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const sessionResponse = await withTimeout(
+          supabase.auth.getSession(),
+          AUTH_TIMEOUT,
+          "Auth session check timed out"
+        );
         
-        if (error) {
-          console.error("Session error:", error);
+        if (sessionResponse.error) {
+          console.error("Session error:", sessionResponse.error);
           toast({
             title: "Authentication Error",
             description: "There was a problem checking your session. Please try signing in again.",
@@ -145,9 +175,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         
         if (mounted) {
-          setIsAuthenticated(!!session);
-          if (session) {
-            await checkSubscription();
+          setIsAuthenticated(!!sessionResponse.data.session);
+          if (sessionResponse.data.session) {
+            await checkSubscription().catch(error => {
+              console.error("Error checking subscription during init:", error);
+              setSubscriptionTier("free");
+            });
           }
         }
       } catch (err) {
@@ -155,7 +188,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (mounted) {
           toast({
             title: "Error",
-            description: "There was a problem initializing the application. Please refresh the page.",
+            description: err instanceof Error ? err.message : "There was a problem initializing the application. Please refresh the page.",
             variant: "destructive",
             action: <button onClick={() => window.location.reload()}>Refresh</button>,
           });

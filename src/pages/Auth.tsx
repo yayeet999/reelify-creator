@@ -7,8 +7,9 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import type { AuthError } from "@supabase/supabase-js";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
-const Auth = () => {
+const AuthContent = () => {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -134,6 +135,14 @@ const Auth = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const Auth = () => {
+  return (
+    <ErrorBoundary>
+      <AuthContent />
+    </ErrorBoundary>
   );
 };
 
