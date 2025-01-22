@@ -6,17 +6,19 @@ import { VideoUploader } from "@/components/green-screenify/VideoUploader";
 import { AudioUploader } from "@/components/green-screenify/AudioUploader";
 import { CombinedPreview } from "@/components/green-screenify/CombinedPreview";
 import { DownloadButton } from "@/components/green-screenify/DownloadButton";
+import { VoiceSelector } from "@/components/green-screenify/VoiceSelector";
 import { Card } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function GreenScreenify() {
   const [selectedTemplateUrl, setSelectedTemplateUrl] = useState<string>();
   const [backgroundVideoUrl, setBackgroundVideoUrl] = useState<string>();
   const [audioUrl, setAudioUrl] = useState<string>();
 
-  const handleAudioGenerated = (url: string) => {
-    console.log("GreenScreenify - Audio URL generated:", url);
-    setAudioUrl(url);
+  const handleAudioGenerated = (generatedUrl: string) => {
+    console.log("GreenScreenify - Audio URL generated:", generatedUrl);
+    setAudioUrl(generatedUrl);
   };
 
   return (
@@ -57,12 +59,23 @@ export default function GreenScreenify() {
                 <VideoUploader onVideoSelect={setBackgroundVideoUrl} />
               </Card>
 
-              {/* Audio Upload */}
+              {/* Audio Section with Tabs */}
               <Card className="p-6 shadow-md">
                 <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
                   3. Add Audio (Optional)
                 </h2>
-                <AudioUploader onAudioSelect={handleAudioGenerated} />
+                <Tabs defaultValue="generate" className="w-full">
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="generate">Generate Voice</TabsTrigger>
+                    <TabsTrigger value="upload">Upload Audio</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="generate" className="mt-4">
+                    <VoiceSelector onAudioGenerated={handleAudioGenerated} />
+                  </TabsContent>
+                  <TabsContent value="upload" className="mt-4">
+                    <AudioUploader onAudioSelect={setAudioUrl} />
+                  </TabsContent>
+                </Tabs>
               </Card>
             </div>
 
