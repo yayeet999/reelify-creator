@@ -4,25 +4,35 @@ import { supabase } from "@/integrations/supabase/client";
 import type { SubscriptionTier } from "@/types/subscription";
 import { toast } from "@/components/ui/use-toast";
 
-interface AuthContextType {
+interface AuthState {
   isAuthenticated: boolean;
   isLoading: boolean;
   subscriptionTier: SubscriptionTier;
+  isSubscriptionLoading: boolean;
+  subscriptionError: string | null;
   checkSubscription: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthState | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("free");
+  const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
+  const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const checkSubscription = async () => {
     try {
+      setIsSubscriptionLoading(true);
+      setSubscriptionError(null);
+      
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user) {
+        setSubscriptionTier("free");
+        return;
+      }
 
       const { data: profile, error } = await supabase
         .from("users")
@@ -30,15 +40,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         .eq("id", user.id)
         .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error checking subscription:", error);
+        setSubscriptionError("Failed to check subscription status");
+        toast({
+          title: "Error",
+          description: "Failed to check subscription status. Please try again later.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setSubscriptionTier(profile.subscription_tier);
     } catch (error) {
-      console.error("Error checking subscription:", error);
+      console.error("Error in checkSubscription:", error);
+      setSubscriptionError("An unexpected error occurred");
       toast({
         title: "Error",
-        description: "Failed to check subscription status",
+        description: "An unexpected error occurred. Please try again later.",
         variant: "destructive",
       });
+    } finally {
+      setIsSubscriptionLoading(false);
     }
   };
 
@@ -57,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setIsAuthenticated(!!session);
       if (event === "SIGNED_IN") {
         await checkSubscription();
-        navigate("/starter-dashboard");
+        navigate("/dashboard");
       } else if (event === "SIGNED_OUT") {
         setSubscriptionTier("free");
         navigate("/auth");
@@ -93,8 +116,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
   }, [navigate, subscriptionTier]);
 
+  const value: AuthState = {
+    isAuthenticated,
+    isLoading,
+    subscriptionTier,
+    isSubscriptionLoading,
+    subscriptionError,
+    checkSubscription,
+  };
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, isLoading, subscriptionTier, checkSubscription }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
