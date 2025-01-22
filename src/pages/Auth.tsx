@@ -15,7 +15,7 @@ const Auth = () => {
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_IN" && session) {
-        navigate("/starter-dashboard");
+        navigate("/dashboard");
       }
       if (event === "USER_UPDATED") {
         const checkSession = async () => {
@@ -129,7 +129,7 @@ const Auth = () => {
               },
             }}
             providers={[]}
-            redirectTo={`${siteUrl}/starter-dashboard`}
+            redirectTo={`${siteUrl}/dashboard`}
           />
         </div>
       </div>
