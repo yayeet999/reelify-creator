@@ -1,15 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import { Code, FilePlus, Video, Film, Plus } from "lucide-react";
+import { Code, FilePlus, Video, Film, Plus, Loader2 } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 import { useAuth } from "@/contexts/AuthContext";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FEATURES } from "@/config/features";
 import { FeatureGate } from "@/components/FeatureGate";
+import { useSubscriptionTier } from "@/hooks/useSubscriptionTier";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { subscriptionTier } = useAuth();
+  const { isSubscriptionLoading } = useSubscriptionTier();
 
   const getQuickStartOptions = () => {
     const baseOptions = [
@@ -49,6 +51,14 @@ const Dashboard = () => {
     return [...baseOptions, ...starterOptions];
   };
 
+  if (isSubscriptionLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
       <div className="space-y-8">
@@ -64,8 +74,23 @@ const Dashboard = () => {
               )}
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Welcome! Here's what you can do
+              Welcome to your dashboard! Here's what you can do
             </p>
+            {subscriptionTier === "free" && (
+              <Alert className="mt-4 bg-primary/5 border-primary/10">
+                <AlertTitle className="text-primary">Free Plan</AlertTitle>
+                <AlertDescription>
+                  You're currently on the free plan. Upgrade to access premium features.
+                  <Button
+                    variant="link"
+                    className="ml-2 text-primary"
+                    onClick={() => navigate("/pricing")}
+                  >
+                    View Plans
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
         </div>
 
@@ -82,7 +107,7 @@ const Dashboard = () => {
                   icon={option.icon}
                   onClick={() => navigate("/pricing")}
                   overlay={
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
                       <Button variant="secondary" className="gap-2">
                         <Plus className="w-4 h-4" />
                         Upgrade to Access
