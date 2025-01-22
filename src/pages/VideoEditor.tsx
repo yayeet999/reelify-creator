@@ -1,10 +1,9 @@
-// Move content from StarterVideoEditor.tsx
 import { useState } from "react";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { TextPositionSelector } from "@/components/video-editor/TextPositionSelector";
 import { TextAnimationSelector } from "@/components/video-editor/TextAnimationSelector";
-import { FreeVideoDownloader } from "@/components/video-editor/FreeVideoDownloader";
+import { DownloadButton } from "@/components/video-editor/DownloadButton";
 import { VideoUpload } from "@/components/video-editor/VideoUpload";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -15,7 +14,7 @@ import { ArrowLeft, Sparkles } from "lucide-react";
 const VideoEditor = () => {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>();
   const [textPosition, setTextPosition] = useState<"top" | "middle" | "bottom">("middle");
-  const [textAnimation, setTextAnimation] = useState<"none" | "fade">("none");
+  const [textAnimation, setTextAnimation] = useState<"none" | "fade" | "slide" | "scale">("none");
   const [text, setText] = useState<string>("");
   const [textColor, setTextColor] = useState<string>("#FFFFFF");
   const [textSize, setTextSize] = useState<number>(32);
@@ -165,19 +164,16 @@ const VideoEditor = () => {
                   position={textPosition}
                   animation={textAnimation}
                 />
-                <FreeVideoDownloader
+                <DownloadButton
+                  videoUrl={selectedVideoUrl}
                   textOverlay={text}
                   textColor={textColor}
                   textSize={textSize}
                   textPosition={textPosition}
                   animation={textAnimation}
                   startTime={0}
-                  duration={0}
-                  currentVideoUrl={selectedVideoUrl || ""}
-                  isTemplateSelected={isTemplateSelected}
-                  onProceedWithTemplate={handleProceedWithTemplate}
-                  onGoBackToTemplates={handleGoBackToTemplates}
-                  hasUploadedVideo={!!uploadedVideo}
+                  duration={30}
+                  disabled={!selectedVideoUrl}
                 />
               </div>
             </Card>
