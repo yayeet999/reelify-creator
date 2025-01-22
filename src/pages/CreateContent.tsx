@@ -5,6 +5,7 @@ import { FeatureGate } from "@/components/FeatureGate";
 import { FEATURES } from "@/config/features";
 import { useSubscriptionTier } from "@/hooks/useSubscriptionTier";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 
 const CreateContent = () => {
   const navigate = useNavigate();
@@ -70,18 +71,21 @@ const CreateContent = () => {
               <FeatureGate
                 requiredTier={option.feature.requiredTier}
                 fallback={
-                  <div className="relative">
-                    <QuickStartCard
-                      title={option.title}
-                      description={option.description}
-                      icon={option.icon}
-                      onClick={() => {}}
-                      className="opacity-75"
-                    />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/5 rounded-lg">
-                      <Lock className="h-6 w-6 text-primary" />
-                    </div>
-                  </div>
+                  <QuickStartCard
+                    title={option.title}
+                    description={option.description}
+                    icon={option.icon}
+                    onClick={() => navigate("/pricing")}
+                    className="opacity-75"
+                    overlay={
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/5 rounded-lg">
+                        <Button variant="secondary" className="gap-2">
+                          <Lock className="h-4 w-4" />
+                          Upgrade to Access
+                        </Button>
+                      </div>
+                    }
+                  />
                 }
               >
                 <QuickStartCard
