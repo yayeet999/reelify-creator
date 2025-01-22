@@ -23,6 +23,7 @@ interface MenuItem {
   path: string;
   description: string;
   isHighlighted?: boolean;
+  requiredTier?: 'free' | 'starter' | 'pro';
 }
 
 export function DashboardSidebar() {
@@ -32,55 +33,64 @@ export function DashboardSidebar() {
   const { subscriptionTier } = useAuth();
   const isMobile = useIsMobile();
 
-  const getMenuItems = () => {
-    const baseItems: MenuItem[] = [
-      {
-        title: "Create Content",
-        icon: FilePlus,
-        path: "/dashboard/create",
-        description: "Create new content",
-        isHighlighted: true,
-      },
-      {
-        title: "Home",
-        icon: Home,
-        path: "/dashboard",
-        description: "Overview and quick actions",
-      },
-    ];
-
-    const starterItems: MenuItem[] = [
-      {
-        title: "Generate Hooks",
-        icon: Code,
-        path: "/dashboard/hooks",
-        description: "Generate custom React hooks",
-      },
-      {
-        title: "Saved Hooks",
-        icon: Bookmark,
-        path: "/dashboard/saved-hooks",
-        description: "View your saved hooks",
-      },
-      {
-        title: "Green Screenify",
-        icon: Video,
-        path: "/dashboard/green-screenify",
-        description: "Create videos with custom backgrounds",
-      },
-      {
-        title: "Video Editor",
-        icon: Film,
-        path: "/dashboard/video-editor",
-        description: "Edit and customize videos",
-      },
-    ];
-
-    if (subscriptionTier === "free") {
-      return baseItems;
+  const menuItems: MenuItem[] = [
+    {
+      title: "Create Content",
+      icon: FilePlus,
+      path: "/dashboard/create",
+      description: "Create new content",
+      isHighlighted: true,
+      requiredTier: 'free'
+    },
+    {
+      title: "Home",
+      icon: Home,
+      path: "/dashboard",
+      description: "Overview and quick actions",
+      requiredTier: 'free'
+    },
+    {
+      title: "Generate Hooks",
+      icon: Code,
+      path: "/dashboard/hooks",
+      description: "Generate custom React hooks",
+      requiredTier: 'starter'
+    },
+    {
+      title: "Saved Hooks",
+      icon: Bookmark,
+      path: "/dashboard/saved-hooks",
+      description: "View your saved hooks",
+      requiredTier: 'starter'
+    },
+    {
+      title: "Green Screenify",
+      icon: Video,
+      path: "/dashboard/green-screenify",
+      description: "Create videos with custom backgrounds",
+      requiredTier: 'starter'
+    },
+    {
+      title: "Video Editor",
+      icon: Film,
+      path: "/dashboard/video-editor",
+      description: "Edit and customize videos",
+      requiredTier: 'starter'
     }
+  ];
 
-    return [...baseItems, ...starterItems];
+  const getAccessibleMenuItems = () => {
+    const tierLevels = {
+      'free': 0,
+      'starter': 1,
+      'pro': 2
+    };
+
+    const userTierLevel = tierLevels[subscriptionTier];
+    return menuItems.filter(item => {
+      const requiredTierLevel = tierLevels[item.requiredTier || 'free'];
+      return userTierLevel >= requiredTierLevel;
+    });
   };
 
   const isActiveRoute = (path: string) => {
@@ -93,15 +103,15 @@ export function DashboardSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 text-lg font-semibold text-primary">
             Dashboard
-            {subscriptionTier !== "free" && (
-              <span className="ml-2 text-sm font-normal text-muted-foreground">
+            {subscriptionTier !== 'free' && (
+              <span className="ml-2 text-sm font-normal text-muted-foreground capitalize">
                 ({subscriptionTier})
               </span>
             )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1.5 pt-10">
-              {getMenuItems().map((item) => (
+              {getAccessibleMenuItems().map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     onClick={() => navigate(item.path)}
