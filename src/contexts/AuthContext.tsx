@@ -66,29 +66,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   useEffect(() => {
+    let mounted = true;
+
     // Check initial auth state
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setIsAuthenticated(!!session);
-      if (session) {
-        checkSubscription();
+    const initializeAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (mounted) {
+          setIsAuthenticated(!!session);
+          if (session) {
+            await checkSubscription();
+          }
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error("Error initializing auth:", error);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
-      setIsLoading(false);
-    });
+    };
+
+    initializeAuth();
 
     // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setIsAuthenticated(!!session);
-      if (event === "SIGNED_IN") {
-        await checkSubscription();
-        navigate("/dashboard");
-      } else if (event === "SIGNED_OUT") {
-        setSubscriptionTier("free");
-        navigate("/auth");
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (!mounted) return;
+
+        setIsAuthenticated(!!session);
+        if (event === "SIGNED_IN") {
+          await checkSubscription();
+          navigate("/dashboard");
+        } else if (event === "SIGNED_OUT") {
+          setSubscriptionTier("free");
+          navigate("/auth");
+        }
       }
-    });
+    );
 
     // Listen for real-time subscription updates
-    const channel = supabase
+    const subscriptionChannel = supabase
       .channel('public:users')
       .on(
         'postgres_changes',
@@ -99,6 +117,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           filter: `id=eq.${supabase.auth.getUser().then(({ data }) => data.user?.id)}`
         },
         async (payload) => {
+          if (!mounted) return;
+          
           if (payload.new.subscription_tier !== subscriptionTier) {
             setSubscriptionTier(payload.new.subscription_tier as SubscriptionTier);
             toast({
@@ -110,9 +130,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       )
       .subscribe();
 
+    // Cleanup function
     return () => {
-      subscription.unsubscribe();
-      supabase.removeChannel(channel);
+      mounted = false;
+      authSubscription.unsubscribe();
+      supabase.removeChannel(subscriptionChannel);
     };
   }, [navigate, subscriptionTier]);
 
