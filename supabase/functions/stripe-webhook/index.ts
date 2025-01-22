@@ -54,7 +54,6 @@ serve(async (req) => {
         const session = event.data.object
         console.log('Processing checkout session:', session.id)
         
-        // Extract user ID from client_reference_id
         const userId = session.client_reference_id
         if (!userId) {
           throw new Error('No user ID found in session')
@@ -75,9 +74,9 @@ serve(async (req) => {
 
         // Update subscription record with metadata
         const { error: subscriptionError } = await supabase
-          .from('subscriptions')
+          .from('users')
           .upsert({
-            user_id: userId,
+            id: userId,
             stripe_customer_id: session.customer,
             stripe_subscription_id: session.subscription,
             status: 'active',
@@ -85,6 +84,7 @@ serve(async (req) => {
             metadata: session.metadata || {},
             current_period_start: new Date().toISOString(),
             current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+            subscription_tier: tier
           })
 
         if (subscriptionError) {
@@ -92,18 +92,7 @@ serve(async (req) => {
           throw subscriptionError
         }
 
-        // Update user's subscription tier
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .update({ subscription_tier: tier })
-          .eq('id', userId)
-
-        if (profileError) {
-          console.error('Profile update failed:', profileError)
-          throw profileError
-        }
-
-        console.log('Successfully updated subscription and profile')
+        console.log('Successfully updated subscription')
         break
       }
 
@@ -112,19 +101,19 @@ serve(async (req) => {
         console.log('Processing subscription update:', subscription.id)
 
         // First, try to find the customer's user_id through the subscriptions table
-        const { data: existingSubscription, error: fetchError } = await supabase
-          .from('subscriptions')
-          .select('id, user_id')
+        const { data: existingUser, error: fetchError } = await supabase
+          .from('users')
+          .select('id')
           .eq('stripe_subscription_id', subscription.id)
           .maybeSingle()
 
         if (fetchError) {
-          console.error('Error fetching subscription:', fetchError)
+          console.error('Error fetching user:', fetchError)
           throw fetchError
         }
 
-        if (!existingSubscription) {
-          console.log('No existing subscription found, creating new record')
+        if (!existingUser) {
+          console.log('No existing user found for subscription:', subscription.id)
           
           const priceId = subscription.items.data[0]?.price.id
 
@@ -137,76 +126,65 @@ serve(async (req) => {
             tier = 'enterprise'
           }
 
-          // Find user by customer ID in subscriptions table
-          const { data: customerSubscription } = await supabase
-            .from('subscriptions')
-            .select('user_id')
+          // Find user by customer ID
+          const { data: customerUser } = await supabase
+            .from('users')
+            .select('id')
             .eq('stripe_customer_id', subscription.customer)
             .maybeSingle()
 
-          if (!customerSubscription?.user_id) {
+          if (!customerUser?.id) {
             console.error('Could not find user for customer:', subscription.customer)
             throw new Error('User not found')
           }
 
-          // Create new subscription record with metadata
-          const { error: createError } = await supabase
-            .from('subscriptions')
-            .insert({
-              user_id: customerSubscription.user_id,
-              stripe_customer_id: subscription.customer,
+          // Update user record with subscription data
+          const { error: updateError } = await supabase
+            .from('users')
+            .update({
               stripe_subscription_id: subscription.id,
               status: subscription.status,
               price_id: priceId,
               metadata: subscription.metadata || {},
               current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+              subscription_tier: tier
             })
+            .eq('id', customerUser.id)
 
-          if (createError) {
-            console.error('Error creating subscription:', createError)
-            throw createError
+          if (updateError) {
+            console.error('Error updating user:', updateError)
+            throw updateError
           }
 
-          // Update user's subscription tier
-          const { error: profileError } = await supabase
-            .from('profiles')
-            .update({ subscription_tier: tier })
-            .eq('id', customerSubscription.user_id)
-
-          if (profileError) {
-            console.error('Error updating profile:', profileError)
-            throw profileError
-          }
-
-          console.log('Successfully created subscription and updated profile')
+          console.log('Successfully updated user subscription data')
         } else {
-          // Update existing subscription with metadata
+          // Update existing user's subscription data
           const { error: updateError } = await supabase
-            .from('subscriptions')
+            .from('users')
             .update({
               status: subscription.status,
               metadata: subscription.metadata || {},
               current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
               current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
             })
-            .eq('id', existingSubscription.id)
+            .eq('id', existingUser.id)
 
           if (updateError) {
-            console.error('Error updating subscription:', updateError)
+            console.error('Error updating user:', updateError)
             throw updateError
           }
 
           // If subscription is canceled or deleted, revert to free tier
           if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
-            const { error: profileError } = await supabase
-              .from('profiles')
+            const { error: tierError } = await supabase
+              .from('users')
               .update({ subscription_tier: 'free' })
-              .eq('id', existingSubscription.user_id)
+              .eq('id', existingUser.id)
 
-            if (profileError) {
-              console.error('Error updating profile:', profileError)
-              throw profileError
+            if (tierError) {
+              console.error('Error updating tier:', tierError)
+              throw tierError
             }
           }
 
