@@ -45,10 +45,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setSubscriptionError("Failed to check subscription status");
         toast({
           title: "Error",
-          description: "Failed to check subscription status. Please try again later.",
+          description: "Failed to check subscription status. Using free tier as fallback.",
           variant: "destructive",
         });
-        // Set to free tier on error as a fallback
         setSubscriptionTier("free");
         return;
       }
@@ -57,16 +56,32 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("Error in checkSubscription:", error);
       setSubscriptionError("An unexpected error occurred");
-      // Set to free tier on error as a fallback
       setSubscriptionTier("free");
       toast({
         title: "Error",
-        description: "An unexpected error occurred. Please try again later.",
+        description: "An unexpected error occurred. Using free tier as fallback.",
         variant: "destructive",
       });
     } finally {
       setIsSubscriptionLoading(false);
     }
+  };
+
+  const cleanupAuthResources = () => {
+    // Clean up all realtime subscriptions
+    const allChannels = supabase.getChannels();
+    allChannels.forEach((channel) => {
+      supabase.removeChannel(channel);
+    });
+
+    // Clear local storage and cookies
+    localStorage.removeItem("sb-tdfqshwqqsdjsicrrajl-auth-token");
+    document.cookie = "sb-tdfqshwqqsdjsicrrajl-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    
+    // Reset all state
+    setSubscriptionTier("free");
+    setIsAuthenticated(false);
+    setSubscriptionError(null);
   };
 
   useEffect(() => {
@@ -91,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               await checkSubscription();
             } catch (err) {
               console.error("checkSubscription error:", err);
-              // Error already handled in checkSubscription
+              setSubscriptionTier("free");
             }
           }
         }
@@ -126,10 +141,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             navigate("/dashboard");
           } catch (error) {
             console.error("Error during sign in:", error);
-            // Error already handled in checkSubscription
+            setSubscriptionTier("free");
+          } finally {
+            setIsLoading(false);
           }
         } else if (event === "SIGNED_OUT") {
-          setSubscriptionTier("free");
+          cleanupAuthResources();
           navigate("/auth");
         }
       }

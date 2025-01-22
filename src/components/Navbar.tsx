@@ -23,8 +23,9 @@ export const Navbar = () => {
       // 2. Sign out with Supabase
       await supabase.auth.signOut();
 
-      // 3. Force-remove the local storage token
+      // 3. Force-remove the local storage token and cookies
       localStorage.removeItem("sb-tdfqshwqqsdjsicrrajl-auth-token");
+      document.cookie = "sb-tdfqshwqqsdjsicrrajl-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
       // 4. Show success toast and redirect
       toast({
