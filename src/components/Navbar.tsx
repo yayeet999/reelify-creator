@@ -1,17 +1,33 @@
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, Loader2 } from "lucide-react";
 import { useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "@/components/ui/use-toast";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { isLoading, subscriptionTier } = useAuth();
+  const { supabase } = useAuth();
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    navigate("/auth");
+    try {
+      await supabase.auth.signOut();
+      toast({
+        title: "Logged out successfully",
+        description: "You have been logged out of your account.",
+      });
+      navigate("/auth");
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast({
+        title: "Error logging out",
+        description: "There was a problem logging out. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -34,11 +50,22 @@ export const Navbar = () => {
             </a>
           </div>
 
+          {/* Subscription Badge */}
+          <div className="hidden md:flex items-center gap-4">
+            <span className="text-sm font-medium text-gray-600">
+              {subscriptionTier.charAt(0).toUpperCase() + subscriptionTier.slice(1)} Plan
+            </span>
+          </div>
+
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            <Button onClick={handleLogout}>
-              Log out
-            </Button>
+            {isLoading ? (
+              <Loader2 className="h-5 w-5 animate-spin text-primary" />
+            ) : (
+              <Button onClick={handleLogout}>
+                Log out
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -57,10 +84,19 @@ export const Navbar = () => {
         {isMenuOpen && (
           <div className="md:hidden py-4 animate-fade-in">
             <div className="flex flex-col space-y-4">
+              <div className="px-4 py-2">
+                <span className="text-sm font-medium text-gray-600">
+                  {subscriptionTier.charAt(0).toUpperCase() + subscriptionTier.slice(1)} Plan
+                </span>
+              </div>
               <div className="flex flex-col space-y-2 px-4">
-                <Button onClick={handleLogout} className="w-full">
-                  Log out
-                </Button>
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />
+                ) : (
+                  <Button onClick={handleLogout} className="w-full">
+                    Log out
+                  </Button>
+                )}
               </div>
             </div>
           </div>
@@ -68,4 +104,4 @@ export const Navbar = () => {
       </div>
     </nav>
   );
-}
+};
