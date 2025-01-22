@@ -23,11 +23,8 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <Routes>
-            {/* Public routes */}
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-
-            {/* Protected routes */}
             <Route
               path="/settings"
               element={
@@ -36,8 +33,6 @@ function App() {
                 </AuthGuard>
               }
             />
-
-            {/* Protected Dashboard routes */}
             <Route
               element={
                 <AuthGuard>
@@ -47,37 +42,37 @@ function App() {
             >
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/dashboard/create" element={<CreateContent />} />
-              <Route
-                path="/dashboard/hooks"
+              <Route 
+                path="/dashboard/hooks" 
                 element={
                   <SubscriptionGuard requiredTier="starter">
                     <GenerateHooks />
                   </SubscriptionGuard>
-                }
+                } 
               />
-              <Route
-                path="/dashboard/saved-hooks"
+              <Route 
+                path="/dashboard/saved-hooks" 
                 element={
                   <SubscriptionGuard requiredTier="starter">
                     <SavedHooks />
                   </SubscriptionGuard>
-                }
+                } 
               />
-              <Route
-                path="/dashboard/green-screenify"
+              <Route 
+                path="/dashboard/green-screenify" 
                 element={
                   <SubscriptionGuard requiredTier="starter">
                     <GreenScreenify />
                   </SubscriptionGuard>
-                }
+                } 
               />
-              <Route
-                path="/dashboard/video-editor"
+              <Route 
+                path="/dashboard/video-editor" 
                 element={
                   <SubscriptionGuard requiredTier="starter">
                     <VideoEditor />
                   </SubscriptionGuard>
-                }
+                } 
               />
             </Route>
           </Routes>
