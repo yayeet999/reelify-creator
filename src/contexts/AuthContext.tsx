@@ -193,29 +193,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     // Set up subscription update listener
-    subscriptionChannel = supabase
-      .channel('public:users')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'users',
-          filter: `id=eq.${supabase.auth.getUser().then(({ data }) => data.user?.id)}`
-        },
-        async (payload) => {
-          if (!mounted) return;
-          
-          if (payload.new.subscription_tier !== subscriptionTier) {
-            setSubscriptionTier(payload.new.subscription_tier as SubscriptionTier);
-            toast({
-              title: "Subscription Updated",
-              description: `Your subscription has been updated to ${payload.new.subscription_tier}`,
-            });
+    if (mounted) {
+      subscriptionChannel = supabase
+        .channel('public:users')
+        .on(
+          'postgres_changes',
+          {
+            event: 'UPDATE',
+            schema: 'public',
+            table: 'users',
+            filter: `id=eq.${supabase.auth.getUser().then(({ data }) => data.user?.id)}`
+          },
+          async (payload) => {
+            if (!mounted) return;
+            
+            if (payload.new.subscription_tier !== subscriptionTier) {
+              setSubscriptionTier(payload.new.subscription_tier as SubscriptionTier);
+              toast({
+                title: "Subscription Updated",
+                description: `Your subscription has been updated to ${payload.new.subscription_tier}`,
+              });
+            }
           }
-        }
-      )
-      .subscribe();
+        )
+        .subscribe();
+    }
 
     // Cleanup function
     return () => {
