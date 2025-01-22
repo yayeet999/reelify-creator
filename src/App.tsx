@@ -21,63 +21,70 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route
-              path="/settings"
-              element={
+        <Routes>
+          {/* Public routes - no AuthProvider */}
+          <Route path="/" element={<Index />} />
+          <Route path="/auth" element={<Auth />} />
+
+          {/* Protected route - Settings */}
+          <Route
+            path="/settings"
+            element={
+              <AuthProvider>
                 <AuthGuard>
                   <Settings />
                 </AuthGuard>
-              }
-            />
-            <Route
-              element={
+              </AuthProvider>
+            }
+          />
+
+          {/* Protected routes - Dashboard and related pages */}
+          <Route
+            element={
+              <AuthProvider>
                 <AuthGuard>
                   <DashboardLayout />
                 </AuthGuard>
-              }
-            >
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/dashboard/create" element={<CreateContent />} />
-              <Route 
-                path="/dashboard/hooks" 
-                element={
-                  <SubscriptionGuard requiredTier="starter">
-                    <GenerateHooks />
-                  </SubscriptionGuard>
-                } 
-              />
-              <Route 
-                path="/dashboard/saved-hooks" 
-                element={
-                  <SubscriptionGuard requiredTier="starter">
-                    <SavedHooks />
-                  </SubscriptionGuard>
-                } 
-              />
-              <Route 
-                path="/dashboard/green-screenify" 
-                element={
-                  <SubscriptionGuard requiredTier="starter">
-                    <GreenScreenify />
-                  </SubscriptionGuard>
-                } 
-              />
-              <Route 
-                path="/dashboard/video-editor" 
-                element={
-                  <SubscriptionGuard requiredTier="starter">
-                    <VideoEditor />
-                  </SubscriptionGuard>
-                } 
-              />
-            </Route>
-          </Routes>
-          <Toaster />
-        </AuthProvider>
+              </AuthProvider>
+            }
+          >
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/dashboard/create" element={<CreateContent />} />
+            <Route 
+              path="/dashboard/hooks" 
+              element={
+                <SubscriptionGuard requiredTier="starter">
+                  <GenerateHooks />
+                </SubscriptionGuard>
+              } 
+            />
+            <Route 
+              path="/dashboard/saved-hooks" 
+              element={
+                <SubscriptionGuard requiredTier="starter">
+                  <SavedHooks />
+                </SubscriptionGuard>
+              } 
+            />
+            <Route 
+              path="/dashboard/green-screenify" 
+              element={
+                <SubscriptionGuard requiredTier="starter">
+                  <GreenScreenify />
+                </SubscriptionGuard>
+              } 
+            />
+            <Route 
+              path="/dashboard/video-editor" 
+              element={
+                <SubscriptionGuard requiredTier="starter">
+                  <VideoEditor />
+                </SubscriptionGuard>
+              } 
+            />
+          </Route>
+        </Routes>
+        <Toaster />
       </BrowserRouter>
     </QueryClientProvider>
   );
