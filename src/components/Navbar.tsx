@@ -9,11 +9,14 @@ import { supabase } from "@/integrations/supabase/client";
 
 export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
-  const { isLoading, subscriptionTier } = useAuth();
+  const { isLoading, subscriptionTier, retrySubscriptionCheck } = useAuth();
 
   const handleLogout = async () => {
     try {
+      setIsLoggingOut(true);
+      
       // 1. Unsubscribe from all channels
       const allChannels = supabase.getChannels();
       allChannels.forEach((channel) => {
@@ -23,11 +26,24 @@ export const Navbar = () => {
       // 2. Sign out with Supabase
       await supabase.auth.signOut();
 
-      // 3. Force-remove the local storage token and cookies
-      localStorage.removeItem("sb-tdfqshwqqsdjsicrrajl-auth-token");
-      document.cookie = "sb-tdfqshwqqsdjsicrrajl-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      // 3. Clear storage with retry mechanism for Norton interference
+      const clearStorageWithRetry = () => {
+        localStorage.removeItem("sb-tdfqshwqqsdjsicrrajl-auth-token");
+        // Double-check if token was actually removed
+        if (localStorage.getItem("sb-tdfqshwqqsdjsicrrajl-auth-token")) {
+          localStorage.setItem("sb-tdfqshwqqsdjsicrrajl-auth-token", ""); // Force blank
+          localStorage.removeItem("sb-tdfqshwqqsdjsicrrajl-auth-token"); // Try remove again
+        }
+      };
+      clearStorageWithRetry();
 
-      // 4. Show success toast and redirect
+      // 4. Clear cookies with all possible paths
+      const paths = ['/', '/auth', '/dashboard'];
+      paths.forEach(path => {
+        document.cookie = `sb-tdfqshwqqsdjsicrrajl-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path};`;
+      });
+
+      // 5. Show success toast and redirect
       toast({
         title: "Logged out successfully",
         description: "You have been logged out of your account.",
@@ -37,9 +53,12 @@ export const Navbar = () => {
       console.error("Logout error:", error);
       toast({
         title: "Error logging out",
-        description: "There was a problem logging out. Please try again.",
+        description: "There was a problem logging out. Please try again or refresh the page.",
         variant: "destructive",
+        action: <button onClick={() => window.location.reload()}>Refresh Page</button>,
       });
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -72,11 +91,14 @@ export const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-8">
-            {isLoading ? (
+            {isLoading || isLoggingOut ? (
               <Loader2 className="h-5 w-5 animate-spin text-primary" />
             ) : (
-              <Button onClick={handleLogout}>
-                Log out
+              <Button 
+                onClick={handleLogout}
+                disabled={isLoggingOut}
+              >
+                {isLoggingOut ? "Logging out..." : "Log out"}
               </Button>
             )}
           </div>
@@ -103,11 +125,15 @@ export const Navbar = () => {
                 </span>
               </div>
               <div className="flex flex-col space-y-2 px-4">
-                {isLoading ? (
+                {isLoading || isLoggingOut ? (
                   <Loader2 className="h-5 w-5 animate-spin text-primary mx-auto" />
                 ) : (
-                  <Button onClick={handleLogout} className="w-full">
-                    Log out
+                  <Button 
+                    onClick={handleLogout} 
+                    className="w-full"
+                    disabled={isLoggingOut}
+                  >
+                    {isLoggingOut ? "Logging out..." : "Log out"}
                   </Button>
                 )}
               </div>

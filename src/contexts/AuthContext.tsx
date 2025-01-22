@@ -11,6 +11,7 @@ interface AuthState {
   isSubscriptionLoading: boolean;
   subscriptionError: string | null;
   checkSubscription: () => Promise<void>;
+  retrySubscriptionCheck: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
@@ -21,7 +22,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("free");
   const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState(0);
   const navigate = useNavigate();
+
+  const cleanupAuthResources = () => {
+    try {
+      // Clean up all realtime subscriptions
+      const allChannels = supabase.getChannels();
+      allChannels.forEach((channel) => {
+        supabase.removeChannel(channel);
+      });
+
+      // Clear local storage with retry mechanism
+      const clearStorageWithRetry = () => {
+        localStorage.removeItem("sb-tdfqshwqqsdjsicrrajl-auth-token");
+        // Double-check if token was actually removed (Norton interference check)
+        if (localStorage.getItem("sb-tdfqshwqqsdjsicrrajl-auth-token")) {
+          localStorage.setItem("sb-tdfqshwqqsdjsicrrajl-auth-token", ""); // Force blank
+          localStorage.removeItem("sb-tdfqshwqqsdjsicrrajl-auth-token"); // Try remove again
+        }
+      };
+      clearStorageWithRetry();
+      
+      // Clear cookies with all possible paths
+      const paths = ['/', '/auth', '/dashboard'];
+      paths.forEach(path => {
+        document.cookie = `sb-tdfqshwqqsdjsicrrajl-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=${path};`;
+      });
+      
+      // Reset all state
+      setSubscriptionTier("free");
+      setIsAuthenticated(false);
+      setSubscriptionError(null);
+      setRetryCount(0);
+    } catch (error) {
+      console.error("Error during cleanup:", error);
+      toast({
+        title: "Cleanup Error",
+        description: "There was an issue cleaning up your session. Please refresh the page.",
+        variant: "destructive",
+      });
+    }
+  };
 
   const checkSubscription = async () => {
     try {
@@ -43,12 +85,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (error) {
         console.error("Error checking subscription:", error);
         setSubscriptionError("Failed to check subscription status");
-        toast({
-          title: "Error",
-          description: "Failed to check subscription status. Using free tier as fallback.",
-          variant: "destructive",
-        });
         setSubscriptionTier("free");
+        toast({
+          title: "Subscription Check Failed",
+          description: "Using free tier as fallback. Click to retry.",
+          variant: "destructive",
+          action: <button onClick={retrySubscriptionCheck}>Retry</button>,
+        });
         return;
       }
 
@@ -61,53 +104,50 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         title: "Error",
         description: "An unexpected error occurred. Using free tier as fallback.",
         variant: "destructive",
+        action: <button onClick={retrySubscriptionCheck}>Retry</button>,
       });
     } finally {
       setIsSubscriptionLoading(false);
     }
   };
 
-  const cleanupAuthResources = () => {
-    // Clean up all realtime subscriptions
-    const allChannels = supabase.getChannels();
-    allChannels.forEach((channel) => {
-      supabase.removeChannel(channel);
-    });
-
-    // Clear local storage and cookies
-    localStorage.removeItem("sb-tdfqshwqqsdjsicrrajl-auth-token");
-    document.cookie = "sb-tdfqshwqqsdjsicrrajl-auth-token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-    
-    // Reset all state
-    setSubscriptionTier("free");
-    setIsAuthenticated(false);
-    setSubscriptionError(null);
+  const retrySubscriptionCheck = async () => {
+    if (retryCount >= 3) {
+      toast({
+        title: "Too Many Retries",
+        description: "Please refresh the page or contact support if the issue persists.",
+        variant: "destructive",
+      });
+      return;
+    }
+    setRetryCount(prev => prev + 1);
+    await checkSubscription();
   };
 
   useEffect(() => {
     let mounted = true;
+    let authSubscription: { unsubscribe: () => void } | null = null;
+    let subscriptionChannel: ReturnType<typeof supabase.channel> | null = null;
 
     const initializeAuth = async () => {
       try {
+        setIsLoading(true);
         const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
           console.error("Session error:", error);
           toast({
             title: "Authentication Error",
             description: "There was a problem checking your session. Please try signing in again.",
             variant: "destructive",
+            action: <button onClick={() => navigate("/auth")}>Sign In</button>,
           });
         }
         
         if (mounted) {
           setIsAuthenticated(!!session);
           if (session) {
-            try {
-              await checkSubscription();
-            } catch (err) {
-              console.error("checkSubscription error:", err);
-              setSubscriptionTier("free");
-            }
+            await checkSubscription();
           }
         }
       } catch (err) {
@@ -117,6 +157,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             title: "Error",
             description: "There was a problem initializing the application. Please refresh the page.",
             variant: "destructive",
+            action: <button onClick={() => window.location.reload()}>Refresh</button>,
           });
         }
       } finally {
@@ -126,34 +167,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
+    // Initialize auth and set up listeners
     initializeAuth();
 
-    // Listen for auth changes
-    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!mounted) return;
+    // Set up auth state change listener
+    authSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (!mounted) return;
 
-        setIsAuthenticated(!!session);
-        
-        if (event === "SIGNED_IN" && session) {
-          try {
-            await checkSubscription();
-            navigate("/dashboard");
-          } catch (error) {
-            console.error("Error during sign in:", error);
-            setSubscriptionTier("free");
-          } finally {
-            setIsLoading(false);
-          }
-        } else if (event === "SIGNED_OUT") {
-          cleanupAuthResources();
-          navigate("/auth");
+      setIsAuthenticated(!!session);
+      
+      if (event === "SIGNED_IN" && session) {
+        try {
+          await checkSubscription();
+          navigate("/dashboard");
+        } catch (error) {
+          console.error("Error during sign in:", error);
+          setSubscriptionTier("free");
+        } finally {
+          setIsLoading(false);
         }
+      } else if (event === "SIGNED_OUT") {
+        cleanupAuthResources();
+        navigate("/auth");
       }
-    );
+    });
 
-    // Listen for real-time subscription updates
-    const subscriptionChannel = supabase
+    // Set up subscription update listener
+    subscriptionChannel = supabase
       .channel('public:users')
       .on(
         'postgres_changes',
@@ -180,8 +220,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Cleanup function
     return () => {
       mounted = false;
-      authSubscription.unsubscribe();
-      supabase.removeChannel(subscriptionChannel);
+      if (authSubscription) {
+        authSubscription.unsubscribe();
+      }
+      if (subscriptionChannel) {
+        supabase.removeChannel(subscriptionChannel);
+      }
     };
   }, [navigate, subscriptionTier]);
 
@@ -192,6 +236,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     isSubscriptionLoading,
     subscriptionError,
     checkSubscription,
+    retrySubscriptionCheck,
   };
 
   return (
