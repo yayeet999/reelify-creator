@@ -14,7 +14,19 @@ export const Navbar = () => {
 
   const handleLogout = async () => {
     try {
+      // 1. Unsubscribe from all channels
+      const allChannels = supabase.getChannels();
+      allChannels.forEach((channel) => {
+        supabase.removeChannel(channel);
+      });
+
+      // 2. Sign out with Supabase
       await supabase.auth.signOut();
+
+      // 3. Force-remove the local storage token
+      localStorage.removeItem("sb-tdfqshwqqsdjsicrrajl-auth-token");
+
+      // 4. Show success toast and redirect
       toast({
         title: "Logged out successfully",
         description: "You have been logged out of your account.",
