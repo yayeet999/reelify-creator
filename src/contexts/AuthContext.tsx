@@ -48,6 +48,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           description: "Failed to check subscription status. Please try again later.",
           variant: "destructive",
         });
+        // Set to free tier on error as a fallback
+        setSubscriptionTier("free");
         return;
       }
 
@@ -55,6 +57,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } catch (error) {
       console.error("Error in checkSubscription:", error);
       setSubscriptionError("An unexpected error occurred");
+      // Set to free tier on error as a fallback
+      setSubscriptionTier("free");
       toast({
         title: "Error",
         description: "An unexpected error occurred. Please try again later.",
@@ -68,19 +72,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    // Check initial auth state
     const initializeAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Session error:", error);
+          toast({
+            title: "Authentication Error",
+            description: "There was a problem checking your session. Please try signing in again.",
+            variant: "destructive",
+          });
+        }
+        
         if (mounted) {
           setIsAuthenticated(!!session);
           if (session) {
-            await checkSubscription();
+            try {
+              await checkSubscription();
+            } catch (err) {
+              console.error("checkSubscription error:", err);
+              // Error already handled in checkSubscription
+            }
           }
-          setIsLoading(false);
         }
-      } catch (error) {
-        console.error("Error initializing auth:", error);
+      } catch (err) {
+        console.error("Error initializing auth:", err);
+        if (mounted) {
+          toast({
+            title: "Error",
+            description: "There was a problem initializing the application. Please refresh the page.",
+            variant: "destructive",
+          });
+        }
+      } finally {
         if (mounted) {
           setIsLoading(false);
         }
@@ -95,9 +119,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (!mounted) return;
 
         setIsAuthenticated(!!session);
-        if (event === "SIGNED_IN") {
-          await checkSubscription();
-          navigate("/dashboard");
+        
+        if (event === "SIGNED_IN" && session) {
+          try {
+            await checkSubscription();
+            navigate("/dashboard");
+          } catch (error) {
+            console.error("Error during sign in:", error);
+            // Error already handled in checkSubscription
+          }
         } else if (event === "SIGNED_OUT") {
           setSubscriptionTier("free");
           navigate("/auth");
