@@ -17,6 +17,14 @@ import { useSidebar } from "@/components/ui/sidebar";
 import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
 
+interface MenuItem {
+  title: string;
+  icon: React.ElementType;
+  path: string;
+  description: string;
+  isHighlighted?: boolean;
+}
+
 export function DashboardSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,7 +33,7 @@ export function DashboardSidebar() {
   const isMobile = useIsMobile();
 
   const getMenuItems = () => {
-    const baseItems = [
+    const baseItems: MenuItem[] = [
       {
         title: "Create Content",
         icon: FilePlus,
@@ -41,7 +49,7 @@ export function DashboardSidebar() {
       },
     ];
 
-    const starterItems = [
+    const starterItems: MenuItem[] = [
       {
         title: "Generate Hooks",
         icon: Code,
