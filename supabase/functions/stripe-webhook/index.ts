@@ -72,8 +72,7 @@ serve(async (req) => {
 
         console.log('Updating to tier:', tier, 'for user:', userId)
 
-        // Update subscription record with metadata
-        const { error: subscriptionError } = await supabase
+        const { error: userError } = await supabase
           .from('users')
           .upsert({
             id: userId,
@@ -87,9 +86,9 @@ serve(async (req) => {
             subscription_tier: tier
           })
 
-        if (subscriptionError) {
-          console.error('Subscription update failed:', subscriptionError)
-          throw subscriptionError
+        if (userError) {
+          console.error('User update failed:', userError)
+          throw userError
         }
 
         console.log('Successfully updated subscription')
@@ -100,7 +99,6 @@ serve(async (req) => {
         const subscription = event.data.object
         console.log('Processing subscription update:', subscription.id)
 
-        // First, try to find the customer's user_id through the subscriptions table
         const { data: existingUser, error: fetchError } = await supabase
           .from('users')
           .select('id')
@@ -126,7 +124,6 @@ serve(async (req) => {
             tier = 'enterprise'
           }
 
-          // Find user by customer ID
           const { data: customerUser } = await supabase
             .from('users')
             .select('id')
@@ -138,7 +135,6 @@ serve(async (req) => {
             throw new Error('User not found')
           }
 
-          // Update user record with subscription data
           const { error: updateError } = await supabase
             .from('users')
             .update({
@@ -159,7 +155,6 @@ serve(async (req) => {
 
           console.log('Successfully updated user subscription data')
         } else {
-          // Update existing user's subscription data
           const { error: updateError } = await supabase
             .from('users')
             .update({
@@ -175,7 +170,6 @@ serve(async (req) => {
             throw updateError
           }
 
-          // If subscription is canceled or deleted, revert to free tier
           if (subscription.status === 'canceled' || subscription.status === 'unpaid') {
             const { error: tierError } = await supabase
               .from('users')
