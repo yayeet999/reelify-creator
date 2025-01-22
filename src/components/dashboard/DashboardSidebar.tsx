@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { FilePlus, Home, ChevronLeft } from "lucide-react";
+import { FilePlus, Home, ChevronLeft, Code, Bookmark, Video, Film } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -14,29 +14,66 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useAuth } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-const menuItems = [
-  {
-    title: "Create Content",
-    icon: FilePlus,
-    path: "/free/create",
-    description: "Create new content",
-    isHighlighted: true,
-  },
-  {
-    title: "Home",
-    icon: Home,
-    path: "/free/dashboard",
-    description: "Overview and quick actions",
-  },
-];
 
 export function DashboardSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
   const { toggleSidebar, state } = useSidebar();
+  const { subscriptionTier } = useAuth();
   const isMobile = useIsMobile();
+
+  const getMenuItems = () => {
+    const baseItems = [
+      {
+        title: "Create Content",
+        icon: FilePlus,
+        path: "/dashboard/create",
+        description: "Create new content",
+        isHighlighted: true,
+      },
+      {
+        title: "Home",
+        icon: Home,
+        path: "/dashboard",
+        description: "Overview and quick actions",
+      },
+    ];
+
+    const starterItems = [
+      {
+        title: "Generate Hooks",
+        icon: Code,
+        path: "/dashboard/hooks",
+        description: "Generate custom React hooks",
+      },
+      {
+        title: "Saved Hooks",
+        icon: Bookmark,
+        path: "/dashboard/saved-hooks",
+        description: "View your saved hooks",
+      },
+      {
+        title: "Green Screenify",
+        icon: Video,
+        path: "/dashboard/green-screenify",
+        description: "Create videos with custom backgrounds",
+      },
+      {
+        title: "Video Editor",
+        icon: Film,
+        path: "/dashboard/video-editor",
+        description: "Edit and customize videos",
+      },
+    ];
+
+    if (subscriptionTier === "free") {
+      return baseItems;
+    }
+
+    return [...baseItems, ...starterItems];
+  };
 
   const isActiveRoute = (path: string) => {
     return location.pathname === path;
@@ -48,10 +85,15 @@ export function DashboardSidebar() {
         <SidebarGroup>
           <SidebarGroupLabel className="px-2 text-lg font-semibold text-primary">
             Dashboard
+            {subscriptionTier !== "free" && (
+              <span className="ml-2 text-sm font-normal text-muted-foreground">
+                ({subscriptionTier})
+              </span>
+            )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu className="space-y-1.5 pt-10">
-              {menuItems.map((item) => (
+              {getMenuItems().map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     onClick={() => navigate(item.path)}
