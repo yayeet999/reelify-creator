@@ -1,7 +1,11 @@
 import { useNavigate } from "react-router-dom";
-import { Code, FilePlus, Video, Film } from "lucide-react";
+import { Code, FilePlus, Video, Film, Plus } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 import { useAuth } from "@/contexts/AuthContext";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { FEATURES } from "@/config/features";
+import { FeatureGate } from "@/components/FeatureGate";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -14,6 +18,7 @@ const Dashboard = () => {
         description: "Start creating your first piece of content",
         icon: <FilePlus className="w-5 h-5" />,
         path: "/dashboard/create",
+        feature: FEATURES.CONTENT_CREATION,
       },
     ];
 
@@ -23,22 +28,25 @@ const Dashboard = () => {
         description: "Create custom React hooks for your projects",
         icon: <Code className="w-5 h-5" />,
         path: "/dashboard/hooks",
+        feature: FEATURES.HOOKS_GENERATOR,
       },
       {
         title: "Green Screenify",
         description: "Create videos with custom backgrounds",
         icon: <Video className="w-5 h-5" />,
         path: "/dashboard/green-screenify",
+        feature: FEATURES.GREEN_SCREENIFY,
       },
       {
         title: "Video Editor",
         description: "Edit and customize videos",
         icon: <Film className="w-5 h-5" />,
         path: "/dashboard/video-editor",
+        feature: FEATURES.VIDEO_EDITOR,
       },
     ];
 
-    return subscriptionTier === "free" ? baseOptions : [...baseOptions, ...starterOptions];
+    return [...baseOptions, ...starterOptions];
   };
 
   return (
@@ -50,7 +58,7 @@ const Dashboard = () => {
             <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary to-secondary-light bg-clip-text text-transparent">
               Dashboard
               {subscriptionTier !== "free" && (
-                <span className="text-2xl text-primary ml-2">
+                <span className="text-2xl text-primary ml-2 capitalize">
                   ({subscriptionTier})
                 </span>
               )}
@@ -64,13 +72,33 @@ const Dashboard = () => {
         {/* Quick Start Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {getQuickStartOptions().map((option) => (
-            <QuickStartCard
+            <FeatureGate
               key={option.title}
-              title={option.title}
-              description={option.description}
-              icon={option.icon}
-              onClick={() => navigate(option.path)}
-            />
+              requiredTier={option.feature.requiredTier}
+              fallback={
+                <QuickStartCard
+                  title={option.title}
+                  description={option.description}
+                  icon={option.icon}
+                  onClick={() => navigate("/pricing")}
+                  overlay={
+                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+                      <Button variant="secondary" className="gap-2">
+                        <Plus className="w-4 h-4" />
+                        Upgrade to Access
+                      </Button>
+                    </div>
+                  }
+                />
+              }
+            >
+              <QuickStartCard
+                title={option.title}
+                description={option.description}
+                icon={option.icon}
+                onClick={() => navigate(option.path)}
+              />
+            </FeatureGate>
           ))}
         </div>
 
@@ -95,6 +123,21 @@ const Dashboard = () => {
             </p>
           </div>
         </div>
+
+        {subscriptionTier === "free" && (
+          <Alert>
+            <AlertDescription>
+              Upgrade your subscription to access more features and capabilities.
+              <Button
+                variant="link"
+                className="ml-2 text-primary"
+                onClick={() => navigate("/pricing")}
+              >
+                View Plans
+              </Button>
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
     </div>
   );
