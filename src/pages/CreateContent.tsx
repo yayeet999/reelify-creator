@@ -1,15 +1,15 @@
-import { FileText, Video, Code, Film, Lock } from "lucide-react";
+import { FileText, Video, Code, Film, Lock, Loader2 } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 import { useNavigate } from "react-router-dom";
 import { FeatureGate } from "@/components/FeatureGate";
 import { FEATURES } from "@/config/features";
 import { useSubscriptionTier } from "@/hooks/useSubscriptionTier";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 
 const CreateContent = () => {
   const navigate = useNavigate();
-  const { currentTier } = useSubscriptionTier();
+  const { currentTier, isSubscriptionLoading } = useSubscriptionTier();
 
   const contentOptions = [
     {
@@ -42,6 +42,14 @@ const CreateContent = () => {
     },
   ];
 
+  if (isSubscriptionLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
       <div className="space-y-8">
@@ -56,8 +64,16 @@ const CreateContent = () => {
             </p>
             {currentTier === 'free' && (
               <Alert className="mt-4 bg-primary/5 border-primary/10">
+                <AlertTitle className="text-primary">Free Plan</AlertTitle>
                 <AlertDescription>
                   Some features require a paid subscription. Upgrade to access all features.
+                  <Button
+                    variant="link"
+                    className="ml-2 text-primary"
+                    onClick={() => navigate("/pricing")}
+                  >
+                    View Plans
+                  </Button>
                 </AlertDescription>
               </Alert>
             )}
