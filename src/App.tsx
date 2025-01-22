@@ -42,38 +42,10 @@ function App() {
             >
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/dashboard/create" element={<CreateContent />} />
-              <Route
-                path="/dashboard/hooks"
-                element={
-                  <SubscriptionGuard requiredTier="starter">
-                    <GenerateHooks />
-                  </SubscriptionGuard>
-                }
-              />
-              <Route
-                path="/dashboard/saved-hooks"
-                element={
-                  <SubscriptionGuard requiredTier="starter">
-                    <SavedHooks />
-                  </SubscriptionGuard>
-                }
-              />
-              <Route
-                path="/dashboard/green-screenify"
-                element={
-                  <SubscriptionGuard requiredTier="starter">
-                    <GreenScreenify />
-                  </SubscriptionGuard>
-                }
-              />
-              <Route
-                path="/dashboard/video-editor"
-                element={
-                  <SubscriptionGuard requiredTier="starter">
-                    <VideoEditor />
-                  </SubscriptionGuard>
-                }
-              />
+              <Route path="/dashboard/hooks" element={<GenerateHooks />} />
+              <Route path="/dashboard/saved-hooks" element={<SavedHooks />} />
+              <Route path="/dashboard/green-screenify" element={<GreenScreenify />} />
+              <Route path="/dashboard/video-editor" element={<VideoEditor />} />
             </Route>
           </Routes>
           <Toaster />

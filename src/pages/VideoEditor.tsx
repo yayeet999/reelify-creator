@@ -1,15 +1,19 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { VideoThumbnailGrid } from "@/components/video-editor/VideoThumbnailGrid";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
 import { TextPositionSelector } from "@/components/video-editor/TextPositionSelector";
 import { TextAnimationSelector } from "@/components/video-editor/TextAnimationSelector";
+import { TextPresets } from "@/components/video-editor/TextPresets";
+import { ColorPicker } from "@/components/video-editor/ColorPicker";
 import { DownloadButton } from "@/components/video-editor/DownloadButton";
 import { VideoUpload } from "@/components/video-editor/VideoUpload";
+import { TimelineControl } from "@/components/video-editor/TimelineControl";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Sparkles } from "lucide-react";
+import { useSubscriptionTier } from "@/hooks/useSubscriptionTier";
 
 const VideoEditor = () => {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>();
@@ -17,9 +21,14 @@ const VideoEditor = () => {
   const [textAnimation, setTextAnimation] = useState<"none" | "fade" | "slide" | "scale">("none");
   const [text, setText] = useState<string>("");
   const [textColor, setTextColor] = useState<string>("#FFFFFF");
+  const [backgroundColor, setBackgroundColor] = useState<string>("#000000E6");
   const [textSize, setTextSize] = useState<number>(32);
   const [isTemplateSelected, setIsTemplateSelected] = useState(false);
   const [uploadedVideo, setUploadedVideo] = useState<File | null>(null);
+  const [startTime, setStartTime] = useState(0);
+  const [duration, setDuration] = useState(30);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const { currentTier } = useSubscriptionTier();
 
   const handleProceedWithTemplate = () => {
     setIsTemplateSelected(true);
@@ -32,6 +41,11 @@ const VideoEditor = () => {
 
   const handleVideoUpload = (file: File) => {
     setUploadedVideo(file);
+  };
+
+  const handlePresetSelect = (textColor: string, bgColor: string) => {
+    setTextColor(textColor);
+    setBackgroundColor(bgColor);
   };
 
   return (
@@ -102,13 +116,18 @@ const VideoEditor = () => {
 
                 <div>
                   <Label className="block text-sm font-medium mb-2">
+                    Text Presets
+                  </Label>
+                  <TextPresets onSelect={handlePresetSelect} />
+                </div>
+
+                <div>
+                  <Label className="block text-sm font-medium mb-2">
                     Text Color
                   </Label>
-                  <Input
-                    type="color"
-                    value={textColor}
-                    onChange={(e) => setTextColor(e.target.value)}
-                    className="w-full h-10"
+                  <ColorPicker
+                    color={textColor}
+                    onChange={setTextColor}
                   />
                 </div>
 
@@ -145,6 +164,22 @@ const VideoEditor = () => {
                     onChange={setTextAnimation}
                   />
                 </div>
+
+                {currentTier !== 'free' && (
+                  <div>
+                    <Label className="block text-sm font-medium mb-2">
+                      Timeline Control
+                    </Label>
+                    <TimelineControl
+                      videoRef={videoRef}
+                      startTime={startTime}
+                      duration={duration}
+                      videoDuration={30}
+                      onStartTimeChange={setStartTime}
+                      onDurationChange={setDuration}
+                    />
+                  </div>
+                )}
               </div>
             </Card>
           </div>
@@ -157,6 +192,7 @@ const VideoEditor = () => {
               </h2>
               <div className="space-y-6">
                 <VideoPreview
+                  videoRef={videoRef}
                   videoUrl={selectedVideoUrl || ""}
                   text={text}
                   textColor={textColor}
@@ -171,8 +207,8 @@ const VideoEditor = () => {
                   textSize={textSize}
                   textPosition={textPosition}
                   animation={textAnimation}
-                  startTime={0}
-                  duration={30}
+                  startTime={startTime}
+                  duration={duration}
                   disabled={!selectedVideoUrl}
                 />
               </div>
