@@ -3,24 +3,10 @@ import { Play } from "lucide-react";
 import { StatsSection } from "@/components/StatsSection";
 import { FeatureGrid } from "@/components/FeatureGrid";
 import { Link } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 export const Hero = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        setIsAuthenticated(!!session);
-      } catch (error) {
-        console.error('Auth check error:', error);
-        setIsAuthenticated(false);
-      }
-    };
-    checkAuth();
-  }, []);
+  const { isAuthenticated } = useAuth();
 
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-white pt-16">
