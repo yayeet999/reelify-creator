@@ -1,13 +1,7 @@
-import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
 import { StatsSection } from "@/components/StatsSection";
 import { FeatureGrid } from "@/components/FeatureGrid";
-import { Link } from "react-router-dom";
-import { useAuth } from "@/contexts/AuthContext";
 
 export const Hero = () => {
-  const { isAuthenticated } = useAuth();
-
   return (
     <div className="relative min-h-screen flex items-center justify-center bg-white pt-16">
       <div className="w-full px-4 max-w-[1920px] mx-auto">
@@ -19,16 +13,6 @@ export const Hero = () => {
           <p className="text-xl text-gray-600 mb-8">
             Transform your content with AI-powered video effects and hooks that capture attention and drive engagement.
           </p>
-          <div className="flex flex-col sm:flex-row justify-center gap-4">
-            {!isAuthenticated && (
-              <Link to="/auth">
-                <Button size="lg" className="group">
-                  Get Started Free
-                  <Play className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </Link>
-            )}
-          </div>
         </div>
         
         {/* Feature Grid */}
