@@ -23,7 +23,7 @@ interface MenuItem {
   path: string;
   description: string;
   isHighlighted?: boolean;
-  requiredTier?: 'free' | 'starter' | 'pro' | 'enterprise';
+  requiredTier?: 'free' | 'starter' | 'pro';
 }
 
 export function DashboardSidebar() {
@@ -83,8 +83,7 @@ export function DashboardSidebar() {
     const tierLevels = {
       'free': 0,
       'starter': 1,
-      'pro': 2,
-      'enterprise': 3
+      'pro': 2
     };
 
     const userTierLevel = tierLevels[subscriptionTier];
@@ -174,4 +173,4 @@ export function DashboardSidebar() {
       <SidebarRail />
     </Sidebar>
   );
-};
+}
