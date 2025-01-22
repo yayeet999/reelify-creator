@@ -6,22 +6,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { VideoPreview } from "@/components/video-editor/VideoPreview";
-import { TextPositionSelector } from "@/components/video-editor/TextPositionSelector";
-import { TextAnimationSelector } from "@/components/video-editor/TextAnimationSelector";
+import { TextPositionSelector, type Position } from "@/components/video-editor/TextPositionSelector";
+import { TextAnimationSelector, type AnimationType } from "@/components/video-editor/TextAnimationSelector";
 import { ColorPicker } from "@/components/video-editor/ColorPicker";
 import { useToast } from "@/components/ui/use-toast";
-import { useNavigate } from "react-router-dom";
 
 export default function GreenScreenify() {
   const [videoUrl, setVideoUrl] = useState("");
   const [text, setText] = useState("");
   const [textColor, setTextColor] = useState("#ffffff");
   const [textSize, setTextSize] = useState(32);
-  const [position, setPosition] = useState("middle");
-  const [animation, setAnimation] = useState("none");
+  const [position, setPosition] = useState<Position>("middle");
+  const [animation, setAnimation] = useState<AnimationType>("none");
   const videoRef = useRef<HTMLVideoElement>(null);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -90,7 +88,6 @@ export default function GreenScreenify() {
               <TextPositionSelector
                 position={position}
                 onChange={setPosition}
-                className="mt-2"
               />
             </div>
 
@@ -99,7 +96,6 @@ export default function GreenScreenify() {
               <TextAnimationSelector
                 animation={animation}
                 onChange={setAnimation}
-                className="mt-2"
               />
             </div>
 
