@@ -103,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .from("users")
           .select("subscription_tier")
           .eq("id", userResponse.data.user.id)
-          .single() as Promise<PostgrestSingleResponse<{ subscription_tier: SubscriptionTier }>>,
+          .single() as unknown as Promise<PostgrestSingleResponse<{ subscription_tier: SubscriptionTier }>>,
         SUBSCRIPTION_TIMEOUT,
         "Subscription data fetch timed out"
       );
@@ -112,12 +112,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         console.error("Error checking subscription:", profileResponse.error);
         setSubscriptionError("Failed to check subscription status");
         setSubscriptionTier("free");
-        toast({
-          title: "Subscription Check Failed",
-          description: "Using free tier as fallback. Click to retry.",
-          variant: "destructive",
-          action: <button onClick={retrySubscriptionCheck}>Retry</button>,
-        });
+        // Only show toast for non-timeout errors
+        if (!profileResponse.error.message.includes("timed out")) {
+          toast({
+            title: "Subscription Check Failed",
+            description: "Using free tier as fallback. Click to retry.",
+            variant: "destructive",
+            action: <button onClick={retrySubscriptionCheck}>Retry</button>,
+          });
+        }
         return;
       }
 
@@ -126,12 +129,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error("Error in checkSubscription:", error);
       setSubscriptionError(error instanceof Error ? error.message : "An unexpected error occurred");
       setSubscriptionTier("free");
-      toast({
-        title: "Error",
-        description: error instanceof Error ? error.message : "An unexpected error occurred. Using free tier as fallback.",
-        variant: "destructive",
-        action: <button onClick={retrySubscriptionCheck}>Retry</button>,
-      });
+      // Only show toast for non-timeout errors
+      if (error instanceof Error && !error.message.includes("timed out")) {
+        toast({
+          title: "Error",
+          description: error.message,
+          variant: "destructive",
+          action: <button onClick={retrySubscriptionCheck}>Retry</button>,
+        });
+      }
     } finally {
       setIsSubscriptionLoading(false);
     }
