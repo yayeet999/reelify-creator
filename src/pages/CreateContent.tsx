@@ -1,7 +1,8 @@
-// Move content from StarterCreateContent.tsx
 import { FileText, Video, Code, Film } from "lucide-react";
 import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
 import { useNavigate } from "react-router-dom";
+import { FeatureGate } from "@/components/FeatureGate";
+import { FEATURES } from "@/config/features";
 
 const CreateContent = () => {
   const navigate = useNavigate();
@@ -12,24 +13,28 @@ const CreateContent = () => {
       description: "Create custom React hooks for your projects",
       icon: <Code className="w-5 h-5" />,
       path: "/dashboard/hooks",
+      feature: FEATURES.HOOKS_GENERATOR,
     },
     {
       title: "Green Screenify",
       description: "Create videos with custom backgrounds",
       icon: <Video className="w-5 h-5" />,
       path: "/dashboard/green-screenify",
+      feature: FEATURES.GREEN_SCREENIFY,
     },
     {
       title: "Video Editor",
       description: "Create and customize video content",
       icon: <Film className="w-5 h-5" />,
       path: "/dashboard/video-editor",
+      feature: FEATURES.VIDEO_EDITOR,
     },
     {
       title: "View Saved Hooks",
       description: "Access your library of saved hooks",
       icon: <FileText className="w-5 h-5" />,
       path: "/dashboard/saved-hooks",
+      feature: FEATURES.HOOKS_GENERATOR,
     },
   ];
 
@@ -51,13 +56,17 @@ const CreateContent = () => {
         {/* Content Options Grid */}
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {contentOptions.map((option) => (
-            <QuickStartCard
+            <FeatureGate
               key={option.title}
-              title={option.title}
-              description={option.description}
-              icon={option.icon}
-              onClick={() => navigate(option.path)}
-            />
+              requiredTier={option.feature.requiredTier}
+            >
+              <QuickStartCard
+                title={option.title}
+                description={option.description}
+                icon={option.icon}
+                onClick={() => navigate(option.path)}
+              />
+            </FeatureGate>
           ))}
         </div>
       </div>
