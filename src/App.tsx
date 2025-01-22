@@ -11,6 +11,7 @@ import StarterGreenScreenify from "./pages/StarterGreenScreenify";
 import StarterSavedHooks from "./pages/StarterSavedHooks";
 import StarterCreateContent from "./pages/StarterCreateContent";
 import StarterVideoEditor from "./pages/StarterVideoEditor";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
@@ -18,20 +19,22 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route element={<StarterDashboardLayout />}>
-            <Route path="/starter-dashboard" element={<StarterDashboard />} />
-            <Route path="/starter/create" element={<StarterCreateContent />} />
-            <Route path="/starter/hooks" element={<StarterGenerateHooks />} />
-            <Route path="/starter/saved-hooks" element={<StarterSavedHooks />} />
-            <Route path="/starter/green-screenify" element={<StarterGreenScreenify />} />
-            <Route path="/starter/video-editor" element={<StarterVideoEditor />} />
-          </Route>
-        </Routes>
-        <Toaster />
+        <AuthProvider>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/settings" element={<Settings />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route element={<StarterDashboardLayout />}>
+              <Route path="/starter-dashboard" element={<StarterDashboard />} />
+              <Route path="/starter/create" element={<StarterCreateContent />} />
+              <Route path="/starter/hooks" element={<StarterGenerateHooks />} />
+              <Route path="/starter/saved-hooks" element={<StarterSavedHooks />} />
+              <Route path="/starter/green-screenify" element={<StarterGreenScreenify />} />
+              <Route path="/starter/video-editor" element={<StarterVideoEditor />} />
+            </Route>
+          </Routes>
+          <Toaster />
+        </AuthProvider>
       </BrowserRouter>
     </QueryClientProvider>
   );

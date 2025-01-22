@@ -1,9 +1,29 @@
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { StarterDashboardSidebar } from "@/components/dashboard/StarterDashboardSidebar";
 import { Navbar } from "@/components/Navbar";
-import { Outlet } from "react-router-dom";
+import { Outlet, Navigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { Loader2 } from "lucide-react";
 
 export function StarterDashboardLayout() {
+  const { isAuthenticated, isLoading, subscriptionTier } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/auth" replace />;
+  }
+
+  if (subscriptionTier === "free") {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <SidebarProvider defaultOpen={true}>
       <div className="min-h-screen flex w-full">
