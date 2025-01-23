@@ -7,9 +7,8 @@ import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 // Enhanced timeout and caching constants
 const AUTH_TIMEOUT = 10000;
-const SUBSCRIPTION_TIMEOUT = 5000;
-const SESSION_CACHE_TTL = 5 * 60 * 1000;
-const SUBSCRIPTION_CHECK_DEBOUNCE = 2000;
+const SUBSCRIPTION_TIMEOUT = 10000;
+const SUBSCRIPTION_CACHE_TTL = 5 * 60 * 1000;
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -38,30 +37,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [subscriptionTier, setSubscriptionTier] = useState<SubscriptionTier>("free");
   const [isSubscriptionLoading, setIsSubscriptionLoading] = useState(false);
   const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
-  const [lastSessionCheck, setLastSessionCheck] = useState(0);
-  const [sessionCache, setSessionCache] = useState<any>(null);
   const [lastSubscriptionCheck, setLastSubscriptionCheck] = useState(0);
+  const [cachedSubscriptionTier, setCachedSubscriptionTier] = useState<SubscriptionTier | null>(null);
   const navigate = useNavigate();
 
   const cleanupAuthResources = useCallback(() => {
     setIsAuthenticated(false);
     setSubscriptionTier("free");
     setSubscriptionError(null);
-    setSessionCache(null);
-    setLastSessionCheck(0);
+    setCachedSubscriptionTier(null);
     setLastSubscriptionCheck(0);
   }, []);
 
   const checkSubscription = useCallback(async () => {
     const now = Date.now();
-    if (now - lastSubscriptionCheck < SUBSCRIPTION_CHECK_DEBOUNCE) {
+    if (cachedSubscriptionTier && (now - lastSubscriptionCheck < SUBSCRIPTION_CACHE_TTL)) {
+      setSubscriptionTier(cachedSubscriptionTier);
       return;
     }
 
     try {
       setIsSubscriptionLoading(true);
       setSubscriptionError(null);
-      setLastSubscriptionCheck(now);
 
       const userResponse = await withTimeout(
         supabase.auth.getUser(),
@@ -70,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       );
 
       if (!userResponse.data.user) {
-        setSubscriptionTier("free");
+        setSubscriptionTier(cachedSubscriptionTier || "free");
         return;
       }
 
@@ -87,54 +84,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (profileResponse.error) {
         console.error("Error checking subscription:", profileResponse.error);
         setSubscriptionError("Failed to check subscription status");
-        setSubscriptionTier("free");
+        setSubscriptionTier(cachedSubscriptionTier || "free");
         return;
       }
 
+      setLastSubscriptionCheck(now);
+      setCachedSubscriptionTier(profileResponse.data.subscription_tier);
       setSubscriptionTier(profileResponse.data.subscription_tier);
     } catch (error) {
       console.error("Error in checkSubscription:", error);
       setSubscriptionError(error instanceof Error ? error.message : "An unexpected error occurred");
-      setSubscriptionTier("free");
+      setSubscriptionTier(cachedSubscriptionTier || "free");
     } finally {
       setIsSubscriptionLoading(false);
     }
-  }, [lastSubscriptionCheck]);
+  }, [cachedSubscriptionTier, lastSubscriptionCheck]);
 
   const retrySubscriptionCheck = useCallback(async () => {
     await checkSubscription();
   }, [checkSubscription]);
 
-  const checkSession = useCallback(async () => {
-    const now = Date.now();
-    if (now - lastSessionCheck < SESSION_CACHE_TTL && sessionCache) {
-      return sessionCache;
-    }
-
-    try {
-      const sessionResponse = await withTimeout(
-        supabase.auth.getSession(),
-        AUTH_TIMEOUT,
-        "Auth session check timed out"
-      );
-      
-      setSessionCache(sessionResponse.data.session);
-      setLastSessionCheck(now);
-      return sessionResponse.data.session;
-    } catch (error) {
-      console.error("Session check error:", error);
-      return null;
-    }
-  }, [lastSessionCheck, sessionCache]);
-
   useEffect(() => {
     let mounted = true;
-    let authSubscription: { unsubscribe: () => void } | null = null;
 
     const initializeAuth = async () => {
       try {
         setIsLoading(true);
-        const session = await checkSession();
+        const { data: { session } } = await supabase.auth.getSession();
         
         if (mounted) {
           setIsAuthenticated(!!session);
@@ -172,16 +148,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     });
 
-    authSubscription = subscription;
     initializeAuth();
 
     return () => {
       mounted = false;
-      if (authSubscription) {
-        authSubscription.unsubscribe();
-      }
+      subscription.unsubscribe();
     };
-  }, [navigate, checkSubscription, cleanupAuthResources, checkSession]);
+  }, [navigate, checkSubscription, cleanupAuthResources]);
 
   const value: AuthState = {
     isAuthenticated,
