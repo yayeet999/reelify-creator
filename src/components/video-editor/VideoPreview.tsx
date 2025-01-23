@@ -29,9 +29,10 @@ export const VideoPreview = ({
   // Enhanced video control effect
   useEffect(() => {
     const videoElement = videoRef.current;
-    if (videoElement) {
+    if (videoElement && videoUrl) {
       // Reset video and play
       videoElement.currentTime = 0;
+      videoElement.loop = true;  // Ensure looping is enabled
       
       // Track loading state
       setIsLoading(true);
@@ -39,9 +40,22 @@ export const VideoPreview = ({
       // Ensure video plays and loops
       const playVideo = async () => {
         try {
+          // Set playback attributes
+          videoElement.muted = true;  // Required for autoplay
+          videoElement.playsInline = true;  // Better mobile support
           await videoElement.play();
         } catch (error) {
-          console.log("Video autoplay failed:", error);
+          console.error("Video autoplay failed:", error);
+          // Retry play on user interaction
+          const playOnInteraction = async () => {
+            try {
+              await videoElement.play();
+              document.removeEventListener('click', playOnInteraction);
+            } catch (e) {
+              console.error("Retry play failed:", e);
+            }
+          };
+          document.addEventListener('click', playOnInteraction);
         }
       };
       
@@ -51,7 +65,7 @@ export const VideoPreview = ({
 
   // Update previous video URL after transition
   useEffect(() => {
-    if (!isLoading) {
+    if (!isLoading && videoUrl) {  // Only update if we have a URL
       setPrevVideoUrl(videoUrl);
     }
   }, [isLoading, videoUrl]);
@@ -73,6 +87,10 @@ export const VideoPreview = ({
         return "opacity-100";
       case "fade":
         return "animate-fade-in";
+      case "slide":
+        return "animate-slide-up";
+      case "scale":
+        return "animate-scale-in";
     }
   };
 
@@ -81,6 +99,30 @@ export const VideoPreview = ({
 
   return (
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
+      <style>{`
+        .animate-fade-in {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+        .animate-slide-up {
+          animation: slideUp 0.5s ease-out forwards;
+        }
+        .animate-scale-in {
+          animation: scaleIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        @keyframes slideUp {
+          from { transform: translateY(20px); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes scaleIn {
+          from { transform: scale(0.8); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
+
       {/* Previous video for transition */}
       {prevVideoUrl !== videoUrl && (
         <video 

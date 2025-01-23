@@ -9,7 +9,6 @@ interface TimelineControlProps {
   videoDuration: number;
   onStartTimeChange: (value: number) => void;
   onDurationChange: (value: number) => void;
-  onTimeUpdate?: (time: number) => void;
 }
 
 export const TimelineControl = ({
@@ -19,9 +18,9 @@ export const TimelineControl = ({
   videoDuration,
   onStartTimeChange,
   onDurationChange,
-  onTimeUpdate,
 }: TimelineControlProps) => {
   const [currentTime, setCurrentTime] = useState(0);
+  const [actualDuration, setActualDuration] = useState(videoDuration);
   const isSeekingRef = useRef(false);
 
   useEffect(() => {
@@ -31,18 +30,13 @@ export const TimelineControl = ({
     const handleTimeUpdate = () => {
       if (!isSeekingRef.current) {
         setCurrentTime(video.currentTime);
-        if (onTimeUpdate) {
-          onTimeUpdate(video.currentTime);
-        }
       }
     };
 
     const handleLoadedMetadata = () => {
-      // Set initial time to 0 when video loads
       setCurrentTime(0);
-      if (onTimeUpdate) {
-        onTimeUpdate(0);
-      }
+      setActualDuration(video.duration || videoDuration);
+      video.currentTime = startTime;
     };
 
     video.addEventListener('timeupdate', handleTimeUpdate);
@@ -52,19 +46,37 @@ export const TimelineControl = ({
       video.removeEventListener('timeupdate', handleTimeUpdate);
       video.removeEventListener('loadedmetadata', handleLoadedMetadata);
     };
-  }, [videoRef, onTimeUpdate]);
+  }, [videoRef, startTime, videoDuration]);
 
-  const handleSliderChange = (values: number[]) => {
+  // Update video position when startTime changes
+  useEffect(() => {
+    const video = videoRef.current;
+    if (video) {
+      video.currentTime = startTime;
+    }
+  }, [startTime, videoRef]);
+
+  const handleTimelineChange = (values: number[]) => {
     const time = values[0];
     if (videoRef.current) {
       isSeekingRef.current = true;
       videoRef.current.currentTime = time;
       setCurrentTime(time);
-      if (onTimeUpdate) {
-        onTimeUpdate(time);
-      }
       isSeekingRef.current = false;
     }
+  };
+
+  const handleStartTimeChange = (values: number[]) => {
+    const newStartTime = values[0];
+    onStartTimeChange(newStartTime);
+    if (videoRef.current) {
+      videoRef.current.currentTime = newStartTime;
+    }
+  };
+
+  const handleDurationChange = (values: number[]) => {
+    const newDuration = values[0];
+    onDurationChange(newDuration);
   };
 
   const formatTime = (seconds: number) => {
@@ -74,43 +86,45 @@ export const TimelineControl = ({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Current Time Display */}
+    <div className="space-y-4">
+      {/* Main Timeline */}
       <div className="space-y-2">
         <div className="flex justify-between text-sm text-muted-foreground">
           <span>{formatTime(currentTime)}</span>
-          <span>{formatTime(videoDuration)}</span>
+          <span>{formatTime(actualDuration)}</span>
         </div>
         <Slider
           value={[currentTime]}
-          max={videoDuration}
+          max={actualDuration}
           step={0.1}
-          onValueChange={handleSliderChange}
+          onValueChange={handleTimelineChange}
           className="w-full"
         />
       </div>
 
-      {/* Start Time Control */}
-      <div className="space-y-2">
-        <Label>Start Time: {startTime.toFixed(1)}s</Label>
-        <Slider
-          value={[startTime]}
-          onValueChange={([value]) => onStartTimeChange(value)}
-          max={videoDuration - duration}
-          step={0.1}
-        />
-      </div>
-
-      {/* Duration Control */}
-      <div className="space-y-2">
-        <Label>Duration: {duration.toFixed(1)}s</Label>
-        <Slider
-          value={[duration]}
-          onValueChange={([value]) => onDurationChange(value)}
-          min={0.5}
-          max={videoDuration - startTime}
-          step={0.1}
-        />
+      {/* Start Time and Duration Controls */}
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label className="text-xs">Start Time: {formatTime(startTime)}</Label>
+          <Slider
+            value={[startTime]}
+            onValueChange={handleStartTimeChange}
+            max={actualDuration - duration}
+            step={0.1}
+            className="w-full"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label className="text-xs">Duration: {formatTime(duration)}</Label>
+          <Slider
+            value={[duration]}
+            onValueChange={handleDurationChange}
+            min={1}
+            max={Math.min(30, actualDuration - startTime)}
+            step={0.1}
+            className="w-full"
+          />
+        </div>
       </div>
     </div>
   );

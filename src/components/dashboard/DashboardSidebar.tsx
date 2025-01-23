@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { FilePlus, Home, ChevronLeft, Code, Bookmark, Video, Film } from "lucide-react";
+import { Home, ChevronLeft, Code, Bookmark, Video, Film } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -34,14 +34,6 @@ export function DashboardSidebar() {
   const isMobile = useIsMobile();
 
   const menuItems: MenuItem[] = [
-    {
-      title: "Create Content",
-      icon: FilePlus,
-      path: "/dashboard/create",
-      description: "Create new content",
-      isHighlighted: true,
-      requiredTier: 'free'
-    },
     {
       title: "Home",
       icon: Home,
@@ -111,7 +103,7 @@ export function DashboardSidebar() {
             )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="space-y-1.5 pt-10">
+            <SidebarMenu className="space-y-2.5 pt-16">
               {getAccessibleMenuItems().map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
@@ -119,7 +111,7 @@ export function DashboardSidebar() {
                     tooltip={item.description}
                     isActive={isActiveRoute(item.path)}
                     className={cn(
-                      "group flex items-center gap-3 rounded-lg px-3 py-3 text-[15px] font-medium transition-all duration-200",
+                      "group flex items-center gap-4 rounded-lg px-4 py-3.5 text-base font-medium transition-all duration-200",
                       item.isHighlighted
                         ? cn(
                             "bg-primary text-white hover:bg-primary/90",
@@ -129,17 +121,19 @@ export function DashboardSidebar() {
                         : isActiveRoute(item.path)
                         ? "bg-primary/10 text-primary justify-start"
                         : "hover:bg-primary/10 hover:text-primary justify-start",
-                      state === "collapsed" && !item.isHighlighted && "justify-center"
+                      state === "collapsed" && !item.isHighlighted && "justify-center",
+                      "md:text-[16px]"
                     )}
                   >
                     <item.icon 
                       className={cn(
-                        "h-5 w-5 shrink-0 transition-colors",
+                        "h-[22px] w-[22px] shrink-0 transition-colors",
                         item.isHighlighted
                           ? "text-white"
                           : isActiveRoute(item.path)
                           ? "text-primary"
-                          : "text-muted-foreground group-hover:text-primary"
+                          : "text-muted-foreground group-hover:text-primary",
+                        "md:h-6 md:w-6"
                       )} 
                     />
                     <span 

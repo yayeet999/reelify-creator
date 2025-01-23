@@ -14,9 +14,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { thumbnails, beautyThumbnails, lifestyleThumbnails, customThumbnails } from "@/components/video-editor/data/thumbnailData";
+import { Slider } from "@/components/ui/slider";
 
 const VideoEditor = () => {
-  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>();
+  const defaultVideo = thumbnails[0]?.videoUrl;
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>(defaultVideo);
   const [textPosition, setTextPosition] = useState<"top" | "middle" | "bottom">("middle");
   const [textAnimation, setTextAnimation] = useState<"none" | "fade" | "slide" | "scale">("none");
   const [text, setText] = useState<string>("");
@@ -49,135 +52,225 @@ const VideoEditor = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
-      <div className="space-y-8">
-        {/* Header Section */}
-        <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-8 border border-primary/20">
-          <div className="flex items-center gap-3 mb-3">
-            <h1 className="text-4xl font-bold tracking-tight text-primary">
+    <div className="container mx-auto px-4 py-6 max-w-6xl animate-fade-up">
+      <div className="space-y-6">
+        {/* Header Section - More Compact */}
+        <div className="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-6 border border-primary/20">
+          <div className="flex items-center gap-3 mb-2">
+            <h1 className="text-3xl font-bold tracking-tight text-primary">
               Video Editor
             </h1>
           </div>
-          <p className="text-lg text-muted-foreground">
+          <p className="text-base text-muted-foreground">
             Create stunning videos by selecting templates and customizing them with your text
           </p>
         </div>
 
-        {isTemplateSelected && (
-          <Button
-            variant="outline"
-            onClick={handleGoBackToTemplates}
-            className="flex items-center gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Templates
-          </Button>
-        )}
+        <div className="grid gap-6 lg:grid-cols-12">
+          {/* Left Side - Preview Area (Smaller) */}
+          <div className="lg:col-span-5 space-y-6">
+            <Card className="p-6 shadow-sm bg-slate-50">
+              <div className="relative w-full">
+                <div className="absolute inset-0 bg-gradient-to-b from-slate-100/50 to-slate-100/30 rounded-lg" />
+                <div className="relative mx-auto w-full max-w-[280px]">
+                  <div className="aspect-[9/16] relative rounded-lg overflow-hidden ring-1 ring-black/5">
+                    {isTemplateSelected ? (
+                      <CombinedVideoPreview
+                        templateVideoUrl={selectedVideoUrl}
+                        uploadedVideoUrl={uploadedVideoUrl}
+                        text={text}
+                        textColor={textColor}
+                        textSize={textSize}
+                        position={textPosition}
+                        animation={textAnimation}
+                      />
+                    ) : (
+                      <VideoPreview
+                        videoRef={videoRef}
+                        videoUrl={selectedVideoUrl || ""}
+                        text={text}
+                        textColor={textColor}
+                        textSize={textSize}
+                        position={textPosition}
+                        animation={textAnimation}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Card>
 
-        <div className="grid gap-8 lg:grid-cols-12">
-          {/* Left Column */}
-          <div className="space-y-8 lg:col-span-8">
-            {!isTemplateSelected ? (
-              <Card className="p-6 shadow-md">
-                <h2 className="text-2xl font-semibold mb-4 flex items-center gap-2">
-                  1. Select Template Video
-                </h2>
-                <VideoThumbnailGrid 
-                  currentVideoUrl={selectedVideoUrl}
-                  onVideoSelect={setSelectedVideoUrl}
-                />
-                {selectedVideoUrl && (
-                  <Button
-                    className="w-full mt-4 bg-primary hover:bg-primary/90"
-                    size="lg"
-                    onClick={handleProceedWithTemplate}
-                  >
-                    <ArrowRight className="mr-2 h-4 w-4" />
-                    Proceed with Template
-                  </Button>
-                )}
-              </Card>
-            ) : (
-              <Card className="p-6 shadow-md">
-                <h2 className="text-2xl font-semibold mb-4">2. Upload Your Video</h2>
+            {/* Upload Section - Below Preview */}
+            {isTemplateSelected && (
+              <Card className="p-4 shadow-sm">
+                <h2 className="text-lg font-semibold mb-3">Upload Your Video</h2>
                 <VideoUpload onVideoSelect={handleVideoUpload} />
               </Card>
             )}
+          </div>
 
-            {/* Text Customization */}
-            <Card className="p-6 shadow-md">
-              <h2 className="text-2xl font-semibold mb-4">
-                {isTemplateSelected ? "3." : "2."} Customize Text
-              </h2>
+          {/* Right Side - Templates and Controls (Wider) */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Template Selection - Always visible but shows only selected template when proceeded */}
+            <Card className="p-4 shadow-sm">
+              <div className="flex items-center justify-between mb-3">
+                <h2 className="text-lg font-semibold">
+                  {isTemplateSelected ? "Selected Template" : "Select Template"}
+                </h2>
+              </div>
+              
+              {isTemplateSelected && selectedVideoUrl ? (
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="aspect-square relative rounded-lg overflow-hidden w-[60px] mx-auto">
+                    <img
+                      src={[...thumbnails, ...beautyThumbnails, ...lifestyleThumbnails, ...customThumbnails]
+                        .find(t => t.videoUrl === selectedVideoUrl)?.thumbnailUrl || ''}
+                      alt="Selected template"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                    <div className="absolute inset-0 bg-black/10 rounded-lg" />
+                  </div>
+                  <Button
+                    variant="outline"
+                    onClick={handleGoBackToTemplates}
+                    className="w-full flex items-center justify-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Change Template
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <VideoThumbnailGrid 
+                    currentVideoUrl={selectedVideoUrl}
+                    onVideoSelect={setSelectedVideoUrl}
+                  />
+                  {selectedVideoUrl && (
+                    <Button
+                      className="w-full mt-4 bg-primary hover:bg-primary/90"
+                      onClick={handleProceedWithTemplate}
+                    >
+                      <ArrowRight className="mr-2 h-4 w-4" />
+                      Proceed with Template
+                    </Button>
+                  )}
+                </>
+              )}
+            </Card>
+
+            {/* Customization Controls */}
+            <Card className="p-4 shadow-sm">
+              <h2 className="text-lg font-semibold mb-4">Customize</h2>
               <div className="space-y-6">
-                <div>
-                  <Label className="block text-sm font-medium mb-2">
-                    Enter Custom Text
-                  </Label>
-                  <Input
-                    type="text"
-                    value={text}
-                    onChange={(e) => setText(e.target.value)}
-                    className="w-full"
-                    placeholder="Enter your text here..."
-                  />
+                {/* Text Input and Font Size */}
+                <div className="space-y-4">
+                  <div>
+                    <Label className="text-sm font-medium mb-1.5">Text</Label>
+                    <Input
+                      type="text"
+                      value={text}
+                      onChange={(e) => setText(e.target.value)}
+                      className="w-full"
+                      placeholder="Enter your text..."
+                    />
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-center mb-1.5">
+                      <Label className="text-sm font-medium">Font Size</Label>
+                      <span className="text-sm text-muted-foreground">{textSize}px</span>
+                    </div>
+                    <Slider
+                      value={[textSize]}
+                      onValueChange={([value]) => setTextSize(value)}
+                      min={12}
+                      max={72}
+                      step={1}
+                      className="w-full"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <Label className="block text-sm font-medium mb-2">
-                    Text Presets
-                  </Label>
-                  <TextPresets onSelect={handlePresetSelect} />
+                {/* Style Controls */}
+                <div className="grid grid-cols-2 gap-6">
+                  {/* Left Column - Position */}
+                  <div>
+                    <Label className="text-sm font-medium mb-2">Position</Label>
+                    <div className="grid grid-cols-1 gap-2">
+                      <Button
+                        type="button"
+                        variant={textPosition === "top" ? "default" : "outline"}
+                        className="w-full h-12 flex items-center justify-center gap-2"
+                        onClick={() => setTextPosition("top")}
+                      >
+                        Top
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={textPosition === "middle" ? "default" : "outline"}
+                        className="w-full h-12 flex items-center justify-center gap-2"
+                        onClick={() => setTextPosition("middle")}
+                      >
+                        Middle
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={textPosition === "bottom" ? "default" : "outline"}
+                        className="w-full h-12 flex items-center justify-center gap-2"
+                        onClick={() => setTextPosition("bottom")}
+                      >
+                        Bottom
+                      </Button>
+                    </div>
+                  </div>
+                  {/* Right Column - Animation and Color */}
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-sm font-medium mb-2">Animation</Label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <Button
+                          type="button"
+                          variant={textAnimation === "none" ? "default" : "outline"}
+                          className="w-full h-12 flex items-center justify-center"
+                          onClick={() => setTextAnimation("none")}
+                        >
+                          None
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={textAnimation === "fade" ? "default" : "outline"}
+                          className="w-full h-12 flex items-center justify-center"
+                          onClick={() => setTextAnimation("fade")}
+                        >
+                          Fade
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={textAnimation === "slide" ? "default" : "outline"}
+                          className="w-full h-12 flex items-center justify-center"
+                          onClick={() => setTextAnimation("slide")}
+                        >
+                          Slide
+                        </Button>
+                        <Button
+                          type="button"
+                          variant={textAnimation === "scale" ? "default" : "outline"}
+                          className="w-full h-12 flex items-center justify-center"
+                          onClick={() => setTextAnimation("scale")}
+                        >
+                          Scale
+                        </Button>
+                      </div>
+                    </div>
+                    <div>
+                      <Label className="text-sm font-medium mb-2">Text Color</Label>
+                      <ColorPicker color={textColor} onChange={setTextColor} showPreview={false} />
+                    </div>
+                  </div>
                 </div>
 
-                <div>
-                  <Label className="block text-sm font-medium mb-2">
-                    Text Color
-                  </Label>
-                  <ColorPicker
-                    color={textColor}
-                    onChange={setTextColor}
-                  />
-                </div>
-
-                <div>
-                  <Label className="block text-sm font-medium mb-2">
-                    Text Size
-                  </Label>
-                  <Input
-                    type="number"
-                    value={textSize}
-                    onChange={(e) => setTextSize(Number(e.target.value))}
-                    min={12}
-                    max={72}
-                    className="w-full"
-                  />
-                </div>
-
-                <div>
-                  <Label className="block text-sm font-medium mb-2">
-                    Text Position
-                  </Label>
-                  <TextPositionSelector 
-                    position={textPosition}
-                    onChange={setTextPosition}
-                  />
-                </div>
-
-                <div>
-                  <Label className="block text-sm font-medium mb-2">
-                    Text Animation
-                  </Label>
-                  <TextAnimationSelector
-                    animation={textAnimation}
-                    onChange={setTextAnimation}
-                  />
-                </div>
-
-                <div>
-                  <Label className="block text-sm font-medium mb-2">
-                    Timeline Control
-                  </Label>
+                {/* Timeline Control */}
+                <div className="border-t pt-4">
+                  <Label className="text-sm font-medium mb-2">Timeline</Label>
                   <TimelineControl
                     videoRef={videoRef}
                     startTime={startTime}
@@ -189,49 +282,21 @@ const VideoEditor = () => {
                 </div>
               </div>
             </Card>
-          </div>
 
-          {/* Right Column - Preview and Download */}
-          <div className="lg:col-span-4 space-y-6">
-            <Card className="p-6 shadow-md">
-              <h2 className="text-2xl font-semibold mb-4">
-                {isTemplateSelected ? "4." : "3."} Preview & Download
-              </h2>
-              <div className="space-y-6">
-                {isTemplateSelected ? (
-                  <CombinedVideoPreview
-                    templateVideoUrl={selectedVideoUrl}
-                    uploadedVideoUrl={uploadedVideoUrl}
-                    text={text}
-                    textColor={textColor}
-                    textSize={textSize}
-                    position={textPosition}
-                    animation={textAnimation}
-                  />
-                ) : (
-                  <VideoPreview
-                    videoRef={videoRef}
-                    videoUrl={selectedVideoUrl || ""}
-                    text={text}
-                    textColor={textColor}
-                    textSize={textSize}
-                    position={textPosition}
-                    animation={textAnimation}
-                  />
-                )}
-                <DownloadButton
-                  templateVideoUrl={selectedVideoUrl}
-                  backgroundVideoUrl={uploadedVideoUrl}
-                  textOverlay={text}
-                  textColor={textColor}
-                  textSize={textSize}
-                  textPosition={textPosition}
-                  animation={textAnimation}
-                  startTime={startTime}
-                  duration={duration}
-                  disabled={!selectedVideoUrl || (isTemplateSelected && !uploadedVideoUrl)}
-                />
-              </div>
+            {/* Download Button */}
+            <Card className="p-4 shadow-sm">
+              <DownloadButton
+                templateVideoUrl={selectedVideoUrl}
+                backgroundVideoUrl={uploadedVideoUrl}
+                textOverlay={text}
+                textColor={textColor}
+                textSize={textSize}
+                textPosition={textPosition}
+                animation={textAnimation}
+                startTime={startTime}
+                duration={duration}
+                disabled={!selectedVideoUrl || (isTemplateSelected && !uploadedVideoUrl)}
+              />
             </Card>
           </div>
         </div>

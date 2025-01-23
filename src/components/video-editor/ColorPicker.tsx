@@ -4,18 +4,22 @@ import { Input } from "@/components/ui/input";
 interface ColorPickerProps {
   color: string;
   onChange: (color: string) => void;
+  showPreview?: boolean;
 }
 
 export const ColorPicker = ({
   color,
   onChange,
+  showPreview = true,
 }: ColorPickerProps) => {
   return (
     <div className="flex items-center gap-4">
-      <div 
-        className="w-10 h-10 rounded-lg border border-gray-200"
-        style={{ backgroundColor: color }}
-      />
+      {showPreview && (
+        <div 
+          className="w-10 h-10 rounded-lg border border-gray-200"
+          style={{ backgroundColor: color }}
+        />
+      )}
       <Input
         type="color"
         value={color}

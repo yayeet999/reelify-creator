@@ -9,7 +9,7 @@ import {
 } from "./data/thumbnailData";
 
 interface VideoThumbnailProps {
-  currentVideoUrl: string;
+  currentVideoUrl?: string;
   onVideoSelect: (videoUrl: string) => void;
 }
 

@@ -6,7 +6,7 @@ interface ThumbnailGridProps {
     thumbnailUrl: string;
     videoUrl: string;
   }>;
-  currentVideoUrl: string;
+  currentVideoUrl?: string;
   onVideoSelect: (videoUrl: string) => void;
 }
 
@@ -16,7 +16,7 @@ export const ThumbnailGrid = ({
   onVideoSelect,
 }: ThumbnailGridProps) => {
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <div className="grid grid-cols-8 gap-2 p-2">
       {thumbnails.map((thumbnail) => (
         <ThumbnailCard
           key={thumbnail.id}

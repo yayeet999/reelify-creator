@@ -1,55 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { Code, FilePlus, Video, Film, Plus, Loader2 } from "lucide-react";
-import { QuickStartCard } from "@/components/dashboard/QuickStartCard";
+import { Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { FEATURES } from "@/config/features";
-import { FeatureGate } from "@/components/FeatureGate";
 import { useSubscriptionTier } from "@/hooks/useSubscriptionTier";
+import { MetricsOverview } from "@/components/dashboard/MetricsOverview";
+import { ResourceCenter } from "@/components/dashboard/ResourceCenter";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { subscriptionTier } = useAuth();
   const { isSubscriptionLoading } = useSubscriptionTier();
-
-  const getQuickStartOptions = () => {
-    const baseOptions = [
-      {
-        title: "Create Content",
-        description: "Start creating your first piece of content",
-        icon: <FilePlus className="w-5 h-5" />,
-        path: "/dashboard/create",
-        feature: FEATURES.CONTENT_CREATION,
-      },
-    ];
-
-    const starterOptions = [
-      {
-        title: "Generate Hooks",
-        description: "Create custom React hooks for your projects",
-        icon: <Code className="w-5 h-5" />,
-        path: "/dashboard/hooks",
-        feature: FEATURES.HOOKS_GENERATOR,
-      },
-      {
-        title: "Green Screenify",
-        description: "Create videos with custom backgrounds",
-        icon: <Video className="w-5 h-5" />,
-        path: "/dashboard/green-screenify",
-        feature: FEATURES.GREEN_SCREENIFY,
-      },
-      {
-        title: "Video Editor",
-        description: "Edit and customize videos",
-        icon: <Film className="w-5 h-5" />,
-        path: "/dashboard/video-editor",
-        feature: FEATURES.VIDEO_EDITOR,
-      },
-    ];
-
-    return [...baseOptions, ...starterOptions];
-  };
 
   if (isSubscriptionLoading) {
     return (
@@ -74,7 +35,7 @@ const Dashboard = () => {
               )}
             </h1>
             <p className="mt-2 text-lg text-muted-foreground">
-              Welcome to your dashboard! Here's what you can do
+              Welcome to your dashboard! Here's an overview of your activity
             </p>
             {subscriptionTier === "free" && (
               <Alert className="mt-4 bg-primary/5 border-primary/10">
@@ -94,59 +55,16 @@ const Dashboard = () => {
           </div>
         </div>
 
-        {/* Quick Start Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {getQuickStartOptions().map((option) => (
-            <FeatureGate
-              key={option.title}
-              requiredTier={option.feature.requiredTier}
-              fallback={
-                <QuickStartCard
-                  title={option.title}
-                  description={option.description}
-                  icon={option.icon}
-                  onClick={() => navigate("/pricing")}
-                  overlay={
-                    <div className="absolute inset-0 bg-black/50 flex items-center justify-center rounded-lg">
-                      <Button variant="secondary" className="gap-2">
-                        <Plus className="w-4 h-4" />
-                        Upgrade to Access
-                      </Button>
-                    </div>
-                  }
-                />
-              }
-            >
-              <QuickStartCard
-                title={option.title}
-                description={option.description}
-                icon={option.icon}
-                onClick={() => navigate(option.path)}
-              />
-            </FeatureGate>
-          ))}
+        {/* Metrics Overview */}
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+          <h2 className="text-xl font-semibold mb-4">Overview</h2>
+          <MetricsOverview />
         </div>
 
-        {/* Additional Info Section */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          <div className="bg-accent-purple/30 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Quick Tips</h3>
-            <p className="text-sm text-muted-foreground">
-              Explore the dashboard to access all features available in your subscription tier.
-            </p>
-          </div>
-          <div className="bg-accent-pink/30 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">Need Help?</h3>
-            <p className="text-sm text-muted-foreground">
-              Check out our documentation or contact support for assistance.
-            </p>
-          </div>
-          <div className="bg-accent-green/30 rounded-lg p-6 shadow-sm">
-            <h3 className="text-lg font-semibold mb-2">What's New</h3>
-            <p className="text-sm text-muted-foreground">
-              Stay updated with the latest features and improvements.
-            </p>
-          </div>
+        {/* Resource Center */}
+        <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-100">
+          <h2 className="text-xl font-semibold mb-4">Resources</h2>
+          <ResourceCenter />
         </div>
 
         {subscriptionTier === "free" && (
