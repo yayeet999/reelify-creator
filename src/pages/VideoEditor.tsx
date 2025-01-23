@@ -43,6 +43,11 @@ const VideoEditor = () => {
     setUploadedVideoUrl(cloudinaryUrl);
   };
 
+  const handlePresetSelect = (textColor: string, bgColor: string) => {
+    setTextColor(textColor);
+    setBackgroundColor(bgColor);
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-7xl animate-fade-up">
       <div className="space-y-8">
