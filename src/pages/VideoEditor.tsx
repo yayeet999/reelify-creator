@@ -24,7 +24,6 @@ const VideoEditor = () => {
   const [backgroundColor, setBackgroundColor] = useState<string>("#000000E6");
   const [textSize, setTextSize] = useState<number>(32);
   const [isTemplateSelected, setIsTemplateSelected] = useState(false);
-  const [uploadedVideo, setUploadedVideo] = useState<File | null>(null);
   const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string>();
   const [startTime, setStartTime] = useState(0);
   const [duration, setDuration] = useState(30);
@@ -37,19 +36,11 @@ const VideoEditor = () => {
 
   const handleGoBackToTemplates = () => {
     setIsTemplateSelected(false);
-    setUploadedVideo(null);
     setUploadedVideoUrl(undefined);
   };
 
-  const handleVideoUpload = async (file: File) => {
-    setUploadedVideo(file);
-    const url = URL.createObjectURL(file);
-    setUploadedVideoUrl(url);
-  };
-
-  const handlePresetSelect = (textColor: string, bgColor: string) => {
-    setTextColor(textColor);
-    setBackgroundColor(bgColor);
+  const handleVideoUpload = (cloudinaryUrl: string) => {
+    setUploadedVideoUrl(cloudinaryUrl);
   };
 
   return (

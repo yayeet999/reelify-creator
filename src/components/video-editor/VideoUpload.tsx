@@ -3,14 +3,17 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Video } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 interface VideoUploadProps {
-  onVideoSelect: (file: File) => void;
+  onVideoSelect: (url: string) => void;
 }
 
 export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
   const [error, setError] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const { toast } = useToast();
 
   const validateVideo = async (file: File) => {
     // Check file format
@@ -45,12 +48,42 @@ export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
 
     const isValid = await validateVideo(file);
     if (isValid) {
-      onVideoSelect(file);
-    }
-    
-    // Reset input so the same file can be selected again if needed
-    if (inputRef.current) {
-      inputRef.current.value = '';
+      setIsUploading(true);
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'for_temp_videos_forSTARTERgreen');
+
+      try {
+        const response = await fetch(
+          'https://api.cloudinary.com/v1_1/fornotreel/video/upload',
+          {
+            method: 'POST',
+            body: formData,
+          }
+        );
+
+        if (!response.ok) throw new Error('Upload failed');
+
+        const data = await response.json();
+        onVideoSelect(data.secure_url);
+        
+        toast({
+          title: "Upload Successful",
+          description: "Your video has been uploaded.",
+        });
+      } catch (error) {
+        console.error('Upload error:', error);
+        toast({
+          title: "Upload Failed",
+          description: "There was an error uploading your video.",
+          variant: "destructive",
+        });
+      } finally {
+        setIsUploading(false);
+        if (inputRef.current) {
+          inputRef.current.value = '';
+        }
+      }
     }
   };
 
@@ -59,12 +92,13 @@ export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
       <Label>Upload Video</Label>
       
       {/* Upload Container */}
-      <div className="relative aspect-[9/4] bg-accent-purple/10 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
+      <div className="relative aspect-[9/4] bg-accent/10 rounded-lg border-2 border-dashed border-primary/20 hover:border-primary/40 transition-colors">
         <Input
           ref={inputRef}
           type="file"
           accept=".mp4,.mov,.webm"
           onChange={handleFileChange}
+          disabled={isUploading}
           className="hidden"
         />
         <div 
@@ -72,7 +106,9 @@ export const VideoUpload = ({ onVideoSelect }: VideoUploadProps) => {
           className="absolute inset-0 flex flex-col items-center justify-center cursor-pointer p-4"
         >
           <Video className="w-8 h-8 mb-2 text-primary/60" />
-          <p className="text-sm font-medium text-primary">Choose Video</p>
+          <p className="text-sm font-medium text-primary">
+            {isUploading ? "Uploading..." : "Choose Video"}
+          </p>
           <p className="text-xs text-muted-foreground mt-1">
             MP4, MOV, or WEBM format
           </p>
