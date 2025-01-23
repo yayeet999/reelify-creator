@@ -5,10 +5,11 @@ import type { SubscriptionTier } from "@/types/subscription";
 import { toast } from "@/components/ui/use-toast";
 import type { PostgrestSingleResponse } from '@supabase/supabase-js';
 
-// Constants for timeouts and caching
-const AUTH_TIMEOUT = 10000; // 10 seconds
-const SUBSCRIPTION_TIMEOUT = 5000; // 5 seconds
-const SESSION_CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+// Enhanced timeout and caching constants
+const AUTH_TIMEOUT = 10000;
+const SUBSCRIPTION_TIMEOUT = 5000;
+const SESSION_CACHE_TTL = 5 * 60 * 1000;
+const SUBSCRIPTION_CHECK_DEBOUNCE = 2000;
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -22,7 +23,6 @@ interface AuthState {
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
 
-// Utility function for timeout handling
 const withTimeout = <T,>(promise: Promise<T>, timeout: number, errorMessage: string): Promise<T> => {
   return Promise.race([
     promise,
@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [subscriptionError, setSubscriptionError] = useState<string | null>(null);
   const [lastSessionCheck, setLastSessionCheck] = useState(0);
   const [sessionCache, setSessionCache] = useState<any>(null);
+  const [lastSubscriptionCheck, setLastSubscriptionCheck] = useState(0);
   const navigate = useNavigate();
 
   const cleanupAuthResources = useCallback(() => {
@@ -48,12 +49,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setSubscriptionError(null);
     setSessionCache(null);
     setLastSessionCheck(0);
+    setLastSubscriptionCheck(0);
   }, []);
 
   const checkSubscription = useCallback(async () => {
+    const now = Date.now();
+    if (now - lastSubscriptionCheck < SUBSCRIPTION_CHECK_DEBOUNCE) {
+      return;
+    }
+
     try {
       setIsSubscriptionLoading(true);
       setSubscriptionError(null);
+      setLastSubscriptionCheck(now);
 
       const userResponse = await withTimeout(
         supabase.auth.getUser(),
@@ -91,13 +99,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setIsSubscriptionLoading(false);
     }
-  }, []);
+  }, [lastSubscriptionCheck]);
 
   const retrySubscriptionCheck = useCallback(async () => {
     await checkSubscription();
   }, [checkSubscription]);
 
-  // Efficient session check with caching
   const checkSession = useCallback(async () => {
     const now = Date.now();
     if (now - lastSessionCheck < SESSION_CACHE_TTL && sessionCache) {
