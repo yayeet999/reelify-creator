@@ -5,7 +5,9 @@ import {
   thumbnails, 
   beautyThumbnails, 
   lifestyleThumbnails, 
-  customThumbnails 
+  customThumbnails,
+  fashionThumbnails,
+  travelThumbnails 
 } from "./data/thumbnailData";
 
 interface VideoThumbnailProps {
@@ -17,7 +19,7 @@ export const VideoThumbnailGrid = ({
   currentVideoUrl, 
   onVideoSelect 
 }: VideoThumbnailProps) => {
-  const categories = ['beauty', 'lifestyle', 'custom'];
+  const categories = ['beauty', 'lifestyle', 'custom', 'fashion', 'travel'];
 
   return (
     <Tabs defaultValue="all" className="w-full">
@@ -50,6 +52,22 @@ export const VideoThumbnailGrid = ({
       <TabsContent value="custom">
         <ThumbnailGrid
           thumbnails={customThumbnails}
+          currentVideoUrl={currentVideoUrl}
+          onVideoSelect={onVideoSelect}
+        />
+      </TabsContent>
+
+      <TabsContent value="fashion">
+        <ThumbnailGrid
+          thumbnails={fashionThumbnails || []}
+          currentVideoUrl={currentVideoUrl}
+          onVideoSelect={onVideoSelect}
+        />
+      </TabsContent>
+
+      <TabsContent value="travel">
+        <ThumbnailGrid
+          thumbnails={travelThumbnails || []}
           currentVideoUrl={currentVideoUrl}
           onVideoSelect={onVideoSelect}
         />

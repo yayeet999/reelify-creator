@@ -98,7 +98,10 @@ export const VideoPreview = ({
   const PREVIEW_SCALE = 0.8;
 
   return (
-    <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
+    <div 
+      className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden select-none"
+      onContextMenu={(e) => e.preventDefault()}
+    >
       <style>{`
         .animate-fade-in {
           animation: fadeIn 0.5s ease-out forwards;
@@ -121,24 +124,33 @@ export const VideoPreview = ({
           from { transform: scale(0.8); opacity: 0; }
           to { transform: scale(1); opacity: 1; }
         }
+        .video-security {
+          -webkit-user-select: none;
+          -ms-user-select: none;
+          user-select: none;
+          pointer-events: none;
+          -webkit-touch-callout: none;
+          -webkit-filter: blur(0);
+        }
       `}</style>
 
       {/* Previous video for transition */}
       {prevVideoUrl !== videoUrl && (
         <video 
-          className="absolute inset-0 w-full h-full rounded-lg object-cover z-[1] transition-opacity duration-300 opacity-0"
+          className="absolute inset-0 w-full h-full rounded-lg object-cover z-[1] transition-opacity duration-300 opacity-0 video-security"
           src={prevVideoUrl}
           autoPlay
           muted
           loop
           playsInline
+          onContextMenu={(e) => e.preventDefault()}
         />
       )}
       
       {/* Current video */}
       <video 
         ref={videoRef}
-        className={`w-full h-full rounded-lg object-cover z-[2] transition-opacity duration-300 ${isLoading ? 'opacity-0' : 'opacity-100'}`}
+        className={`w-full h-full rounded-lg object-cover z-[2] transition-opacity duration-300 video-security ${isLoading ? 'opacity-0' : 'opacity-100'}`}
         src={videoUrl}
         autoPlay
         muted
@@ -147,11 +159,18 @@ export const VideoPreview = ({
         playsInline
         preload="auto"
         onLoadedData={() => setIsLoading(false)}
+        onContextMenu={(e) => e.preventDefault()}
       />
+      
+      {/* Security overlay */}
+      <div className="absolute inset-0 z-[10] bg-black/10 pointer-events-none" />
+
+      {/* Additional security layer */}
+      <div className="absolute inset-0 z-[15] pointer-events-none select-none" style={{ mixBlendMode: 'normal' }} />
       
       {/* Watermark overlay with middle z-index */}
       <div className="absolute inset-0 z-[20] pointer-events-none">
-        <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-[0.15]">
+        <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-[0.23]">
           {[...Array(9)].map((_, i) => (
             <div key={i} className="flex items-center justify-center rotate-[-25deg]">
               <span className="text-black text-xl font-bold whitespace-nowrap">

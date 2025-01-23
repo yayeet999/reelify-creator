@@ -496,3 +496,127 @@ export const customThumbnails: Thumbnail[] = [
     category: 'custom'
   },
 ];
+
+export const fashionThumbnails: Thumbnail[] = [
+  {
+    id: 'thumbnail-85',
+    thumbnailUrl: '/thumbnail85.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641295/url85_gmyotv.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-86',
+    thumbnailUrl: '/thumbnail86.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641298/url86_upyci4.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-87',
+    thumbnailUrl: '/thumbnail87.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641293/url87_hiuhbp.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-88',
+    thumbnailUrl: '/thumbnail88.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641295/url88_jtmjv8.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-89',
+    thumbnailUrl: '/thumbnail89.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641258/url89_gboy8a.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-90',
+    thumbnailUrl: '/thumbnail90.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641244/url90_rutawi.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-91',
+    thumbnailUrl: '/thumbnail91.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641243/url91_f585in.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-92',
+    thumbnailUrl: '/thumbnail92.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641290/url92_wuvdrf.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-93',
+    thumbnailUrl: '/thumbnail93.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641291/url93_gia5vw.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-94',
+    thumbnailUrl: '/thumbnail94.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641290/url94_wh4kug.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-95',
+    thumbnailUrl: '/thumbnail95.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641289/url95_elfaln.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-96',
+    thumbnailUrl: '/thumbnail96.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641258/url96_egwupl.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-97',
+    thumbnailUrl: '/thumbnail97.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641244/url97_f1uzrv.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-98',
+    thumbnailUrl: '/thumbnail98.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641289/url98_ijmbto.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-99',
+    thumbnailUrl: '/thumbnail99.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641288/url99_ftgoxw.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-100',
+    thumbnailUrl: '/thumbnail100.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641287/url100_jumwod.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-101',
+    thumbnailUrl: '/thumbnail101.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641287/url101_ckjkrn.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-102',
+    thumbnailUrl: '/thumbnail102.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641287/url102_dip72y.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-103',
+    thumbnailUrl: '/thumbnail103.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641286/url103_avcqwl.mp4',
+    category: 'fashion'
+  },
+  {
+    id: 'thumbnail-104',
+    thumbnailUrl: '/thumbnail104.jpg',
+    videoUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737641286/url104_oys4y6.mp4',
+    category: 'fashion'
+  }
+];
+export const travelThumbnails: Thumbnail[] = [];
