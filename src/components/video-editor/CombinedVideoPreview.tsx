@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { type Position } from "./TextPositionSelector";
 import { type AnimationType } from "./TextAnimationSelector";
 
 interface CombinedVideoPreviewProps {
-  templateVideoUrl: string;
-  uploadedVideoUrl: string;
+  templateVideoUrl?: string;
+  uploadedVideoUrl?: string;
   text: string;
   textColor: string;
   textSize: number;
@@ -21,7 +21,6 @@ export const CombinedVideoPreview = ({
   position,
   animation,
 }: CombinedVideoPreviewProps) => {
-  const [isLoading, setIsLoading] = useState(true);
   const [currentVideo, setCurrentVideo] = useState<"template" | "uploaded">("template");
   const templateVideoRef = useRef<HTMLVideoElement>(null);
   const uploadedVideoRef = useRef<HTMLVideoElement>(null);
@@ -48,7 +47,7 @@ export const CombinedVideoPreview = ({
       // Initial play
       templateVideo.play();
     }
-  }, []);
+  }, [templateVideoUrl, uploadedVideoUrl]);
 
   const getPositionClasses = (pos: Position) => {
     switch (pos) {
@@ -67,6 +66,10 @@ export const CombinedVideoPreview = ({
         return "opacity-100";
       case "fade":
         return "animate-fade-in";
+      case "slide":
+        return "animate-slide-up";
+      case "scale":
+        return "animate-scale-in";
     }
   };
 
@@ -74,26 +77,31 @@ export const CombinedVideoPreview = ({
 
   return (
     <div className="relative max-w-[240px] mx-auto aspect-[9/16] bg-black/5 rounded-lg flex items-center justify-center overflow-hidden">
-      <video 
-        ref={templateVideoRef}
-        className="absolute inset-0 w-full h-full rounded-lg object-cover z-[1] transition-opacity duration-300"
-        src={templateVideoUrl}
-        muted
-        playsInline
-        preload="auto"
-        onLoadedData={() => setIsLoading(false)}
-      />
+      {/* Template Video Layer */}
+      {templateVideoUrl && (
+        <video 
+          ref={templateVideoRef}
+          className="absolute inset-0 w-full h-full rounded-lg object-cover z-[1] transition-opacity duration-300"
+          src={templateVideoUrl}
+          muted
+          playsInline
+          preload="auto"
+        />
+      )}
       
-      <video 
-        ref={uploadedVideoRef}
-        className="absolute inset-0 w-full h-full rounded-lg object-cover z-[1] opacity-0 transition-opacity duration-300"
-        src={uploadedVideoUrl}
-        muted
-        playsInline
-        preload="auto"
-      />
+      {/* Uploaded Video Layer */}
+      {uploadedVideoUrl && (
+        <video 
+          ref={uploadedVideoRef}
+          className="absolute inset-0 w-full h-full rounded-lg object-cover z-[1] opacity-0 transition-opacity duration-300"
+          src={uploadedVideoUrl}
+          muted
+          playsInline
+          preload="auto"
+        />
+      )}
       
-      {/* Watermark overlay - Always visible */}
+      {/* Watermark overlay */}
       <div className="absolute inset-0 z-[20] pointer-events-none">
         <div className="w-full h-full grid grid-cols-3 grid-rows-3 opacity-[0.15]">
           {[...Array(9)].map((_, i) => (
@@ -109,7 +117,6 @@ export const CombinedVideoPreview = ({
       {/* Text overlay - Only visible during template video */}
       {text && currentVideo === "template" && (
         <div 
-          key={`${text}-${animation}-${position}-${currentVideo}`}
           className={`absolute left-1/2 -translate-x-1/2 text-center w-full px-[25px] py-2 z-[30] ${getPositionClasses(position)} ${getAnimationClasses(animation)}`}
           style={{
             color: textColor,

@@ -8,12 +8,12 @@ import { ColorPicker } from "@/components/video-editor/ColorPicker";
 import { DownloadButton } from "@/components/video-editor/DownloadButton";
 import { VideoUpload } from "@/components/video-editor/VideoUpload";
 import { TimelineControl } from "@/components/video-editor/TimelineControl";
+import { CombinedVideoPreview } from "@/components/video-editor/CombinedVideoPreview";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Sparkles } from "lucide-react";
-import { useSubscriptionTier } from "@/hooks/useSubscriptionTier";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 const VideoEditor = () => {
   const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>();
@@ -25,22 +25,26 @@ const VideoEditor = () => {
   const [textSize, setTextSize] = useState<number>(32);
   const [isTemplateSelected, setIsTemplateSelected] = useState(false);
   const [uploadedVideo, setUploadedVideo] = useState<File | null>(null);
+  const [uploadedVideoUrl, setUploadedVideoUrl] = useState<string>();
   const [startTime, setStartTime] = useState(0);
   const [duration, setDuration] = useState(30);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const { currentTier } = useSubscriptionTier();
 
   const handleProceedWithTemplate = () => {
+    if (!selectedVideoUrl) return;
     setIsTemplateSelected(true);
   };
 
   const handleGoBackToTemplates = () => {
     setIsTemplateSelected(false);
     setUploadedVideo(null);
+    setUploadedVideoUrl(undefined);
   };
 
-  const handleVideoUpload = (file: File) => {
+  const handleVideoUpload = async (file: File) => {
     setUploadedVideo(file);
+    const url = URL.createObjectURL(file);
+    setUploadedVideoUrl(url);
   };
 
   const handlePresetSelect = (textColor: string, bgColor: string) => {
@@ -57,7 +61,6 @@ const VideoEditor = () => {
             <h1 className="text-4xl font-bold tracking-tight text-primary">
               Video Editor
             </h1>
-            <Sparkles className="h-6 w-6 text-primary animate-pulse" />
           </div>
           <p className="text-lg text-muted-foreground">
             Create stunning videos by selecting templates and customizing them with your text
@@ -76,7 +79,7 @@ const VideoEditor = () => {
         )}
 
         <div className="grid gap-8 lg:grid-cols-12">
-          {/* Left Column - Template Selection */}
+          {/* Left Column */}
           <div className="space-y-8 lg:col-span-8">
             {!isTemplateSelected ? (
               <Card className="p-6 shadow-md">
@@ -87,6 +90,16 @@ const VideoEditor = () => {
                   currentVideoUrl={selectedVideoUrl}
                   onVideoSelect={setSelectedVideoUrl}
                 />
+                {selectedVideoUrl && (
+                  <Button
+                    className="w-full mt-4 bg-primary hover:bg-primary/90"
+                    size="lg"
+                    onClick={handleProceedWithTemplate}
+                  >
+                    <ArrowRight className="mr-2 h-4 w-4" />
+                    Proceed with Template
+                  </Button>
+                )}
               </Card>
             ) : (
               <Card className="p-6 shadow-md">
@@ -165,21 +178,19 @@ const VideoEditor = () => {
                   />
                 </div>
 
-                {currentTier !== 'free' && (
-                  <div>
-                    <Label className="block text-sm font-medium mb-2">
-                      Timeline Control
-                    </Label>
-                    <TimelineControl
-                      videoRef={videoRef}
-                      startTime={startTime}
-                      duration={duration}
-                      videoDuration={30}
-                      onStartTimeChange={setStartTime}
-                      onDurationChange={setDuration}
-                    />
-                  </div>
-                )}
+                <div>
+                  <Label className="block text-sm font-medium mb-2">
+                    Timeline Control
+                  </Label>
+                  <TimelineControl
+                    videoRef={videoRef}
+                    startTime={startTime}
+                    duration={duration}
+                    videoDuration={30}
+                    onStartTimeChange={setStartTime}
+                    onDurationChange={setDuration}
+                  />
+                </div>
               </div>
             </Card>
           </div>
@@ -191,17 +202,30 @@ const VideoEditor = () => {
                 {isTemplateSelected ? "4." : "3."} Preview & Download
               </h2>
               <div className="space-y-6">
-                <VideoPreview
-                  videoRef={videoRef}
-                  videoUrl={selectedVideoUrl || ""}
-                  text={text}
-                  textColor={textColor}
-                  textSize={textSize}
-                  position={textPosition}
-                  animation={textAnimation}
-                />
+                {isTemplateSelected ? (
+                  <CombinedVideoPreview
+                    templateVideoUrl={selectedVideoUrl}
+                    uploadedVideoUrl={uploadedVideoUrl}
+                    text={text}
+                    textColor={textColor}
+                    textSize={textSize}
+                    position={textPosition}
+                    animation={textAnimation}
+                  />
+                ) : (
+                  <VideoPreview
+                    videoRef={videoRef}
+                    videoUrl={selectedVideoUrl || ""}
+                    text={text}
+                    textColor={textColor}
+                    textSize={textSize}
+                    position={textPosition}
+                    animation={textAnimation}
+                  />
+                )}
                 <DownloadButton
-                  videoUrl={selectedVideoUrl}
+                  templateVideoUrl={selectedVideoUrl}
+                  backgroundVideoUrl={uploadedVideoUrl}
                   textOverlay={text}
                   textColor={textColor}
                   textSize={textSize}
@@ -209,7 +233,7 @@ const VideoEditor = () => {
                   animation={textAnimation}
                   startTime={startTime}
                   duration={duration}
-                  disabled={!selectedVideoUrl}
+                  disabled={!selectedVideoUrl || (isTemplateSelected && !uploadedVideoUrl)}
                 />
               </div>
             </Card>

@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Download, Crown } from "lucide-react";
+import { Download } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
-import { useSubscriptionTier } from "@/hooks/useSubscriptionTier";
 
 interface DownloadButtonProps {
   disabled?: boolean;
-  videoUrl?: string;
+  templateVideoUrl?: string;
+  backgroundVideoUrl?: string;
   textOverlay: string;
   textColor: string;
   textSize: number;
@@ -17,9 +16,10 @@ interface DownloadButtonProps {
   duration: number;
 }
 
-export const DownloadButton = ({
-  disabled,
-  videoUrl,
+export const DownloadButton = ({ 
+  disabled, 
+  templateVideoUrl,
+  backgroundVideoUrl,
   textOverlay,
   textColor,
   textSize,
@@ -30,70 +30,73 @@ export const DownloadButton = ({
 }: DownloadButtonProps) => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
-  const { currentTier, hasAccess } = useSubscriptionTier();
 
-  const handleUpgrade = () => {
-    navigate("/#pricing");
+  const extractCloudinaryId = (url: string) => {
+    const matches = url.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
+    if (!matches) {
+      console.error("Failed to extract video ID from URL:", url);
+      return null;
+    }
+    return matches[1];
   };
 
   const generateCloudinaryUrl = () => {
-    if (!videoUrl) return null;
+    if (!templateVideoUrl || !backgroundVideoUrl) return null;
 
-    // Extract video ID from URL
-    const matches = videoUrl.match(/\/v\d+\/([^/]+?)(?:\.(?:mp4|webm))?$/);
-    if (!matches) {
-      console.error("Failed to extract video ID from URL:", videoUrl);
+    // Extract IDs
+    const templateId = extractCloudinaryId(templateVideoUrl);
+    const backgroundId = extractCloudinaryId(backgroundVideoUrl);
+
+    if (!templateId || !backgroundId) {
+      console.error("Failed to extract video IDs");
       return null;
     }
-    const videoId = matches[1];
 
     // Build transformation URL
     let transformationUrl = `https://res.cloudinary.com/fornotreel/video/upload/`
+      + `ac_none/`                    // Clear any existing audio
       + `q_auto:good/`               // Quality settings
       + `c_fill,ar_9:16,w_1080/`     // Video dimensions
       + `so_${startTime}/`           // Start offset
-      + `du_${duration}/`;           // Duration
+      + `du_${duration}/`            // Duration
+      + `l_video:${templateId}/`     // Template overlay
+      + `c_scale,w_1080/`            // Scale template video
+      + `fl_layer_apply,g_center`;   // Apply template layer
 
-    // Add text overlay with animation
-    const textParams = [
-      `l_text:Arial_${textSize}:${encodeURIComponent(textOverlay)}`,
-      `co_${textColor.replace('#', '')}`,
-      `g_${textPosition === 'middle' ? 'center' : textPosition}`,
-    ];
+    // Add text overlay if provided
+    if (textOverlay) {
+      transformationUrl += `/l_text:Arial_${textSize}:${encodeURIComponent(textOverlay)}`
+        + `,co_${textColor.replace('#', '')}`
+        + `,g_${textPosition === 'middle' ? 'center' : textPosition}`;
 
-    // Add animation effect
-    switch (animation) {
-      case "fade":
-        textParams.push('e_fade:2000');
-        break;
-      case "slide":
-        textParams.push('e_slide:up:2000');
-        break;
-      case "scale":
-        textParams.push('e_scale:2000');
-        break;
+      // Add animation effect
+      switch (animation) {
+        case "fade":
+          transformationUrl += ',e_fade:2000';
+          break;
+        case "slide":
+          transformationUrl += ',e_slide:up:2000';
+          break;
+        case "scale":
+          transformationUrl += ',e_scale:2000';
+          break;
+      }
     }
 
-    transformationUrl += textParams.join(',') + '/';
-    transformationUrl += videoId + '.mp4';
+    // Add final video
+    transformationUrl += `/${backgroundId}.mp4`;
 
     console.log("Generated Cloudinary URL:", transformationUrl);
     return transformationUrl;
   };
 
   const handleDownload = async () => {
-    if (!videoUrl) {
+    if (!templateVideoUrl || !backgroundVideoUrl) {
       toast({
         title: "Error",
-        description: "No video selected.",
+        description: "Both template and background videos are required.",
         variant: "destructive",
       });
-      return;
-    }
-
-    if (!hasAccess('starter')) {
-      handleUpgrade();
       return;
     }
 
@@ -120,7 +123,7 @@ export const DownloadButton = ({
       
       const link = document.createElement('a');
       link.href = downloadUrl;
-      link.download = `edited-video-${Date.now()}.mp4`;
+      link.download = `combined-video-${Date.now()}.mp4`;
       link.style.display = 'none';
       document.body.appendChild(link);
       
@@ -145,20 +148,6 @@ export const DownloadButton = ({
     }
   };
 
-  // Show upgrade button for free tier users
-  if (currentTier === 'free') {
-    return (
-      <Button
-        className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-        size="lg"
-        onClick={handleUpgrade}
-      >
-        <Crown className="mr-2 h-4 w-4" />
-        Upgrade to Download
-      </Button>
-    );
-  }
-
   return (
     <Button
       className="w-full bg-primary hover:bg-primary/90"
@@ -167,7 +156,7 @@ export const DownloadButton = ({
       onClick={handleDownload}
     >
       <Download className="mr-2 h-4 w-4" />
-      {isProcessing ? "Processing..." : "Download Video"}
+      {isProcessing ? "Processing..." : "Download Combined Video"}
     </Button>
   );
 };
