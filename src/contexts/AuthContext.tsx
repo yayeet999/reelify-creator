@@ -43,7 +43,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
 
   const cleanupAuthResources = useCallback(() => {
-    // Only clear session-specific data
     setIsAuthenticated(false);
     setSubscriptionTier("free");
     setSubscriptionError(null);
@@ -152,7 +151,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!mounted) return;
 
