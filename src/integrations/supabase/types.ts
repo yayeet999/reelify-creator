@@ -113,6 +113,24 @@ export type Database = {
         }
         Relationships: []
       }
+      video_urls: {
+        Row: {
+          high_quality_url: string
+          preview_url: string
+          video_id: string
+        }
+        Insert: {
+          high_quality_url: string
+          preview_url: string
+          video_id: string
+        }
+        Update: {
+          high_quality_url?: string
+          preview_url?: string
+          video_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
