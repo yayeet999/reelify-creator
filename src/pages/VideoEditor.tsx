@@ -124,7 +124,7 @@ const VideoEditor = () => {
                   <div className="aspect-square relative rounded-lg overflow-hidden w-[60px] mx-auto">
                     <img
                       src={[...thumbnails, ...beautyThumbnails, ...lifestyleThumbnails, ...customThumbnails]
-                        .find(t => t.videoUrl === selectedVideoUrl)?.thumbnailUrl || ''}
+                        .find(t => t.previewUrl === selectedVideoUrl)?.thumbnailUrl || ''}
                       alt="Selected template"
                       className="w-full h-full object-cover rounded-lg"
                     />

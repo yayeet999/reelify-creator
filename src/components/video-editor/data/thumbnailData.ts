@@ -125,6 +125,12 @@ export const thumbnails: Thumbnail[] = [
     thumbnailUrl: '/thumbnail21.jpg',
     category: 'all',
     previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769884/prev21_s8gxty.mp4'
+  },
+  {
+    id: 'thumbnail-41',
+    thumbnailUrl: '/thumbnail41.jpg',
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769787/prev41_yterbt.mp4'
   }
 ];
 
@@ -247,104 +253,130 @@ export const beautyThumbnails: Thumbnail[] = [
 
 export const lifestyleThumbnails: Thumbnail[] = [
   {
+    id: 'thumbnail-41',
+    thumbnailUrl: '/thumbnail41.jpg',
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769787/prev41_yterbt.mp4'
+  },
+  {
     id: 'thumbnail-42',
     thumbnailUrl: '/thumbnail42.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769828/prev42_r4uvsm.mp4'
   },
   {
     id: 'thumbnail-43',
     thumbnailUrl: '/thumbnail43.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769826/prev43_grdkmf.mp4'
   },
   {
     id: 'thumbnail-44',
     thumbnailUrl: '/thumbnail44.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769823/prev44_fkhleu.mp4'
   },
   {
     id: 'thumbnail-45',
     thumbnailUrl: '/thumbnail45.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769821/prev45_ek40vr.mp4'
   },
   {
     id: 'thumbnail-46',
     thumbnailUrl: '/thumbnail46.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769819/prev46_qeecvf.mp4'
   },
   {
     id: 'thumbnail-47',
     thumbnailUrl: '/thumbnail47.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769815/prev47_rr7uhn.mp4'
   },
   {
     id: 'thumbnail-48',
     thumbnailUrl: '/thumbnail48.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769811/prev48_vj3dkc.mp4'
   },
   {
     id: 'thumbnail-49',
     thumbnailUrl: '/thumbnail49.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769806/prev49_lzrbyj.mp4'
   },
   {
     id: 'thumbnail-50',
     thumbnailUrl: '/thumbnail50.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769811/prev50_bbkb6i.mp4'
   },
   {
     id: 'thumbnail-51',
     thumbnailUrl: '/thumbnail51.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769801/prev51_o2ivf1.mp4'
   },
   {
     id: 'thumbnail-52',
     thumbnailUrl: '/thumbnail52.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769804/prev52_fbxvnu.mp4'
   },
   {
     id: 'thumbnail-53',
     thumbnailUrl: '/thumbnail53.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769796/prev53_hbko66.mp4'
   },
   {
     id: 'thumbnail-54',
     thumbnailUrl: '/thumbnail54.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769800/prev54_gw0gbr.mp4'
   },
   {
     id: 'thumbnail-55',
     thumbnailUrl: '/thumbnail55.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769793/prev55_kcmvus.mp4'
   },
   {
     id: 'thumbnail-56',
     thumbnailUrl: '/thumbnail56.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769790/prev56_w0gbt2.mp4'
   },
   {
     id: 'thumbnail-57',
     thumbnailUrl: '/thumbnail57.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769783/prev57_nqeh5m.mp4'
   },
   {
     id: 'thumbnail-58',
     thumbnailUrl: '/thumbnail58.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769784/prev58_c2u4bc.mp4'
   },
   {
     id: 'thumbnail-59',
     thumbnailUrl: '/thumbnail59.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769780/prev59_sjefkn.mp4'
   },
   {
     id: 'thumbnail-60',
     thumbnailUrl: '/thumbnail60.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769775/prev60_gjcfr3.mp4'
   },
   {
     id: 'thumbnail-61',
     thumbnailUrl: '/thumbnail61.jpg',
-    category: 'lifestyle'
+    category: 'lifestyle',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769772/prev61_dqwo8r.mp4'
   }
 ];
 
@@ -352,47 +384,56 @@ export const customThumbnails: Thumbnail[] = [
   {
     id: 'thumbnail-62',
     thumbnailUrl: '/thumbnail62.jpg',
-    category: 'custom'
+    category: 'custom',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769770/prev62_tkn8vb.mp4'
   },
   {
     id: 'thumbnail-63',
     thumbnailUrl: '/thumbnail63.jpg',
-    category: 'custom'
+    category: 'custom',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769733/prev63_udxcux.mp4'
   },
   {
     id: 'thumbnail-64',
     thumbnailUrl: '/thumbnail64.jpg',
-    category: 'custom'
+    category: 'custom',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769735/prev64_siosbz.mp4'
   },
   {
     id: 'thumbnail-65',
     thumbnailUrl: '/thumbnail65.jpg',
-    category: 'custom'
+    category: 'custom',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769727/prev65_ttcxtz.mp4'
   },
   {
     id: 'thumbnail-66',
     thumbnailUrl: '/thumbnail66.jpg',
-    category: 'custom'
+    category: 'custom',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769743/prev66_wseayi.mp4'
   },
   {
     id: 'thumbnail-67',
     thumbnailUrl: '/thumbnail67.jpg',
-    category: 'custom'
+    category: 'custom',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769747/prev67_fukqhe.mp4'
   },
   {
     id: 'thumbnail-68',
     thumbnailUrl: '/thumbnail68.jpg',
-    category: 'custom'
+    category: 'custom',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769751/prev68_nr7kjb.mp4'
   },
   {
     id: 'thumbnail-69',
     thumbnailUrl: '/thumbnail69.jpg',
-    category: 'custom'
+    category: 'custom',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769758/prev69_czehvb.mp4'
   },
   {
     id: 'thumbnail-70',
     thumbnailUrl: '/thumbnail70.jpg',
-    category: 'custom'
+    category: 'custom',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769777/prev70_fptsxd.mp4'
   },
   {
     id: 'thumbnail-71',
@@ -442,11 +483,6 @@ export const customThumbnails: Thumbnail[] = [
   {
     id: 'thumbnail-80',
     thumbnailUrl: '/thumbnail80.jpg',
-    category: 'custom'
-  },
-  {
-    id: 'thumbnail-81',
-    thumbnailUrl: '/thumbnail81.jpg',
     category: 'custom'
   }
 ];
