@@ -39,77 +39,92 @@ export const thumbnails: Thumbnail[] = [
   {
     id: 'thumbnail-6',
     thumbnailUrl: '/thumbnail6.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769925/prev6_xi4v02.mp4'
   },
   {
     id: 'thumbnail-7',
     thumbnailUrl: '/thumbnail7.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769923/prev7_op6mif.mp4'
   },
   {
     id: 'thumbnail-8',
     thumbnailUrl: '/thumbnail8.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769920/prev8_hhghfv.mp4'
   },
   {
     id: 'thumbnail-9',
     thumbnailUrl: '/thumbnail9.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769917/prev9_fhq9dz.mp4'
   },
   {
     id: 'thumbnail-10',
     thumbnailUrl: '/thumbnail10.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769913/prev10_xdyqc9.mp4'
   },
   {
     id: 'thumbnail-11',
     thumbnailUrl: '/thumbnail11.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769912/prev11_ivrep0.mp4'
   },
   {
     id: 'thumbnail-12',
     thumbnailUrl: '/thumbnail12.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769907/prev12_n0owmb.mp4'
   },
   {
     id: 'thumbnail-13',
     thumbnailUrl: '/thumbnail13.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769905/prev13_tz1zjf.mp4'
   },
   {
     id: 'thumbnail-15',
     thumbnailUrl: '/thumbnail15.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769902/prev15_mmcdig.mp4'
   },
   {
     id: 'thumbnail-16',
     thumbnailUrl: '/thumbnail16.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769899/prev16_kbwuvt.mp4'
   },
   {
     id: 'thumbnail-17',
     thumbnailUrl: '/thumbnail17.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769896/prev17_c7ninh.mp4'
   },
   {
     id: 'thumbnail-18',
     thumbnailUrl: '/thumbnail18.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769893/prev18_usdh5o.mp4'
   },
   {
     id: 'thumbnail-19',
     thumbnailUrl: '/thumbnail19.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769890/prev19_nectbq.mp4'
   },
   {
     id: 'thumbnail-20',
     thumbnailUrl: '/thumbnail20.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769887/prev20_nr1d8w.mp4'
   },
   {
     id: 'thumbnail-21',
     thumbnailUrl: '/thumbnail21.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769884/prev21_s8gxty.mp4'
   }
 ];
 
@@ -129,92 +144,104 @@ export const beautyThumbnails: Thumbnail[] = [
   {
     id: 'thumbnail-24',
     thumbnailUrl: '/thumbnail24.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769864/prev24_kqnhzl.mp4'
   },
   {
     id: 'thumbnail-25',
     thumbnailUrl: '/thumbnail25.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769862/prev25_c1qfe3.mp4'
   },
   {
     id: 'thumbnail-26',
     thumbnailUrl: '/thumbnail26.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769859/prev26_awhbs8.mp4'
   },
   {
     id: 'thumbnail-27',
     thumbnailUrl: '/thumbnail27.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769882/prev27_mvdugw.mp4'
   },
   {
     id: 'thumbnail-28',
     thumbnailUrl: '/thumbnail28.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769879/prev28_lfaucn.mp4'
   },
   {
     id: 'thumbnail-29',
     thumbnailUrl: '/thumbnail29.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769878/prev29_czwgbm.mp4'
   },
   {
     id: 'thumbnail-30',
     thumbnailUrl: '/thumbnail30.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769873/prev30_tglvhh.mp4'
   },
   {
     id: 'thumbnail-31',
     thumbnailUrl: '/thumbnail31.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769857/prev31_glotbe.mp4'
   },
   {
     id: 'thumbnail-32',
     thumbnailUrl: '/thumbnail32.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769853/prev32_jhi9mt.mp4'
   },
   {
     id: 'thumbnail-33',
     thumbnailUrl: '/thumbnail33.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769851/prev33_niwbcx.mp4'
   },
   {
     id: 'thumbnail-34',
     thumbnailUrl: '/thumbnail34.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769848/prev34_ncul3g.mp4'
   },
   {
     id: 'thumbnail-35',
     thumbnailUrl: '/thumbnail35.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769842/prev35_fuiley.mp4'
   },
   {
     id: 'thumbnail-36',
     thumbnailUrl: '/thumbnail36.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769844/prev36_p2o9je.mp4'
   },
   {
     id: 'thumbnail-37',
     thumbnailUrl: '/thumbnail37.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769836/prev37_smnooj.mp4'
   },
   {
     id: 'thumbnail-38',
     thumbnailUrl: '/thumbnail38.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769839/prev38_qda0vw.mp4'
   },
   {
     id: 'thumbnail-39',
     thumbnailUrl: '/thumbnail39.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769833/prev39_w1lmdl.mp4'
   },
   {
     id: 'thumbnail-40',
     thumbnailUrl: '/thumbnail40.jpg',
-    category: 'beauty'
-  },
-  {
-    id: 'thumbnail-41',
-    thumbnailUrl: '/thumbnail41.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769830/prev40_vjboy5.mp4'
   }
 ];
 

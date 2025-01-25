@@ -18,8 +18,8 @@ import { thumbnails, beautyThumbnails, lifestyleThumbnails, customThumbnails } f
 import { Slider } from "@/components/ui/slider";
 
 const VideoEditor = () => {
-  const defaultVideo = thumbnails[0]?.videoUrl;
-  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>(defaultVideo);
+  const defaultVideo = thumbnails[0]?.previewUrl;
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string>(defaultVideo || '');
   const [textPosition, setTextPosition] = useState<"top" | "middle" | "bottom">("middle");
   const [textAnimation, setTextAnimation] = useState<"none" | "fade" | "slide" | "scale">("none");
   const [text, setText] = useState<string>("");
