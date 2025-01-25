@@ -2,33 +2,39 @@ interface Thumbnail {
   id: string;
   thumbnailUrl: string;
   category: string;
+  previewUrl?: string;
 }
 
 export const thumbnails: Thumbnail[] = [
   {
     id: 'elegant-salon',
     thumbnailUrl: '/thumbnail1.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769940/prev1_imaxmn.mp4'
   },
   {
     id: 'thumbnail-2',
     thumbnailUrl: '/thumbnail2.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769937/prev2_y1g4qs.mp4'
   },
   {
     id: 'thumbnail-3',
     thumbnailUrl: '/thumbnail3.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769934/prev3_zjttky.mp4'
   },
   {
     id: 'thumbnail-4',
     thumbnailUrl: '/thumbnail4.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769931/prev4_zkjgly.mp4'
   },
   {
     id: 'thumbnail-5',
     thumbnailUrl: '/thumbnail5.jpg',
-    category: 'all'
+    category: 'all',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769929/prev5_rgykpu.mp4'
   },
   {
     id: 'thumbnail-6',
@@ -111,12 +117,14 @@ export const beautyThumbnails: Thumbnail[] = [
   {
     id: 'thumbnail-22',
     thumbnailUrl: '/thumbnail22.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769867/prev22_v2yjcc.mp4'
   },
   {
     id: 'thumbnail-23',
     thumbnailUrl: '/thumbnail23.jpg',
-    category: 'beauty'
+    category: 'beauty',
+    previewUrl: 'https://res.cloudinary.com/fornotreel/video/upload/v1737769871/prev23_uzfgcb.mp4'
   },
   {
     id: 'thumbnail-24',

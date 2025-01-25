@@ -4,7 +4,7 @@ interface ThumbnailGridProps {
   thumbnails: Array<{
     id: string;
     thumbnailUrl: string;
-    videoUrl: string;
+    previewUrl?: string;
   }>;
   currentVideoUrl?: string;
   onVideoSelect: (videoUrl: string) => void;
@@ -22,9 +22,9 @@ export const ThumbnailGrid = ({
           key={thumbnail.id}
           id={thumbnail.id}
           thumbnailUrl={thumbnail.thumbnailUrl}
-          videoUrl={thumbnail.videoUrl}
-          isSelected={currentVideoUrl === thumbnail.videoUrl}
-          onClick={() => onVideoSelect(thumbnail.videoUrl)}
+          videoUrl={thumbnail.previewUrl || ''}
+          isSelected={currentVideoUrl === thumbnail.previewUrl}
+          onClick={() => thumbnail.previewUrl && onVideoSelect(thumbnail.previewUrl)}
         />
       ))}
     </div>
